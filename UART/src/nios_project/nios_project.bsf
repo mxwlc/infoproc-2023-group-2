@@ -1,0 +1,105 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 2018  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details.
+*/
+(header "symbol" (version "1.1"))
+(symbol
+	(rect 0 0 720 272)
+	(text "nios_project" (rect 325 -1 372 11)(font "Arial" (font_size 10)))
+	(text "inst" (rect 8 256 20 268)(font "Arial" ))
+	(port
+		(pt 0 120)
+		(input)
+		(text "accelerometer_spi_external_interface_G_SENSOR_INT" (rect 0 0 231 12)(font "Arial" (font_size 8)))
+		(text "accelerometer_spi_external_interface_G_SENSOR_INT" (rect 4 109 298 120)(font "Arial" (font_size 8)))
+		(line (pt 0 120)(pt 304 120)(line_width 1))
+	)
+	(port
+		(pt 0 160)
+		(input)
+		(text "button_external_connection_export[1..0]" (rect 0 0 156 12)(font "Arial" (font_size 8)))
+		(text "button_external_connection_export[1..0]" (rect 4 149 238 160)(font "Arial" (font_size 8)))
+		(line (pt 0 160)(pt 304 160)(line_width 3))
+	)
+	(port
+		(pt 0 200)
+		(input)
+		(text "clk_clk" (rect 0 0 27 12)(font "Arial" (font_size 8)))
+		(text "clk_clk" (rect 4 189 46 200)(font "Arial" (font_size 8)))
+		(line (pt 0 200)(pt 304 200)(line_width 1))
+	)
+	(port
+		(pt 0 240)
+		(input)
+		(text "reset_reset_n" (rect 0 0 56 12)(font "Arial" (font_size 8)))
+		(text "reset_reset_n" (rect 4 229 82 240)(font "Arial" (font_size 8)))
+		(line (pt 0 240)(pt 304 240)(line_width 1))
+	)
+	(port
+		(pt 0 88)
+		(output)
+		(text "accelerometer_spi_external_interface_I2C_SCLK" (rect 0 0 201 12)(font "Arial" (font_size 8)))
+		(text "accelerometer_spi_external_interface_I2C_SCLK" (rect 4 77 274 88)(font "Arial" (font_size 8)))
+		(line (pt 0 88)(pt 304 88)(line_width 1))
+	)
+	(port
+		(pt 0 104)
+		(output)
+		(text "accelerometer_spi_external_interface_G_SENSOR_CS_N" (rect 0 0 241 12)(font "Arial" (font_size 8)))
+		(text "accelerometer_spi_external_interface_G_SENSOR_CS_N" (rect 4 93 304 104)(font "Arial" (font_size 8)))
+		(line (pt 0 104)(pt 304 104)(line_width 1))
+	)
+	(port
+		(pt 0 72)
+		(bidir)
+		(text "accelerometer_spi_external_interface_I2C_SDAT" (rect 0 0 202 12)(font "Arial" (font_size 8)))
+		(text "accelerometer_spi_external_interface_I2C_SDAT" (rect 4 61 274 72)(font "Arial" (font_size 8)))
+		(line (pt 0 72)(pt 304 72)(line_width 1))
+	)
+	(drawing
+		(text "accelerometer_spi_external_interface" (rect 85 43 386 99)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "I2C_SDAT" (rect 309 67 666 144)(font "Arial" (color 0 0 0)))
+		(text "I2C_SCLK" (rect 309 83 666 176)(font "Arial" (color 0 0 0)))
+		(text "G_SENSOR_CS_N" (rect 309 99 696 208)(font "Arial" (color 0 0 0)))
+		(text "G_SENSOR_INT" (rect 309 115 690 240)(font "Arial" (color 0 0 0)))
+		(text "button_external_connection" (rect 146 131 448 275)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "export" (rect 309 155 654 320)(font "Arial" (color 0 0 0)))
+		(text "clk" (rect 289 171 596 355)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "clk" (rect 309 195 636 400)(font "Arial" (color 0 0 0)))
+		(text "reset" (rect 275 211 580 435)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "reset_n" (rect 309 235 660 480)(font "Arial" (color 0 0 0)))
+		(text " nios_project " (rect 665 256 1414 522)(font "Arial" ))
+		(line (pt 304 32)(pt 416 32)(line_width 1))
+		(line (pt 416 32)(pt 416 256)(line_width 1))
+		(line (pt 304 256)(pt 416 256)(line_width 1))
+		(line (pt 304 32)(pt 304 256)(line_width 1))
+		(line (pt 305 52)(pt 305 124)(line_width 1))
+		(line (pt 306 52)(pt 306 124)(line_width 1))
+		(line (pt 305 140)(pt 305 164)(line_width 1))
+		(line (pt 306 140)(pt 306 164)(line_width 1))
+		(line (pt 305 180)(pt 305 204)(line_width 1))
+		(line (pt 306 180)(pt 306 204)(line_width 1))
+		(line (pt 305 220)(pt 305 244)(line_width 1))
+		(line (pt 306 220)(pt 306 244)(line_width 1))
+		(line (pt 0 0)(pt 720 0)(line_width 1))
+		(line (pt 720 0)(pt 720 272)(line_width 1))
+		(line (pt 0 272)(pt 720 272)(line_width 1))
+		(line (pt 0 0)(pt 0 272)(line_width 1))
+	)
+)
