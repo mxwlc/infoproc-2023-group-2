@@ -1,6 +1,7 @@
 #script for if we are using pygame
 #this script will be run on the client side, and will send data to the server
 #this script will be modified based on which computer it is running on - player 1's , or player 2's
+#this version is for player 2
 
 import socket
 import time
@@ -17,30 +18,28 @@ client_socket.connect((server_name, server_port))
 while True:
 
     #conditional updates - only send update to server if change is registered, to save latency as these dont need to be sent 10 times a second if theyre usually the same
-    if player1_lives == player1_lives-1:
+    if player2_lives == player2_lives-1:
         client_socket.send(player_lives.encode())
-    
-    else if base_lives == base_lives-1:
-        client_socket.send(base_lives.encode())
 
-    else if #space invader is destroyed:
+    else if #space invader is destroyed by this player:
         client_socket.send(#space invader is destroyed.encode())
     
-    else if #bullet shot:
+    else if #bullet shot by this player:
         client_socket.send(#bullet shot.encode())
     
 
     #concatenate automatically sent game data into a string
-    auto_game_data = f'{player1_x_position}|{player1_score}'
+    auto_game_data = f'{player2_x_position}|{player2_score}'
 
     # send variable values to server
     client_socket.send(auto_game_data.encode())
 
 
     #get updates on all non local variables from server
-    player2_lives = client_socket.recv(1024).decode()
-    player2_score = client_socket.recv(1024).decode()
-    player2_x_position = client_socket.recv(1024).decode()
+    player1_lives = client_socket.recv(1024).decode()
+    player1_score = client_socket.recv(1024).decode()
+    player1_x_position = client_socket.recv(1024).decode()
+    base_lives = client_socket.recv(1024).decode()
 
 
     
