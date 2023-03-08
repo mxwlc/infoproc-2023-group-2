@@ -1,4 +1,8 @@
+# Class handling the controller
+# TODO: Tune the thresholds for the fpga controller -> may work
+
 from pynput.keyboard import Key, Controller
+import time
 
 
 class fpga_controller:
@@ -8,32 +12,33 @@ class fpga_controller:
 
     def shoot(self):
         # TODO: implement space
-        return
+        self.keyboard.press(Key.space)
+        time.sleep(0.1)
+        self.keyboard.release(Key.space)
 
     def moveleft(self):
         # TODO: implement move left
-        return
+        self.keyboard.press(Key.left)
 
     def moveright(self):
         # TODO: implement move right
-        return
+        self.keyboard.press(Key.right)
 
+    def stop(self):
+        self.keyboard.release(Key.left)
+        self.keyboard.release(Key.right)
 
-def uhex_to_shex(uhex):
-    if uhex & 0x80000000:
-        return - (uhex & 0x79999999)
-    else:
-        return uhex & 0x79999999
+    def left_or_right(self, accel_input):
+        accel_input = int(self.uhex_to_shex(accel_input))
+        if accel_input < -100:
+            self.moveleft()
+        elif accel_input > 100:
+            self.moveright()
+        else:
+            self.stop()
 
-
-def left_or_right(controller, accel_input):
-    if uhex_to_shex(accel_input) < -100:
-        controller.moveleft()
-    elif uhex_to_shex(accel_input) > 100:
-        controller.moveright()
-
-
-input_num = 0x00000001
-
-print(int(input_num))
-print(uhex_to_shex(input_num))
+    def uhex_to_shex(uhex):
+        if uhex & 0x80000000:
+            return - (uhex & 0x79999999)
+        else:
+            return uhex & 0x79999999
