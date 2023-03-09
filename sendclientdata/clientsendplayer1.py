@@ -5,6 +5,7 @@
 
 import socket
 import time
+from mygame import *
 
 server_name = #servername
 server_port = 12000
