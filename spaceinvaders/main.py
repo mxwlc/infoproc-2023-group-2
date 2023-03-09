@@ -2,7 +2,12 @@ import pygame
 import os
 import time
 import random
-from player1send import *
+import socket
+
+server_name = '13.40.75.241'
+server_port = 12000
+client_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket1.connect((server_name, server_port))
 
 pygame.font.init()
 
@@ -154,6 +159,9 @@ def main():
     run = True
     FPS = 60
     player1lives = 5
+    user1lives = str(player1lives) 
+    client_socket1.send(user1lives.encode())
+    player2lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
     lost_font = pygame.font.SysFont("comicsans", 60)
 
@@ -173,6 +181,7 @@ def main():
 
     def redraw_window():
         WIN.blit(BG, (0,0))
+        player2lives = int(client_socket1.recv(1024).decode())
         # draw text
         lives_label = main_font.render(f"Lives: {player1lives}", 1, (255,255,255))
         player2lives_label = main_font.render(f"player2lives: {player2lives}", 1, (255,255,255))
@@ -241,7 +250,9 @@ def main():
                 enemies.remove(enemy) #if player collide with enemy health -10
             elif enemy.y + enemy.get_height() > HEIGHT:
                 player1lives -= 1
-                enemies.remove(enemy) #if player misses an enemy lives -1
+                enemies.remove(enemy)
+                user1lives = str(player1lives) 
+                client_socket1.send(user1lives.encode())#if player misses an enemy lives -1
 
         player.move_lasers(-laser_vel, enemies)
 
