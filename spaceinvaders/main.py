@@ -4,9 +4,9 @@ import time
 import random
 import socket
 
-server_name = '13.40.75.241'
+server_name = '35.178.142.85'
 server_port = 12000
-clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 clientsocket.connect((server_name, server_port))
 
 pygame.font.init()
@@ -249,12 +249,12 @@ def main():
             elif enemy.y + enemy.get_height() > HEIGHT:
                 player1lives -= 1
                 enemies.remove(enemy)
-                clientsocket.send(str(player1lives).encode())
+                clientsocket.sendto(str(player1lives).encode(), '35.178.142.85')
 
         player.move_lasers(-laser_vel, enemies)
         
-        if clientsocket.recv(1024):
-                player2lives = int(clientsocket.recv(1024).decode())
+        if clientsocket.recvfrom(1024):
+                player2lives = int(clientsocket.recvfrom(1024)[0].decode())
         
 
 
