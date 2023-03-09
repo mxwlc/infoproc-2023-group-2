@@ -6,8 +6,8 @@ import socket
 
 server_name = '13.40.75.241'
 server_port = 12000
-#clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#clientsocket.connect((server_name, server_port))
+clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientsocket.connect((server_name, server_port))
 
 pygame.font.init()
 
