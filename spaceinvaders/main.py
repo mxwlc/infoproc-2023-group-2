@@ -2,6 +2,8 @@ import pygame
 import os
 import time
 import random
+from player1send import *
+
 pygame.font.init()
 
 WIDTH, HEIGHT = 750, 650
@@ -151,7 +153,6 @@ def collide(obj1, obj2):
 def main():
     run = True
     FPS = 60
-    player2lives = 5
     player1lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
     lost_font = pygame.font.SysFont("comicsans", 60)

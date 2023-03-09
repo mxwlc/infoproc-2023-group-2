@@ -7,7 +7,7 @@ import socket
 import time
 from main import *
 
-server_name = #servername
+server_name = '18.133.159.31'
 server_port = 12000
 client_socket1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket1.connect((server_name, server_port))
@@ -20,8 +20,7 @@ while True:
 
     #concanete all the data into one string called user1data
     client_socket1.send(player1lives.encode())
-
     player2lives = client_socket1.recv(1024).decode()
 
     #wait a small while before sending more data. this will send info about users actions 10 times per second.
-    time.sleep(0.05)                                                                                                                                             
+    time.sleep(0.1)                                                                                                                                             
