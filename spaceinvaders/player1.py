@@ -2,6 +2,14 @@ import pygame
 import os
 import time
 import random
+import socket
+
+server_name = '35.178.142.85'
+server_port = 5555
+clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientsocket.connect((server_name, server_port))
+clientsocket.settimeout(0)
+
 pygame.font.init()
 
 WIDTH, HEIGHT = 750, 650
@@ -151,8 +159,8 @@ def collide(obj1, obj2):
 def main():
     run = True
     FPS = 60
-    player2lives = 5
     player1lives = 5
+    player2lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
     lost_font = pygame.font.SysFont("comicsans", 60)
 
@@ -193,6 +201,7 @@ def main():
     while run:
         clock.tick(FPS)
         redraw_window()
+
 
         if player1lives <= 0 or player.health <= 0:
             lost = True
@@ -240,9 +249,22 @@ def main():
                 enemies.remove(enemy) #if player collide with enemy health -10
             elif enemy.y + enemy.get_height() > HEIGHT:
                 player1lives -= 1
-                enemies.remove(enemy) #if player misses an enemy lives -1
+                enemies.remove(enemy)
+                p1lives = str(player1lives)
+                clientsocket.send(p1lives.encode())
 
         player.move_lasers(-laser_vel, enemies)
+        
+        try:
+            
+            p2lives = clientsocket.recv(1024).decode()
+            player2lives = int(p2lives)
+        except:
+            continue
+
+
+        
+
 
 def homepage():
     title_font = pygame.font.SysFont("comicsans", 50)

@@ -1,3 +1,5 @@
+
+
 import pygame
 import os
 import time
@@ -5,8 +7,8 @@ import random
 import socket
 
 server_name = '35.178.142.85'
-server_port = 12000
-clientsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+server_port = 5555
+clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientsocket.connect((server_name, server_port))
 clientsocket.settimeout(0)
 
@@ -157,6 +159,7 @@ def collide(obj1, obj2):
     return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) != None
 
 def main():
+
     run = True
     FPS = 60
     player1lives = 5
@@ -181,11 +184,11 @@ def main():
     def redraw_window():
         WIN.blit(BG, (0,0))
         # draw text
-        lives_label = main_font.render(f"Lives: {player1lives}", 1, (255,255,255))
-        player2lives_label = main_font.render(f"player2lives: {player2lives}", 1, (255,255,255))
+        lives_label = main_font.render(f"Lives: {player2lives}", 1, (255,255,255))
+        player1lives_label = main_font.render(f"player1lives: {player1lives}", 1, (255,255,255))
 
         WIN.blit(lives_label, (10, 10))
-        WIN.blit(player2lives_label, (WIDTH - player2lives_label.get_width() - 10, 10))
+        WIN.blit(player1lives_label, (WIDTH - player1lives_label.get_width() - 10, 10))
 
         for enemy in enemies:
             enemy.draw(WIN)
@@ -203,14 +206,14 @@ def main():
         redraw_window()
 
 
-        if player1lives <= 0 or player.health <= 0:
+        if player2lives <= 0 or player.health <= 0:
             lost = True
             lost_count += 1
 
         if lost:
             if lost_count > FPS * 3:
                 run = False
-                
+               
             else:
                 continue
 
@@ -248,21 +251,19 @@ def main():
                 player.health -= 10
                 enemies.remove(enemy) #if player collide with enemy health -10
             elif enemy.y + enemy.get_height() > HEIGHT:
-                player1lives -= 1
+                player2lives -= 1
                 enemies.remove(enemy)
-                clientsocket.send(str(player1lives).encode())
+                p2lives = str(player2lives)
+                clientsocket.send(p2lives.encode())
 
         player.move_lasers(-laser_vel, enemies)
-        
+
         try:
-            
-            data = clientsocket.recvfrom(1024)[0].decode()
-            player2lives = int(data)
+            p1lives = clientsocket.recv(1024).decode()
+            player1lives = int(p1lives)
         except:
             continue
-
-
-        
+       
 
 
 def homepage():
@@ -277,13 +278,13 @@ def homepage():
 
 def tutorial():
     tutorial_font = pygame.font.SysFont("comicsans", 30)
-    tutorial1 = tutorial_font.render("Welcome to the tutorial!", 1, (255, 255, 255)) 
+    tutorial1 = tutorial_font.render("Welcome to the tutorial!", 1, (255, 255, 255))
     tutorial2 = tutorial_font.render("Use the arrow keys to move", 1, (255, 255, 255))    
     tutorial3 = tutorial_font.render("and the space bar to shoot.", 1, (255, 255, 255))
     tutorial4 = tutorial_font.render("(hit Enter to start the game)", 1, (255, 255, 255))    
-    WIN.blit(tutorial1, (WIDTH/2 - tutorial1.get_width()/2, 200)) 
-    WIN.blit(tutorial2, (WIDTH/2 - tutorial2.get_width()/2, 250)) 
-    WIN.blit(tutorial3, (WIDTH/2 - tutorial3.get_width()/2, 300)) 
+    WIN.blit(tutorial1, (WIDTH/2 - tutorial1.get_width()/2, 200))
+    WIN.blit(tutorial2, (WIDTH/2 - tutorial2.get_width()/2, 250))
+    WIN.blit(tutorial3, (WIDTH/2 - tutorial3.get_width()/2, 300))
     WIN.blit(tutorial4, (WIDTH/2 - tutorial4.get_width()/2, 400))
     pygame.display.update()
 
@@ -291,7 +292,7 @@ def main_menu():
     run = True
     current_screen = 0
     while run:
-        
+       
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False #if quit the screen game stop running
@@ -312,5 +313,6 @@ def main_menu():
         elif current_screen == 1:
             tutorial()        
     pygame.quit()
-    
+   
 main_menu()
+
