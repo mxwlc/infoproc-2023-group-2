@@ -1,6 +1,9 @@
 import time
 import random
 
+from leaderboard_functions import *
+from create_leaderboard import *
+
 NUM_ENEMIES = 55
 SCORE_INCREMENT = 10 # How much a player's score should increase by upon killing an enemy.
 ENEMY_BULLET_INTERVAL = 2 # Time in seconds between spawnings of enemy bullets.
@@ -14,10 +17,16 @@ class GameServer:
         self.game_in_progress = False
         self.remaining_enemies = []
         for i in range(NUM_ENEMIES):
-            self.remaining_enemies.append(True) # All enemies are alive at start
+            self.remaining_enemies.append(True)
         self.bullet_ids = []
 
     def __init__(self):
+        try:
+            create_leaderboard()
+            # Although create_leaderboard does not need to be called every time a new game instance is started,
+            # it makes things easier to do it this way and has very little extra cost.
+        except:
+            pass
         self.reset_game_state()
 
     def start_game(self):
@@ -27,22 +36,14 @@ class GameServer:
         self.time_since_bullet = 0
     
     def end_game(self):
-        #
-        # Store names and scores of players in leaderboard via DynamoDB
-        #
+        for i in range(2):
+            update_leaderboard(self.player_name[i], self.player_score[i])
         self.reset_game_state()
     
-    # Parses messages if the game is not in progress.
-    def check_readiness(self, client_index, raw_message):
-        if raw_message[0] == 'r':
-            self.player_ready[client_index] = True
-            self.player_name[client_index] = raw_message[1:]
-    
     # Parses messages if the game is in progress.
-    def process_messages(self, client_index, raw_message):
-        return_messages = [] # Messages to return to the client that sent the incoming message
-        relay_messages = [] # Messages to relay to the other client
-
+    # Return messages: messages to return to the client that sent the incoming (raw) message.
+    # Relay messages: messages to relay to the other client.
+    def parse_ingame(self, client_index, raw_message, return_messages, relay_messages):
         messages = raw_message.split(';')
         for m in messages:
             if len(m) == 0: # Empty messages or trailing ;
@@ -67,8 +68,20 @@ class GameServer:
                     relay_messages.append(m)
             elif m[0] == 'g': # Notification of game end
                 self.end_game()
-
-        return return_messages, relay_messages
+    
+    # Parses messages if the game is not in progress.
+    def parse_outofgame(self, client_index, raw_message):
+        response = ''
+        if raw_message[0] == 'r': # Notification of readiness
+            self.player_ready[client_index] = True
+            self.player_name[client_index] = raw_message[1:]
+        elif raw_message == 'l': # Request for leaderboard
+            leaderboard = get_leaderboard()
+            for entry in leaderboard:
+                response += 'n' + entry['name']
+                response += 's' + entry['score']
+        
+        return response
 
     # Convert a list of messages into a single message separated by ';'.
     def format_responses(self, messages):
@@ -99,16 +112,14 @@ class GameServer:
     # Returns: messages to send back to clients (in same order).
     def update(self, raw_message1, raw_message2):
 
-        response1, response2 = [], []
+        response1, response2 = '', ''
 
         if self.game_in_progress:
             
             ## Process messages from clients and take direct action
-            temp1, temp2 = [], []
-            response1, response2 = self.process_messages(0, raw_message1)
-            temp1, temp2 = self.process_messages(1, raw_message2)
-            response1 += temp2
-            response2 += temp1
+            arr1, arr2 = [], []
+            self.parse_ingame(0, raw_message1, arr1, arr2)
+            self.parse_ingame(1, raw_message2, arr2, arr1)
 
             if self.game_in_progress: # Check again since parsing messages may have ended the game
 
@@ -117,20 +128,24 @@ class GameServer:
 
                 ## Check if we can create a new enemy projectile
                 enemy_bullet_message = self.create_enemy_bullet()
-                if enemy_bullet_message != '':
-                    response1.append(enemy_bullet_message)
-                    response2.append(enemy_bullet_message)
+                arr1.append(enemy_bullet_message) # This message may be empty
+                arr2.append(enemy_bullet_message)
+
+            response1 = self.format_responses(arr1)
+            response2 = self.format_responses(arr2)
 
         else:
 
-            ## Check for notifications of readiness
-            self.check_readiness(0, raw_message1)
-            self.check_readiness(1, raw_message2)
+            ## Check for notifications of readiness and leaderboard requests
+            response1 = self.parse_outofgame(0, raw_message1)
+            response2 = self.parse_outofgame(1, raw_message2)
 
-            ## Check if both players are ready so we can start the game
+            ## Check if both players are ready so we can start the game.
+            ## Note that we are assuming that notifications of readiness and requests for
+            ## the leaderboard are mutually exclusive.
             if self.player_ready[0] and self.player_ready[1]:
                 self.start_game()
-                response1.append('s')
-                response2.append('s')
+                response1 = 's'
+                response2 = 's'
 
-        return self.format_responses(response1), self.format_responses(response2)
+        return response1, response2
