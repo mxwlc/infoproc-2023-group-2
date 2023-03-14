@@ -19,7 +19,6 @@ int main() {
 	int KEY_two;
 	int i = 0;
 	int loops = 0;
-	alt_printf("Initialised.");
 
     alt_32 x_read;
     alt_up_accelerometer_spi_dev * acc_dev;
