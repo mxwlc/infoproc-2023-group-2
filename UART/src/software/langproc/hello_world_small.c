@@ -18,7 +18,6 @@ int main() {
 	int KEY_one;
 	int KEY_two;
 	int i = 0;
-	int loops = 0;
 
     alt_32 x_read;
     alt_up_accelerometer_spi_dev * acc_dev;
@@ -32,11 +31,9 @@ int main() {
 		KEY_value = *(KEY_ptr);
 		KEY_one = (KEY_value & 0x1);
 		KEY_two = ((KEY_value >> 1) & 0x1);
-		alt_printf("\nLoop: %x\n", loops);
 		alt_printf("KEY_one: %x\n", KEY_one);
 		alt_printf("KEY_two: %x\n", KEY_two);
 		printf("X-Axis: %d\n", x_read);
-		loops++;
 		for (i=0; i<2000000; i++);
     }
 
