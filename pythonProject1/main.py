@@ -6,7 +6,9 @@ import math
 pygame.init()
 
 # create the screen, x-axis:800, y-axis:600
-screen = pygame.display.set_mode((800, 600))
+width = 800
+height = 600
+screen = pygame.display.set_mode((width, height))
 
 # background
 # background = pygame.image.load('background.png')
@@ -16,11 +18,18 @@ pygame.display.set_caption("Space Invaders")
 icon = pygame.image.load('spaceship.png')
 pygame.display.set_icon(icon)
 
-# Player
-playerImg = pygame.image.load('player.png')
-playerX = 370
-playerY = 480
-playerX_change = 0
+
+# Bunker
+bunkerImg = []
+BunkerX = [20]
+BunkerY = [400]
+num_of_bunker = 4
+
+for i in range(num_of_bunker):
+    n = i + 1
+    bunkerImg.append(pygame.image.load('bunker.png'))   
+    BunkerX.append(BunkerX[i] + 240)
+    BunkerY.append(BunkerY[i])
 
 # Enemy
 enemyImg = []
@@ -42,16 +51,47 @@ for i in range(num_of_enemies):
     enemyX_change.append(0.5)
     enemyY_change.append(20)
 
-# bullet
+# player bullet
 # Ready - You can't see the bullet on the screen
 # Fire - The bullet is currently moving
 
-bulletImg = pygame.image.load('bullet.png')
-bulletX = 0
-bulletY = 480
-bulletX_change = 0
-bulletY_change = 0.3
-bullet_state = "ready"
+#player1 bullet
+player_bulletImg = pygame.image.load('player_bullet.png')
+player1_bulletX = 0
+player1_bulletY = 480
+player1_bulletX_change = 0
+player1_bulletY_change = 2
+player1_bullet_state = "ready"
+
+#player2 bullet
+player2_bulletX = 0
+player2_bulletY = 480
+player2_bulletX_change = 0
+player2_bulletY_change = 2
+player2_bullet_state = "ready"
+
+#enemy bullet
+enemy_bulletImg = pygame.image.load('enemy_bullet.png')
+enemy_bulletX = 0
+enemy_bulletY = 480
+enemy_bulletX_change = 0
+enemy_bulletY_change = 0.5
+enemy_bullet_state = "ready"
+
+#server should decide the first one log in would be player1
+#in this script should have bool FirstLogIn, if true player1, else player2
+# Player1
+player1Img = pygame.image.load('player.png')
+player1X = 300
+player1Y = 480
+player1X_change = 0
+# Player2
+player2Img = pygame.image.load('player2.png')
+player2X = 500
+player2Y = 480
+player2X_change = 0
+
+player_vel = 0.5
 
 # score
 score_value = 0
@@ -80,27 +120,33 @@ def game_over_text():
     over_text = fonts.render("GAME OVER", True, (255, 255, 255))
     screen.blit(over_text, (200, 250))
 
-def player(x, y):
-    screen.blit(playerImg, (x, y))  # blit means to draw
-
+def player(player, x, y):
+    screen.blit(player, (x, y))  # blit means to draw
 
 def enemy(x, y, i):
     screen.blit(enemyImg[i], (x, y))  # blit means to draw
 
-def fire_bullet(x, y):
-    global bullet_state
-    bullet_state = "fire"
-    screen.blit(bulletImg, (x + 16, y + 10))
+def bunker(x, y, i):
+    screen.blit(bunkerImg[i], (x, y))
+
+def fire_player1_bullet(x, y):
+    global player1_bullet_state
+    player1_bullet_state = "fire"
+    screen.blit(player_bulletImg, (x + 17, y + 10))
+def fire_player2_bullet(x, y):
+    global player2_bullet_state
+    player2_bullet_state = "fire"
+    screen.blit(player_bulletImg, (x + 17, y + 10))
 
 
-def isCollision(enemyX, enemyY, bulletX, bulletY):
-    distance = math.sqrt(math.pow(enemyX - bulletX, 2) + math.pow(enemyY - bulletY, 2))
+def isCollision(X1, Y1, X2, Y2):
+    distance = math.sqrt(math.pow(X1 - X2, 2) + math.pow(Y1 - Y2, 2))
     if distance < 27:
         return True
     else:
         return False
 
-
+FirstLogIn = True #get data from server
 # Game Loop
 running = True
 while running:
@@ -111,33 +157,74 @@ while running:
     for event in pygame.event.get():  # check all the events in the window
         if event.type == pygame.QUIT:
             running = False
+        # keys = pygame.key.get_pressed()
+        # if keys[pygame.K_LEFT] and player1X - player_vel > 0: # left
+        #     player1X -= player_vel
+        # if keys[pygame.K_RIGHT] and player1X + player_vel + player1Img.get_width() < width: # right
+        #     player1X += player_vel
+        # if keys[pygame.K_a] and player2X - player_vel > 0: # left
+        #     player2X -= player_vel
+        # if keys[pygame.K_d] and player2X + player_vel + player2Img.get_width() < width: # right
+        #     player2X += player_vel
+        # if keys[pygame.K_SPACE]:
+        #     if player1_bullet_state == "ready":
+        #         # get the current x coordinate of the spaceship
+        #         player1_bulletX = player1X
+        #         fire_player1_bullet(player1_bulletX, player1_bulletY)
+        # if keys[pygame.K_TAB]:
+        #     if player2_bullet_state == "ready":
+        #         # get the current x coordinate of the spaceship
+        #         player2_bulletX = player2X
+        #         fire_player2_bullet(player2_bulletX, player2_bulletY)
 
-        # if keystroke is pressed check whether its right or left
+        # # if keystroke is pressed check whether its right or left
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                playerX_change = -0.2
+                player1X_change = -0.5
             if event.key == pygame.K_RIGHT:
-                playerX_change = 0.2
+                player1X_change = 0.5
+            if event.key == pygame.K_a:
+                player2X_change = -0.5
+            if event.key == pygame.K_d:
+                player2X_change = 0.5
             if event.key == pygame.K_SPACE:
-                if bullet_state == "ready":
+                if player1_bullet_state == "ready":
                     # get the current x coordinate of the spaceship
-                    bulletX = playerX
-                    fire_bullet(bulletX, bulletY)
+                    player1_bulletX = player1X
+                    fire_player1_bullet(player1_bulletX, player1_bulletY)
+            if event.key == pygame.K_TAB:
+                if player2_bullet_state == "ready":
+                    # get the current x coordinate of the spaceship
+                    player2_bulletX = player2X
+                    fire_player2_bullet(player2_bulletX, player2_bulletY)
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                playerX_change = 0
+                player1X_change = 0
+            if event.key == pygame.K_a or event.key == pygame.K_d:
+                player2X_change = 0
+
+                
 
     # checking for boundaries of spaceship sp it doesn't go out of bounds
-    playerX += playerX_change
+    player1X += player1X_change
+    player2X += player2X_change
 
-    if playerX <= 0:
-        playerX = 0
-    elif playerX >= 730:
-        playerX = 730
+    if player1X <= 0:
+        player1X = 0
+    elif player1X >= 730:
+        player1X = 730
+
+    if player2X <= 0:
+        player2X = 0
+    elif player2X >= 730:
+        player2X = 730
 
     for i in range(num_of_enemies):
         enemy(enemyX[i], enemyY[i], i)
+    
+    for i in range(num_of_bunker):
+        bunker(BunkerX[i], BunkerY[i], i)
 
     # enemy movement
     for i in range(num_of_enemies):
@@ -167,30 +254,44 @@ while running:
 
 
         # collision detection
-        collision = isCollision(enemyX[i], enemyY[i], bulletX, bulletY)
-        if collision:
-            bulletY = 480
-            bullet_state = "ready"
+        KillEnemyCollision1 = isCollision(enemyX[i], enemyY[i], player1_bulletX, player1_bulletY)
+            
+        KillEnemyCollision2 =  isCollision(enemyX[i], enemyY[i], player2_bulletX, player2_bulletY)
+           
+        if KillEnemyCollision1:
+            player1_bulletY = 480
+            player1_bullet_state = "ready"
             score_value += 10
-            print(score_value)
+            #print(score_value)
             # removes enemy out of screen
             enemyX[i] = 1000
             enemyY[i] = -1000
-
+        if KillEnemyCollision2:
+            player2_bulletY = 480
+            player2_bullet_state = "ready"
+            enemyX[i] = 1000
+            enemyY[i] = -1000
             #enemyImg.pop(i)
             #num_of_enemies -= 1
+    # player1_bullet movement
+    if player1_bulletY <= -10:
+        player1_bulletY = 480
+        player1_bullet_state = "ready"
 
+    if player1_bullet_state == "fire":
+        fire_player1_bullet(player1_bulletX, player1_bulletY)
+        player1_bulletY -= player1_bulletY_change
+    if player2_bulletY <= -10:
+        player2_bulletY = 480
+        player2_bullet_state = "ready"
 
-    # bullet movement
-    if bulletY <= -10:
-        bulletY = 480
-        bullet_state = "ready"
+    if player2_bullet_state == "fire":
+        fire_player2_bullet(player2_bulletX, player2_bulletY)
+        player2_bulletY -= player2_bulletY_change
 
-    if bullet_state == "fire":
-        fire_bullet(bulletX, bulletY)
-        bulletY -= bulletY_change
-
-    player(playerX, playerY)
+    
+    player(player1Img, player1X, player1Y)#draw player1
+    player(player2Img, player2X, player2Y)#draw player2
     show_score(scoreX, scoreY)
     show_live(liveX, liveY)
     pygame.display.update()
