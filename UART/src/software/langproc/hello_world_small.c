@@ -31,9 +31,7 @@ int main() {
 		KEY_value = *(KEY_ptr);
 		KEY_one = (KEY_value & 0x1);
 		KEY_two = ((KEY_value >> 1) & 0x1);
-		alt_printf("KEY_one: %x\n", KEY_one);
-		alt_printf("KEY_two: %x\n", KEY_two);
-		printf("X-Axis: %d\n", x_read);
+		alt_printf("%x|%x|%x\n", x_read, KEY_one, KEY_two);
 		for (i=0; i<2000000; i++);
     }
 
