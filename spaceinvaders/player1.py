@@ -4,11 +4,13 @@ import time
 import random
 import socket
 
-server_name = '35.178.142.85'
+server_name = '18.133.242.186'
 server_port = 5555
 clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientsocket.connect((server_name, server_port))
 clientsocket.settimeout(0)
+
+
 
 pygame.font.init()
 

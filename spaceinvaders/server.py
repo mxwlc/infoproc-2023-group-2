@@ -1,4 +1,5 @@
 import socket
+from game_server_logic import *
 
 port = 5555
 tcpserver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -7,6 +8,8 @@ tcpserver.bind(('0.0.0.0', port))
 tcpserver.settimeout(0)
 
 tcpserver.listen(2)
+
+create_leaderboard()
 
 # Wait for two clients to connect
 clients = []
