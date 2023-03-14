@@ -5,6 +5,9 @@ import math
 # Initialize the pygame
 pygame.init()
 
+clock = pygame.time.Clock()
+fps = 60 
+
 # create the screen, x-axis:800, y-axis:600
 width = 800
 height = 600
@@ -46,9 +49,9 @@ for i in range(num_of_enemies):
         enemyX.append(50)
         enemyY.append(enemyY[i - 1] + 50)
     else:
-        enemyX.append(enemyX[i] + 40)
+        enemyX.append(enemyX[i] + 50)
         enemyY.append(enemyY[i])
-    enemyX_change.append(0.5)
+    enemyX_change.append(2)
     enemyY_change.append(20)
 
 # player bullet
@@ -60,14 +63,14 @@ player_bulletImg = pygame.image.load('player_bullet.png')
 player1_bulletX = 0
 player1_bulletY = 480
 player1_bulletX_change = 0
-player1_bulletY_change = 2
+player1_bulletY_change = 5
 player1_bullet_state = "ready"
 
 #player2 bullet
 player2_bulletX = 0
 player2_bulletY = 480
 player2_bulletX_change = 0
-player2_bulletY_change = 2
+player2_bulletY_change = 5
 player2_bullet_state = "ready"
 
 #enemy bullet
@@ -91,7 +94,7 @@ player2X = 500
 player2Y = 480
 player2X_change = 0
 
-player_vel = 0.5
+player_vel = 2
 
 # score
 score_value = 0
@@ -180,13 +183,13 @@ while running:
         # # if keystroke is pressed check whether its right or left
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                player1X_change = -0.5
+                player1X_change = -player_vel
             if event.key == pygame.K_RIGHT:
-                player1X_change = 0.5
+                player1X_change = player_vel
             if event.key == pygame.K_a:
-                player2X_change = -0.5
+                player2X_change = -player_vel
             if event.key == pygame.K_d:
-                player2X_change = 0.5
+                player2X_change = player_vel
             if event.key == pygame.K_SPACE:
                 if player1_bullet_state == "ready":
                     # get the current x coordinate of the spaceship
@@ -246,10 +249,10 @@ while running:
         enemyX[i] += enemyX_change[i]
 
         if enemyX[i] <= 20:
-            enemyX_change[i] = 0.5
+            enemyX_change[i] = 2
             enemyY[i] += enemyY_change[i]
         elif enemyX[i] >= 730:
-            enemyX_change[i] = -0.5
+            enemyX_change[i] = -2
             enemyY[i] += enemyY_change[i]
 
 
@@ -295,3 +298,4 @@ while running:
     show_score(scoreX, scoreY)
     show_live(liveX, liveY)
     pygame.display.update()
+    #clock.tick(fps)
