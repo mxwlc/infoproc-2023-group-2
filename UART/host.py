@@ -7,5 +7,5 @@ while True:
     if process.poll() is not None:
         break
     if output:
-        print(output.strip())
+        accel, key_one, key_two = output.strip().decode().split("|")
 rc = process.poll()
