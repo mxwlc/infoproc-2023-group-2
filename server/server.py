@@ -1,5 +1,6 @@
 import socket
-from game_server_logic import *
+
+from game_server_logic.game_server import *
 
 port = 5555
 tcpserver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -18,7 +18,7 @@ class GameServer:
         self.remaining_enemies = []
         for i in range(NUM_ENEMIES):
             self.remaining_enemies.append(True)
-        self.bullet_ids = []
+        self.enemy_bullet = False # Whether or not there exists an enemy bullet.
 
     def __init__(self):
         try:
@@ -50,45 +50,39 @@ class GameServer:
                 pass
             elif m[0].isdigit(): # Player position
                 relay_messages.append(m)
-            elif m[0] == 'c': # Player bullet creation
-                self.bullet_ids.append(int(m[1:]))
+            elif m == 'c': # Player bullet creation
                 relay_messages.append(m)
-            elif m[0] == 'b': # Bullet-enemy collision
-                enemy_id = m[1:].split('e')[1]
-                if self.remaining_enemies[enemy_id]: # If collision is valid
+            elif m[0] == 'e': # Own enemy hit
+                enemy_id = m[1:]
+                if self.remaining_enemies[enemy_id]: # If enemy is still alive
                     self.remaining_enemies[enemy_id] = False
                     self.player_score[client_index] += SCORE_INCREMENT
-                    return_messages.append(m)
-                    relay_messages.append(m)
-            elif m[0] == 'p': # Player-bullet collision
-                bullet_id = m[3:]
-                if self.bullet_ids.count(bullet_id) > 0:
-                    self.bullet_ids.remove(bullet_id)
-                    return_messages.append(m)
-                    relay_messages.append(m)
-            elif m[0] == 'g': # Notification of game end
+                    return_messages.append('w' + enemy_id)
+                    relay_messages.append('t' + enemy_id)
+            elif m == 'p': # Own player hit
+                if self.enemy_bullet: # If enemy bullet still exists
+                    self.enemy_bullet = False
+                    return_messages.append('p')
+                    relay_messages.append('o')
+            elif m == 'g': # Notification of game end
                 self.end_game()
+            else:
+                print("Error")
     
     # Parses messages if the game is not in progress.
     def parse_outofgame(self, client_index, raw_message):
         response = ''
-        if raw_message[0] == 'r': # Notification of readiness
-            self.player_ready[client_index] = True
-            self.player_name[client_index] = raw_message[1:]
-        elif raw_message == 'l': # Request for leaderboard
+        if raw_message == 'l': # Request for leaderboard
             leaderboard = get_leaderboard()
             for entry in leaderboard:
                 response += 'n' + entry['name']
                 response += 's' + entry['score']
-        
+        elif raw_message[0] == 'r': # Notification of readiness
+            self.player_ready[client_index] = True
+            self.player_name[client_index] = raw_message[1:]
+        else:
+            print("Error")
         return response
-
-    # Convert a list of messages into a single message separated by ';'.
-    def format_responses(self, messages):
-        f_message = ''
-        for m in messages:
-            f_message += m + ';'
-        return f_message
     
     # Update variables that track time when the game is running.
     def update_time(self):
@@ -103,6 +97,7 @@ class GameServer:
         if self.time_since_bullet >= ENEMY_BULLET_INTERVAL:
             self.time_since_bullet = 0
             enemy_id = random.randint(0, NUM_ENEMIES - 1)
+            self.enemy_bullet = True
             return 'e' + str(enemy_id)
         else:
             return ''
@@ -131,8 +126,8 @@ class GameServer:
                 arr1.append(enemy_bullet_message) # This message may be empty
                 arr2.append(enemy_bullet_message)
 
-            response1 = self.format_responses(arr1)
-            response2 = self.format_responses(arr2)
+            response1 = ';'.join(str(x) for x in arr1)
+            response2 = ';'.join(str(x) for x in arr2)
 
         else:
 
