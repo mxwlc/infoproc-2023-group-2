@@ -2,6 +2,16 @@ import pygame
 import os
 import time
 import random
+import socket
+
+server_name = '18.133.242.186'
+server_port = 5555
+clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientsocket.connect((server_name, server_port))
+clientsocket.settimeout(0)
+
+
+
 pygame.font.init()
 
 WIDTH, HEIGHT = 750, 650
@@ -151,8 +161,8 @@ def collide(obj1, obj2):
 def main():
     run = True
     FPS = 60
-    level = 0
-    lives = 5
+    player1lives = 5
+    player2lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
     lost_font = pygame.font.SysFont("comicsans", 60)
 
@@ -173,11 +183,11 @@ def main():
     def redraw_window():
         WIN.blit(BG, (0,0))
         # draw text
-        lives_label = main_font.render(f"Lives: {lives}", 1, (255,255,255))
-        level_label = main_font.render(f"Level: {level}", 1, (255,255,255))
+        lives_label = main_font.render(f"Lives: {player1lives}", 1, (255,255,255))
+        player2lives_label = main_font.render(f"player2lives: {player2lives}", 1, (255,255,255))
 
         WIN.blit(lives_label, (10, 10))
-        WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
+        WIN.blit(player2lives_label, (WIDTH - player2lives_label.get_width() - 10, 10))
 
         for enemy in enemies:
             enemy.draw(WIN)
@@ -194,7 +204,8 @@ def main():
         clock.tick(FPS)
         redraw_window()
 
-        if lives <= 0 or player.health <= 0:
+
+        if player1lives <= 0 or player.health <= 0:
             lost = True
             lost_count += 1
 
@@ -205,8 +216,8 @@ def main():
             else:
                 continue
 
+
         if len(enemies) == 0:
-            level += 1
             wave_length += 5
             for i in range(wave_length):
                 enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, -100), random.choice(["red", "blue", "green"]))
@@ -239,10 +250,23 @@ def main():
                 player.health -= 10
                 enemies.remove(enemy) #if player collide with enemy health -10
             elif enemy.y + enemy.get_height() > HEIGHT:
-                lives -= 1
-                enemies.remove(enemy) #if player misses an enemy lives -1
+                player1lives -= 1
+                enemies.remove(enemy)
+                p1lives = str(player1lives)
+                clientsocket.send(p1lives.encode())
 
         player.move_lasers(-laser_vel, enemies)
+        
+        try:
+            
+            p2lives = clientsocket.recv(1024).decode()
+            player2lives = int(p2lives)
+        except:
+            continue
+
+
+        
+
 
 def homepage():
     title_font = pygame.font.SysFont("comicsans", 50)
