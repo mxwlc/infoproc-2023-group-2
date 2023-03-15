@@ -94,7 +94,8 @@ class GameServer:
     # Check to see if we can create an enemy bullet, and if so, choose a random enemy to fire.
     # At the moment the interval for firing is fixed, but we could change this to a random interval if desired.
     def create_enemy_bullet(self):
-        if self.time_since_bullet >= ENEMY_BULLET_INTERVAL:
+        if self.time_since_bullet >= ENEMY_BULLET_INTERVAL and not self.enemy_bullet:
+            # Only create a new enemy bullet if one does not already exist.
             self.time_since_bullet = 0
             enemy_id = random.randint(0, NUM_ENEMIES - 1)
             self.enemy_bullet = True
