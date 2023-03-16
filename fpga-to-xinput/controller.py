@@ -3,6 +3,7 @@
 
 from pynput.keyboard import Key, Controller
 import time
+import string
 
 
 class fpga_controller:
@@ -17,6 +18,11 @@ class fpga_controller:
         keyboard : Controller Object
             Simulates key presses and releases to control the player
 
+        Alphabet : Array
+            Array containing all Upper case Ascii Characters
+
+        Name : Array
+            Array containing the name of the player
 
         Methods
 
@@ -50,6 +56,9 @@ class fpga_controller:
         initialises the keyboard by creating a controller object
         """
         self.keyboard = Controller()
+        self.name = []
+        self.alphabet = list(string.ascii_uppercase)
+        self.pointer = 0;
 
     def shoot(self):
         """
@@ -108,4 +117,10 @@ class fpga_controller:
             return - (uhex & 0x79999999)
         else:
             return uhex & 0x79999999
+            
+    def cycle(self):
+        """
+        Allows the player to cycle through the alphabet on the player name 
+        """
+        
 
