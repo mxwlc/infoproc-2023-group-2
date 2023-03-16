@@ -37,134 +37,6 @@ over_font = pygame.font.SysFont('arialblack', 64)
 text_colour = (255, 255, 255)
 
 
-class Bunker:
-    def __init__(self, X, Y, Health):
-        self.X = X
-        self.Y = Y
-        self.Health = Health
-
-    def draw(self):
-        image = pygame.image.load('bunker.png')
-        screen.blit(image, (self.X, self.Y))
-
-    def lose_health(self):
-        self.Health -= 1
-        if self.Health == 0:
-            self.X = -50
-
-
-class Player:
-    def __init__(self, X, Y, Lives, Score, Bullet_State, bulletImg):
-        self.X = X
-        self.Y = Y
-        self.Lives = Lives
-        self.Score = Score
-        self.Bullet_State = Bullet_State
-        self.bulletImg = bulletImg
-
-    def draw(self, image):
-        screen.blit(image, (self.X, self.Y))
-
-    def add_score(self, bonus):
-        self.Score += bonus
-
-    def lose_lives(self):
-        self.Lives -= 1
-
-    def shoot(self, X, Y):
-        self.Bullet_State = "fire"
-        screen.blit(bulletImg, (X + 16, Y + 10))
-
-
-enemyImg = []
-enemyX = [50]
-enemyY = [50]
-enemyX_change = []
-enemyY_change = []
-num_of_enemies = 44
-enemy_vel = 1
-
-for i in range(num_of_enemies):
-    n = i + 1
-    enemyImg.append(pygame.image.load('enemy.png'))
-    if n % 11 == 0:
-        enemyX.append(50)
-        enemyY.append(enemyY[i - 1] + 50)
-    else:
-        enemyX.append(enemyX[i] + 50)
-        enemyY.append(enemyY[i])
-    enemyX_change.append(enemy_vel)
-    enemyY_change.append(20)
-
-# player bullet
-# Ready - You can't see the bullet on the screen
-# Fire - The bullet is currently moving
-
-bulletImg = pygame.image.load('player_bullet.png')
-bulletY_change = 5
-# player1 bullet
-player1_bulletX = 0
-player1_bulletY = 500
-
-# player2 bullet
-player2_bulletX = 0
-player2_bulletY = 500
-
-# enemy bullet
-enemy_bulletImg = pygame.image.load('enemy_bullet.png')
-enemy_bulletX = 0
-enemy_bulletY = 500
-enemy_bulletY_change = 5
-enemy_bullet_state = "ready"
-
-# server should decide the first one log in would be player1
-# in this script should have bool FirstLogIn, if true player1, else player2
-# Player1
-player1Img = pygame.image.load('player.png')
-player1X_change = 0
-# Player2
-player2Img = pygame.image.load('player2.png')
-player2X_change = 0
-
-player_vel = 2
-Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
-Player2 = Player(500, 500, 5, 0, "ready", bulletImg)
-
-# player 1 score
-score_value1 = Player1.Score
-# player2 score
-score_value2 = Player2.Score
-
-# player1 lives
-live_value1 = Player1.Lives
-# player 2 lives
-live_value2 = Player2.Lives
-
-# bunker health
-bunker_health = 2
-bunkers = []
-for i in range(4):
-    bunkers.append(Bunker(20 + 240 * i, 450, bunker_health))
-
-
-def enemy(x, y, i):
-    screen.blit(enemyImg[i], (x, y))  # blit means to draw
-
-
-def isCollision(X1, Y1, X2, Y2):
-    distance = math.sqrt(math.pow(X1 - X2, 2) + math.pow(Y1 - Y2, 2))
-    if distance < 25:
-        return True
-    else:
-        return False
-
-
-def enemy_attack(x, y):
-    global enemy_bullet_state
-    enemy_bullet_state = "fire"
-    screen.blit(enemy_bulletImg, (x + 16, y + 10))
-
-
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
@@ -204,14 +76,135 @@ def game_over_screen():
 
 
 def play():
+    class Bunker:
+        def __init__(self, X, Y, Health):
+            self.X = X
+            self.Y = Y
+            self.Health = Health
+
+        def draw(self):
+            image = pygame.image.load('bunker.png')
+            screen.blit(image, (self.X, self.Y))
+
+        def lose_health(self):
+            self.Health -= 1
+            if self.Health == 0:
+                self.X = -50
+
+    class Player:
+        def __init__(self, X, Y, Lives, Score, Bullet_State, bulletImg):
+            self.X = X
+            self.Y = Y
+            self.Lives = Lives
+            self.Score = Score
+            self.Bullet_State = Bullet_State
+            self.bulletImg = bulletImg
+
+        def draw(self, image):
+            screen.blit(image, (self.X, self.Y))
+
+        def add_score(self, bonus):
+            self.Score += bonus
+
+        def lose_lives(self):
+            self.Lives -= 1
+
+        def shoot(self, X, Y):
+            self.Bullet_State = "fire"
+            screen.blit(bulletImg, (X + 16, Y + 10))
+
+    enemyImg = []
+    enemyX = [50]
+    enemyY = [50]
+    enemyX_change = []
+    enemyY_change = []
+    num_of_enemies = 44
+    enemy_vel = 1
+
+    for i in range(num_of_enemies):
+        n = i + 1
+        enemyImg.append(pygame.image.load('enemy.png'))
+        if n % 11 == 0:
+            enemyX.append(50)
+            enemyY.append(enemyY[i - 1] + 50)
+        else:
+            enemyX.append(enemyX[i] + 50)
+            enemyY.append(enemyY[i])
+        enemyX_change.append(enemy_vel)
+        enemyY_change.append(20)
+
+    # player bullet
+    # Ready - You can't see the bullet on the screen
+    # Fire - The bullet is currently moving
+
+    bulletImg = pygame.image.load('player_bullet.png')
+    bulletY_change = 5
+    # player1 bullet
+    player1_bulletX = 0
+    player1_bulletY = 500
+
+    # player2 bullet
+    player2_bulletX = 0
+    player2_bulletY = 500
+
+    # enemy bullet
+    enemy_bulletImg = pygame.image.load('enemy_bullet.png')
+    enemy_bulletX = 0
+    enemy_bulletY = 500
+    enemy_bulletY_change = 5
+    enemy_bullet_state = "ready"
+
+    # server should decide the first one log in would be player1
+    # in this script should have bool FirstLogIn, if true player1, else player2
+    # Player1
+    player1Img = pygame.image.load('player.png')
+    player1X_change = 0
+    # Player2
+    player2Img = pygame.image.load('player2.png')
+    player2X_change = 0
+
+    player_vel = 2
+    Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
+    Player2 = Player(500, 500, 5, 0, "ready", bulletImg)
+
+    # player 1 score
+    score_value1 = Player1.Score
+    # player2 score
+    score_value2 = Player2.Score
+
+    # player1 lives
+    live_value1 = Player1.Lives
+    # player 2 lives
+    live_value2 = Player2.Lives
+
+    # bunker health
+    bunker_health = 2
+    bunkers = []
+    for i in range(4):
+        bunkers.append(Bunker(20 + 240 * i, 450, bunker_health))
+
+    def enemy(x, y, i):
+        screen.blit(enemyImg[i], (x, y))  # blit means to draw
+
+    def isCollision(X1, Y1, X2, Y2):
+        distance = math.sqrt(math.pow(X1 - X2, 2) + math.pow(Y1 - Y2, 2))
+        if distance < 25:
+            return True
+        else:
+            return False
+
+    def enemy_attack(x, y):
+        global enemy_bullet_state
+        enemy_bullet_state = "fire"
+        screen.blit(enemy_bulletImg, (x + 16, y + 10))
 
     # Game Loop
-    global player1X_change, player2X_change, enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY, player2_bulletY
     unavailable = []
     running = True
     while running:
         # RGB Red, Green, Blue color
-        screen.fill((0, 0, 0))
+        #screen.fill((0, 0, 0))
+        screen.fill("black")
 
         for event in pygame.event.get():  # check all the events in the window
             if event.type == pygame.QUIT:
@@ -353,7 +346,6 @@ def play():
         show_other_live(Player2.Lives)
         pygame.display.update()
         clock.tick(fps)
-
 
 # to be modified
 def leaderboard():
