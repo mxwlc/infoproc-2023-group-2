@@ -6,7 +6,7 @@
    version="1.0"
    description=""
    tags=""
-   categories="" />
+   categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
    element accelerometer_spi
@@ -21,7 +21,7 @@
    {
       datum baseAddress
       {
-         value = "135224";
+         value = "135352";
          type = "String";
       }
    }
@@ -37,7 +37,7 @@
    {
       datum baseAddress
       {
-         value = "135200";
+         value = "135328";
          type = "String";
       }
    }
@@ -65,6 +65,102 @@
          type = "String";
       }
    }
+   element hex0
+   {
+      datum _sortIndex
+      {
+         value = "9";
+         type = "int";
+      }
+   }
+   element hex0.s1
+   {
+      datum baseAddress
+      {
+         value = "135280";
+         type = "String";
+      }
+   }
+   element hex1
+   {
+      datum _sortIndex
+      {
+         value = "10";
+         type = "int";
+      }
+   }
+   element hex1.s1
+   {
+      datum baseAddress
+      {
+         value = "135264";
+         type = "String";
+      }
+   }
+   element hex2
+   {
+      datum _sortIndex
+      {
+         value = "11";
+         type = "int";
+      }
+   }
+   element hex2.s1
+   {
+      datum baseAddress
+      {
+         value = "135248";
+         type = "String";
+      }
+   }
+   element hex3
+   {
+      datum _sortIndex
+      {
+         value = "12";
+         type = "int";
+      }
+   }
+   element hex3.s1
+   {
+      datum baseAddress
+      {
+         value = "135232";
+         type = "String";
+      }
+   }
+   element hex4
+   {
+      datum _sortIndex
+      {
+         value = "13";
+         type = "int";
+      }
+   }
+   element hex4.s1
+   {
+      datum baseAddress
+      {
+         value = "135216";
+         type = "String";
+      }
+   }
+   element hex5
+   {
+      datum _sortIndex
+      {
+         value = "14";
+         type = "int";
+      }
+   }
+   element hex5.s1
+   {
+      datum baseAddress
+      {
+         value = "135200";
+         type = "String";
+      }
+   }
    element jtag_uart
    {
       datum _sortIndex
@@ -77,7 +173,23 @@
    {
       datum baseAddress
       {
-         value = "135216";
+         value = "135344";
+         type = "String";
+      }
+   }
+   element led
+   {
+      datum _sortIndex
+      {
+         value = "7";
+         type = "int";
+      }
+   }
+   element led.s1
+   {
+      datum baseAddress
+      {
+         value = "135312";
          type = "String";
       }
    }
@@ -94,6 +206,22 @@
       datum baseAddress
       {
          value = "65536";
+         type = "String";
+      }
+   }
+   element switch
+   {
+      datum _sortIndex
+      {
+         value = "8";
+         type = "int";
+      }
+   }
+   element switch.s1
+   {
+      datum baseAddress
+      {
+         value = "135296";
          type = "String";
       }
    }
@@ -127,7 +255,7 @@
  <parameter name="hideFromIPCatalog" value="false" />
  <parameter name="lockedInterfaceDefinition" value="" />
  <parameter name="maxAdditionalLatency" value="1" />
- <parameter name="projectName" value="" />
+ <parameter name="projectName" value="LangProcProject.qpf" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="0" />
  <parameter name="testBenchDutName" value="" />
@@ -145,7 +273,47 @@
    type="conduit"
    dir="end" />
  <interface name="clk" internal="clk.clk_in" type="clock" dir="end" />
+ <interface
+   name="hex0_external_connection"
+   internal="hex0.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="hex1_external_connection"
+   internal="hex1.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="hex2_external_connection"
+   internal="hex2.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="hex3_external_connection"
+   internal="hex3.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="hex4_external_connection"
+   internal="hex4.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="hex5_external_connection"
+   internal="hex5.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="led_external_connection"
+   internal="led.external_connection"
+   type="conduit"
+   dir="end" />
  <interface name="reset" internal="clk.clk_in_reset" type="reset" dir="end" />
+ <interface
+   name="switch_external_connection"
+   internal="switch.external_connection"
+   type="conduit"
+   dir="end" />
  <module
    name="accelerometer_spi"
    kind="altera_up_avalon_accelerometer_spi"
@@ -194,7 +362,7 @@
   <parameter name="dataAddrWidth" value="18" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory.s1' start='0x10000' end='0x20000' type='altera_avalon_onchip_memory2.s1' /><slave name='cpu.debug_mem_slave' start='0x20800' end='0x21000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='timer.s1' start='0x21000' end='0x21020' type='altera_avalon_timer.s1' /><slave name='button.s1' start='0x21020' end='0x21030' type='altera_avalon_pio.s1' /><slave name='jtag_uart.avalon_jtag_slave' start='0x21030' end='0x21038' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='accelerometer_spi.avalon_accelerometer_spi_mode_slave' start='0x21038' end='0x2103A' type='altera_up_avalon_accelerometer_spi.avalon_accelerometer_spi_mode_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory.s1' start='0x10000' end='0x20000' type='altera_avalon_onchip_memory2.s1' /><slave name='cpu.debug_mem_slave' start='0x20800' end='0x21000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='timer.s1' start='0x21000' end='0x21020' type='altera_avalon_timer.s1' /><slave name='hex5.s1' start='0x21020' end='0x21030' type='altera_avalon_pio.s1' /><slave name='hex4.s1' start='0x21030' end='0x21040' type='altera_avalon_pio.s1' /><slave name='hex3.s1' start='0x21040' end='0x21050' type='altera_avalon_pio.s1' /><slave name='hex2.s1' start='0x21050' end='0x21060' type='altera_avalon_pio.s1' /><slave name='hex1.s1' start='0x21060' end='0x21070' type='altera_avalon_pio.s1' /><slave name='hex0.s1' start='0x21070' end='0x21080' type='altera_avalon_pio.s1' /><slave name='switch.s1' start='0x21080' end='0x21090' type='altera_avalon_pio.s1' /><slave name='led.s1' start='0x21090' end='0x210A0' type='altera_avalon_pio.s1' /><slave name='button.s1' start='0x210A0' end='0x210B0' type='altera_avalon_pio.s1' /><slave name='jtag_uart.avalon_jtag_slave' start='0x210B0' end='0x210B8' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='accelerometer_spi.avalon_accelerometer_spi_mode_slave' start='0x210B8' end='0x210BA' type='altera_up_avalon_accelerometer_spi.avalon_accelerometer_spi_mode_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -352,6 +520,90 @@
   <parameter name="tracefilename" value="" />
   <parameter name="userDefinedSettings" value="" />
  </module>
+ <module name="hex0" kind="altera_avalon_pio" version="18.0" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="7" />
+ </module>
+ <module name="hex1" kind="altera_avalon_pio" version="18.0" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="7" />
+ </module>
+ <module name="hex2" kind="altera_avalon_pio" version="18.0" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="7" />
+ </module>
+ <module name="hex3" kind="altera_avalon_pio" version="18.0" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="7" />
+ </module>
+ <module name="hex4" kind="altera_avalon_pio" version="18.0" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="7" />
+ </module>
+ <module name="hex5" kind="altera_avalon_pio" version="18.0" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="7" />
+ </module>
  <module
    name="jtag_uart"
    kind="altera_avalon_jtag_uart"
@@ -370,6 +622,20 @@
   <parameter name="useRelativePathForSimFile" value="false" />
   <parameter name="writeBufferDepth" value="64" />
   <parameter name="writeIRQThreshold" value="8" />
+ </module>
+ <module name="led" kind="altera_avalon_pio" version="18.0" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="10" />
  </module>
  <module
    name="onchip_memory"
@@ -403,6 +669,20 @@
   <parameter name="useShallowMemBlocks" value="false" />
   <parameter name="writable" value="true" />
  </module>
+ <module name="switch" kind="altera_avalon_pio" version="18.0" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Input" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="10" />
+ </module>
  <module name="timer" kind="altera_avalon_timer" version="18.0" enabled="1">
   <parameter name="alwaysRun" value="false" />
   <parameter name="counterSize" value="32" />
@@ -421,7 +701,7 @@
    start="cpu.data_master"
    end="accelerometer_spi.avalon_accelerometer_spi_mode_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00021038" />
+  <parameter name="baseAddress" value="0x000210b8" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -430,7 +710,7 @@
    start="cpu.data_master"
    end="jtag_uart.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00021030" />
+  <parameter name="baseAddress" value="0x000210b0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -457,6 +737,46 @@
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection kind="avalon" version="18.0" start="cpu.data_master" end="button.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x000210a0" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="18.0" start="cpu.data_master" end="led.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00021090" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="18.0" start="cpu.data_master" end="switch.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00021080" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="18.0" start="cpu.data_master" end="hex0.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00021070" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="18.0" start="cpu.data_master" end="hex1.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00021060" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="18.0" start="cpu.data_master" end="hex2.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00021050" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="18.0" start="cpu.data_master" end="hex3.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00021040" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="18.0" start="cpu.data_master" end="hex4.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00021030" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="avalon" version="18.0" start="cpu.data_master" end="hex5.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x00021020" />
   <parameter name="defaultConnection" value="false" />
@@ -488,6 +808,14 @@
    start="clk.clk"
    end="accelerometer_spi.clk" />
  <connection kind="clock" version="18.0" start="clk.clk" end="button.clk" />
+ <connection kind="clock" version="18.0" start="clk.clk" end="led.clk" />
+ <connection kind="clock" version="18.0" start="clk.clk" end="switch.clk" />
+ <connection kind="clock" version="18.0" start="clk.clk" end="hex0.clk" />
+ <connection kind="clock" version="18.0" start="clk.clk" end="hex1.clk" />
+ <connection kind="clock" version="18.0" start="clk.clk" end="hex2.clk" />
+ <connection kind="clock" version="18.0" start="clk.clk" end="hex3.clk" />
+ <connection kind="clock" version="18.0" start="clk.clk" end="hex4.clk" />
+ <connection kind="clock" version="18.0" start="clk.clk" end="hex5.clk" />
  <connection kind="clock" version="18.0" start="clk.clk" end="onchip_memory.clk1" />
  <connection
    kind="interrupt"
@@ -515,6 +843,14 @@
    start="clk.clk_reset"
    end="accelerometer_spi.reset" />
  <connection kind="reset" version="18.0" start="clk.clk_reset" end="button.reset" />
+ <connection kind="reset" version="18.0" start="clk.clk_reset" end="led.reset" />
+ <connection kind="reset" version="18.0" start="clk.clk_reset" end="switch.reset" />
+ <connection kind="reset" version="18.0" start="clk.clk_reset" end="hex0.reset" />
+ <connection kind="reset" version="18.0" start="clk.clk_reset" end="hex1.reset" />
+ <connection kind="reset" version="18.0" start="clk.clk_reset" end="hex2.reset" />
+ <connection kind="reset" version="18.0" start="clk.clk_reset" end="hex3.reset" />
+ <connection kind="reset" version="18.0" start="clk.clk_reset" end="hex4.reset" />
+ <connection kind="reset" version="18.0" start="clk.clk_reset" end="hex5.reset" />
  <connection
    kind="reset"
    version="18.0"

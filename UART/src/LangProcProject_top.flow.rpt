@@ -1,5 +1,5 @@
 Flow report for LangProcProject_top
-Wed Mar 08 10:39:06 2023
+Thu Mar 16 10:56:53 2023
 Quartus Prime Version 18.0.0 Build 614 04/24/2018 SJ Lite Edition
 
 
@@ -40,18 +40,18 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Flow Summary                                                                     ;
 +------------------------------------+---------------------------------------------+
-; Flow Status                        ; Successful - Wed Mar 08 10:39:01 2023       ;
+; Flow Status                        ; Successful - Thu Mar 16 10:56:48 2023       ;
 ; Quartus Prime Version              ; 18.0.0 Build 614 04/24/2018 SJ Lite Edition ;
 ; Revision Name                      ; LangProcProject_top                         ;
 ; Top-level Entity Name              ; LangProcProject_top                         ;
 ; Family                             ; MAX 10                                      ;
 ; Device                             ; 10M50DAF484C7G                              ;
 ; Timing Models                      ; Final                                       ;
-; Total logic elements               ; 2,096 / 49,760 ( 4 % )                      ;
-;     Total combinational functions  ; 1,968 / 49,760 ( 4 % )                      ;
-;     Dedicated logic registers      ; 1,206 / 49,760 ( 2 % )                      ;
-; Total registers                    ; 1206                                        ;
-; Total pins                         ; 117 / 360 ( 33 % )                          ;
+; Total logic elements               ; 2,385 / 49,760 ( 5 % )                      ;
+;     Total combinational functions  ; 2,203 / 49,760 ( 4 % )                      ;
+;     Dedicated logic registers      ; 1,370 / 49,760 ( 3 % )                      ;
+; Total registers                    ; 1370                                        ;
+; Total pins                         ; 185 / 360 ( 51 % )                          ;
 ; Total virtual pins                 ; 0                                           ;
 ; Total memory bits                  ; 535,552 / 1,677,312 ( 32 % )                ;
 ; Embedded Multiplier 9-bit elements ; 0 / 288 ( 0 % )                             ;
@@ -66,7 +66,7 @@ refer to the applicable agreement for further details.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 03/08/2023 10:37:49 ;
+; Start date & time ; 03/16/2023 10:55:16 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; LangProcProject_top ;
 +-------------------+---------------------+
@@ -77,7 +77,7 @@ refer to the applicable agreement for further details.
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
 ; Assignment Name                     ; Value                                  ; Default Value ; Entity Name ; Section Id ;
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
-; COMPILER_SIGNATURE_ID               ; 10995770589190.167827186828376         ; --            ; --          ; --         ;
+; COMPILER_SIGNATURE_ID               ; 242174578488910.167896411508160        ; --            ; --          ; --         ;
 ; MAX_CORE_JUNCTION_TEMP              ; 85                                     ; --            ; --          ; --         ;
 ; MIN_CORE_JUNCTION_TEMP              ; 0                                      ; --            ; --          ; --         ;
 ; PARTITION_COLOR                     ; -- (Not supported for targeted family) ; --            ; --          ; Top        ;
@@ -93,11 +93,11 @@ refer to the applicable agreement for further details.
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name          ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis ; 00:00:52     ; 1.0                     ; 4960 MB             ; 00:00:39                           ;
-; Fitter               ; 00:00:14     ; 1.7                     ; 6652 MB             ; 00:00:17                           ;
-; Assembler            ; 00:00:03     ; 1.0                     ; 4697 MB             ; 00:00:02                           ;
-; Timing Analyzer      ; 00:00:04     ; 2.5                     ; 4999 MB             ; 00:00:06                           ;
-; Total                ; 00:01:13     ; --                      ; --                  ; 00:01:04                           ;
+; Analysis & Synthesis ; 00:01:09     ; 1.0                     ; 4993 MB             ; 00:00:52                           ;
+; Fitter               ; 00:00:15     ; 1.7                     ; 6660 MB             ; 00:00:16                           ;
+; Assembler            ; 00:00:03     ; 1.0                     ; 4698 MB             ; 00:00:02                           ;
+; Timing Analyzer      ; 00:00:04     ; 2.6                     ; 5009 MB             ; 00:00:06                           ;
+; Total                ; 00:01:31     ; --                      ; --                  ; 00:01:16                           ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
