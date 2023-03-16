@@ -14,6 +14,8 @@
 int main() {
 
 	volatile int * KEY_ptr = (int *)BUTTON_BASE;
+	volatile int * SW_ptr = (int *)SWITCH_BASE;
+	int SW_value;
 	int KEY_value;
 	int KEY_one;
 	int KEY_two;
@@ -29,10 +31,11 @@ int main() {
     while (1) {
 		alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read);
 		KEY_value = *(KEY_ptr);
+		SW_value = *(SW_ptr);
 		KEY_one = (KEY_value & 0x1);
 		KEY_two = ((KEY_value >> 1) & 0x1);
-		alt_printf("%x|%x|%x\n", x_read, KEY_one, KEY_two);
-		for (i=0; i<2000000; i++);
+		alt_printf("%x|%x|%x|%x\n", x_read, KEY_one, KEY_two, SW_value);
+		for (i=0; i<1000000; i++);
     }
 
     return 0;
