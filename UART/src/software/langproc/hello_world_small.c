@@ -1,43 +1,56 @@
-#include "system.h"
-#include "altera_up_avalon_accelerometer_spi.h"
-#include "altera_avalon_timer_regs.h"
-#include "altera_avalon_timer.h"
-#include "altera_avalon_pio_regs.h"
-#include "sys/alt_irq.h"
-#include "system.h"
-#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#define CHARLIM 256		// Maximum character length of what the user places in memory.  Increase to allow longer sequences
+#define QUITLETTER '~' 		// Letter to kill all processing
 
-#define PWM_PERIOD 16
+char get_input(char curr, int *length, char *text, int *running) {
+	if(curr == '\n') return curr;								// If the line is empty, return nothing.
+	int idx = 0;										// Keep track of how many characters have been sent down for later printing
+	char newCurr = curr;
 
+	while (newCurr != EOF && newCurr != '\n'){						// Keep reading characters until we get to the end of the line
+		if (newCurr == QUITLETTER) { *running = 0; }					// If quitting letter is encountered, setting running to 0
+		text[idx] = newCurr;								// Add the next letter to the text buffer
+		idx++;										// Keep track of the number of characters read
+		newCurr = alt_getchar();							// Get the next character
+	}
+	*length = idx;
 
-
-int main() {
-
-	volatile int * KEY_ptr = (int *)BUTTON_BASE;
-	volatile int * SW_ptr = (int *)SWITCH_BASE;
-	int SW_value;
-	int KEY_value;
-	int KEY_one;
-	int KEY_two;
-	int i = 0;
-
-    alt_32 x_read;
-    alt_up_accelerometer_spi_dev * acc_dev;
-    acc_dev = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi");
-    if (acc_dev == NULL) { // if return 1, check if the spi ip name is "accelerometer_spi"
-        return 1;
-    }
-
-    while (1) {
-		alt_up_accelerometer_spi_read_x_axis(acc_dev, & x_read);
-		KEY_value = *(KEY_ptr);
-		SW_value = *(SW_ptr);
-		KEY_one = (KEY_value & 0x1);
-		KEY_two = ((KEY_value >> 1) & 0x1);
-		alt_printf("%x|%x|%x|%x\n", x_read, KEY_one, KEY_two, SW_value);
-		for (i=0; i<1000000; i++);
-    }
-
-    return 0;
+	return newCurr;
 }
 
+int read_chars() {
+	char text[2*CHARLIM];									// The buffer for the printing text
+	char prevLetter = '!';
+	int length = 0;
+	int running = 1;
+
+	while (running) {									// Keep running until QUITLETTER is encountered
+		prevLetter = alt_getchar();							// Extract the first character (and create a hold until one arrives)
+		prevLetter = get_input(prevLetter, &length, text, &running);		// Process input text
+		switch (text[0]){
+
+		case 'r':
+			alt_printf("Read");
+			break;
+
+		case 's':
+			alt_printf("Score");
+			break;
+
+		case 'l':
+			alt_printf("Lives");
+			break;
+
+		default:
+			alt_printf("Unrecognised Command");
+			break;
+		}
+	}
+
+	return 0;
+}
+
+int main() {
+	return read_chars();
+}
