@@ -108,3 +108,4 @@ class fpga_controller:
             return - (uhex & 0x79999999)
         else:
             return uhex & 0x79999999
+
