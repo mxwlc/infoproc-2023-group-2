@@ -176,16 +176,32 @@ def boundary(X1):
 
 unavailable = []
 killed = 0
-def reset():
-    global unavailable, killed
+def LevelUpReset():
+    global unavailable, killed 
     unavailable.clear()
     killed = 0
+
+def NewGameReset():
+    global Player1, Player2, bunkers, player1X_change, player2X_change, score_value1, live_value1, score_value2, live_value2, enemy_vel
+    player1X_change = 0
+    Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
+    score_value1 = Player1.Score 
+    live_value1 = Player1.Lives
+    player2X_change = 0
+    Player2 = Player(500, 500, 5, 0, "ready", bulletImg)
+    score_value2 = Player2.Score 
+    live_value2 = Player2.Lives
+    enemy_vel = 1
+    for i in range(4):
+        bunkers[i].X = 40 + space*i 
+        bunkers[i].Health = bunker_health
+
 
 def EnemyLevelUp(): #reset positions and bodycount
     global enemyX, enemyY, enemy_vel, num_of_enemies, enemyX_change, enemyY_change
     enemyX_change.clear()
     enemyY_change.clear()
-    reset()
+    LevelUpReset()
     enemyX = [50]
     enemyY = [50]
     for i in range(num_of_enemies):
@@ -203,6 +219,7 @@ def play():
     # add fps to synchronise the game on different devices
     clock = pygame.time.Clock()
     fps = 60
+    NewGameReset()
     EnemyLevelUp()
     # Game Loop
     global player1X_change, player2X_change, enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY, player2_bulletY, killed, unavailable, enemy_vel
@@ -280,6 +297,7 @@ def play():
                     # Render the game over text
                     game_over_screen(I_Won)
                     pygame.display.update()
+                running = False
                 start_menu()
 
             if enemyX[i] == 1000:
