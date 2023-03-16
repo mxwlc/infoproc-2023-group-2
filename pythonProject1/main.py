@@ -29,7 +29,8 @@ icon = pygame.image.load('icon.png')
 pygame.display.set_icon(icon)
 
 # fonts
-fontl = pygame.font.SysFont('arialblack', 20)
+font = pygame.font.SysFont('arialblack', 35)
+fontl = pygame.font.SysFont('cambria', 64)
 fonts = pygame.font.SysFont('arialblack', 20)
 over_font = pygame.font.SysFont('arialblack', 64)
 
@@ -181,12 +182,12 @@ def show_other_score(score_value2):
 
 
 def show_live(live_value1):
-    life = fontl.render("Lives :" + str(live_value1), True, (255, 255, 255))
+    life = fonts.render("Lives :" + str(live_value1), True, (255, 255, 255))
     screen.blit(life, (550, 10))
 
 
 def show_other_live(live_value2):
-    life = fontl.render("Other Player Lives :" + str(live_value2), True, (255, 255, 255))
+    life = fonts.render("Other Player Lives :" + str(live_value2), True, (255, 255, 255))
     screen.blit(life, (550, 30))
 
 
@@ -365,20 +366,20 @@ def leaderboard():
 def start_menu():
     pygame.display.set_caption('Menu')
 
-    position = [400, 250]  # set initial position
+    position = [400, 225]  # set initial position
 
     while True:
         screen.blit(menu_bg, (0, 0))
 
-        menu_text = fonts.render("MAIN MENU", True, "#b68f40")
+        menu_text = fontl.render("MAIN MENU", True, "#b68f40")
         menu_rect = menu_text.get_rect(center=(400, 100))
 
-        play_button = Button(image=pygame.image.load("Play Rect.png"), pos=(400, 250),
-                             text_input="PLAY", font=fonts, base_color="#b68f40", hovering_color="white")
-        leaderboard_button = Button(image=pygame.image.load("Options Rect.png"), pos=(400, 400),
-                                    text_input="LEADERBOARD", font=fonts, base_color="#b68f40", hovering_color="White")
-        quit_button = Button(image=pygame.image.load("Quit Rect.png"), pos=(400, 550),
-                             text_input="QUIT", font=fonts, base_color="#b68f40", hovering_color="#ffffff")
+        play_button = Button(image=pygame.image.load("Play Rect.png"), pos=(400, 225),
+                             text_input="PLAY", font=font, base_color="#b68f40", hovering_color="white")
+        leaderboard_button = Button(image=pygame.image.load("Leaderboard Rect.png"), pos=(400, 350),
+                                    text_input="LEADERBOARD", font=font, base_color="#b68f40", hovering_color="White")
+        quit_button = Button(image=pygame.image.load("Quit Rect.png"), pos=(400, 475),
+                             text_input="QUIT", font=font, base_color="#b68f40", hovering_color="#ffffff")
 
         screen.blit(menu_text, menu_rect)
 
@@ -392,23 +393,23 @@ def start_menu():
                 sys.exit()
             if menu_event.type == pygame.KEYUP:
                 if menu_event.key == pygame.K_RETURN:
-                    if position[1] == 250:  # select play
+                    if position[1] == 225:  # select play
                         play()
-                    if position[1] == 400:  # select leaderboard
+                    if position[1] == 350:  # select leaderboard
                         leaderboard()
-                    if position[1] == 550:  # select quit
+                    if position[1] == 475:  # select quit
                         pygame.quit()
                         sys.exit()
                 if menu_event.key == pygame.K_UP:
-                    if position[1] == 250:
-                        position[1] = 250
+                    if position[1] == 225:
+                        position[1] = 225
                     else:
-                        position[1] = position[1] - 150
+                        position[1] = position[1] - 125
                 elif menu_event.key == pygame.K_DOWN:
-                    if position[1] == 550:
-                        position[1] = 550
+                    if position[1] == 475:
+                        position[1] = 475
                     else:
-                        position[1] = position[1] + 150
+                        position[1] = position[1] + 125
                 for button in [play_button, leaderboard_button, quit_button]:
                     button.changeColor(position)
                     button.update(screen)
