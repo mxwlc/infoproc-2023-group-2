@@ -1,8 +1,23 @@
 # # File gsaved with Nlview version 6.3.8  2013-12-19 bk=1.2992 VDI=34 GEI=35
 # 
-preplace inst unsaved.clk_0 -pg 1 -lvl 1 -y 30
-preplace inst unsaved -pg 1 -lvl 1 -y 40 -regy -20
-preplace netloc EXPORT<net_container>unsaved</net_container>(SLAVE)clk_0.clk_in_reset,(SLAVE)unsaved.reset) 1 0 1 NJ
-preplace netloc EXPORT<net_container>unsaved</net_container>(SLAVE)clk_0.clk_in,(SLAVE)unsaved.clk) 1 0 1 NJ
-levelinfo -pg 1 0 50 270
-levelinfo -hier unsaved 60 90 260
+preplace inst nios_project -pg 1 -lvl 1 -y 40 -regy -20
+preplace inst nios_project.cpu.reset_bridge -pg 1
+preplace inst nios_project.accelerometer_spi -pg 1 -lvl 3 -y 30
+preplace inst nios_project.jtag_uart -pg 1 -lvl 3 -y 250
+preplace inst nios_project.cpu.clock_bridge -pg 1
+preplace inst nios_project.onchip_memory -pg 1 -lvl 3 -y 350
+preplace inst nios_project.cpu.cpu -pg 1
+preplace inst nios_project.clk -pg 1 -lvl 1 -y 280
+preplace inst nios_project.cpu -pg 1 -lvl 2 -y 260
+preplace inst nios_project.timer -pg 1 -lvl 3 -y 430
+preplace inst nios_project.button -pg 1 -lvl 3 -y 150
+preplace netloc FAN_OUT<net_container>nios_project</net_container>(SLAVE)onchip_memory.clk1,(SLAVE)button.clk,(SLAVE)jtag_uart.clk,(SLAVE)cpu.clk,(SLAVE)accelerometer_spi.clk,(MASTER)clk.clk,(SLAVE)timer.clk) 1 1 2 410 200 830
+preplace netloc EXPORT<net_container>nios_project</net_container>(SLAVE)nios_project.clk,(SLAVE)clk.clk_in) 1 0 1 NJ
+preplace netloc EXPORT<net_container>nios_project</net_container>(SLAVE)button.external_connection,(SLAVE)nios_project.button_external_connection) 1 0 3 NJ 180 NJ 180 NJ
+preplace netloc EXPORT<net_container>nios_project</net_container>(SLAVE)accelerometer_spi.external_interface,(SLAVE)nios_project.accelerometer_spi_external_interface) 1 0 3 NJ 80 NJ 80 NJ
+preplace netloc FAN_OUT<net_container>nios_project</net_container>(SLAVE)timer.irq,(MASTER)cpu.irq,(SLAVE)jtag_uart.irq,(SLAVE)accelerometer_spi.interrupt) 1 2 1 810
+preplace netloc INTERCONNECT<net_container>nios_project</net_container>(SLAVE)onchip_memory.s1,(MASTER)cpu.data_master,(SLAVE)cpu.debug_mem_slave,(SLAVE)accelerometer_spi.avalon_accelerometer_spi_mode_slave,(MASTER)cpu.instruction_master,(SLAVE)timer.s1,(SLAVE)button.s1,(SLAVE)jtag_uart.avalon_jtag_slave) 1 1 2 430 220 790
+preplace netloc EXPORT<net_container>nios_project</net_container>(SLAVE)nios_project.reset,(SLAVE)clk.clk_in_reset) 1 0 1 NJ
+preplace netloc FAN_OUT<net_container>nios_project</net_container>(SLAVE)jtag_uart.reset,(SLAVE)onchip_memory.reset1,(SLAVE)cpu.reset,(SLAVE)accelerometer_spi.reset,(SLAVE)timer.reset,(MASTER)clk.clk_reset,(SLAVE)button.reset) 1 1 2 410 400 850
+levelinfo -pg 1 0 200 1150
+levelinfo -hier nios_project 210 240 550 890 1140
