@@ -29,12 +29,141 @@ icon = pygame.image.load('icon.png')
 pygame.display.set_icon(icon)
 
 # fonts
-fontl = pygame.font.SysFont('arialblack', 20)
+font = pygame.font.SysFont('arialblack', 35)
+fontl = pygame.font.SysFont('cambria', 64)
 fonts = pygame.font.SysFont('arialblack', 20)
 over_font = pygame.font.SysFont('arialblack', 64)
 
 # colours
 text_colour = (255, 255, 255)
+
+
+class Bunker:
+    def __init__(self, X, Y, Health):
+        self.X = X
+        self.Y = Y
+        self.Health = Health
+
+    def draw(self):
+        image = pygame.image.load('bunker.png')
+        screen.blit(image, (self.X, self.Y))
+
+    def lose_health(self):
+        self.Health -= 1
+        if self.Health == 0:
+            self.X = -50
+
+
+class Player:
+    def __init__(self, X, Y, Lives, Score, Bullet_State, bulletImg):
+        self.X = X
+        self.Y = Y
+        self.Lives = Lives
+        self.Score = Score
+        self.Bullet_State = Bullet_State
+        self.bulletImg = bulletImg
+
+    def draw(self, image):
+        screen.blit(image, (self.X, self.Y))
+
+    def add_score(self, bonus):
+        self.Score += bonus
+
+    def lose_lives(self):
+        self.Lives -= 1
+
+    def shoot(self, X, Y):
+        self.Bullet_State = "fire"
+        screen.blit(bulletImg, (X + 16, Y + 10))
+
+
+enemyImg = []
+enemyX = [50]
+enemyY = [50]
+enemyX_change = []
+enemyY_change = []
+num_of_enemies = 44
+enemy_vel = 1
+
+for i in range(num_of_enemies):
+    n = i + 1
+    enemyImg.append(pygame.image.load('enemy.png'))
+    if n % 11 == 0:
+        enemyX.append(50)
+        enemyY.append(enemyY[i - 1] + 50)
+    else:
+        enemyX.append(enemyX[i] + 50)
+        enemyY.append(enemyY[i])
+    enemyX_change.append(enemy_vel)
+    enemyY_change.append(20)
+
+# player bullet
+# Ready - You can't see the bullet on the screen
+# Fire - The bullet is currently moving
+
+bulletImg = pygame.image.load('player_bullet.png')
+bulletY_change = 5
+# player1 bullet
+player1_bulletX = 0
+player1_bulletY = 500
+
+# player2 bullet
+player2_bulletX = 0
+player2_bulletY = 500
+
+# enemy bullet
+enemy_bulletImg = pygame.image.load('enemy_bullet.png')
+enemy_bulletX = 0
+enemy_bulletY = 500
+enemy_bulletY_change = 5
+enemy_bullet_state = "ready"
+
+# server should decide the first one log in would be player1
+# in this script should have bool FirstLogIn, if true player1, else player2
+# Player1
+player1Img = pygame.image.load('player.png')
+player1X_change = 0
+# Player2
+player2Img = pygame.image.load('player2.png')
+player2X_change = 0
+
+player_vel = 2
+Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
+Player2 = Player(500, 500, 5, 0, "ready", bulletImg)
+
+# player 1 score
+score_value1 = Player1.Score
+# player2 score
+score_value2 = Player2.Score
+
+# player1 lives
+live_value1 = Player1.Lives
+# player 2 lives
+live_value2 = Player2.Lives
+
+# bunker health
+bunker_health = 2
+bunkers = []
+for i in range(4):
+    bunkers.append(Bunker(20 + 240 * i, 450, bunker_health))
+
+
+def enemy(x, y, i):
+    screen.blit(enemyImg[i], (x, y))  # blit means to draw
+
+
+def isCollision(X1, Y1, X2, Y2):
+    distance = math.sqrt(math.pow(X1 - X2, 2) + math.pow(Y1 - Y2, 2))
+    if distance < 25:
+        return True
+    else:
+        return False
+
+
+def enemy_attack(x, y):
+    global enemy_bullet_state
+    enemy_bullet_state = "fire"
+    screen.blit(enemy_bulletImg, (x + 16, y + 10))
 
 
 def draw_text(text, font, text_col, x, y):
@@ -53,12 +182,12 @@ def show_other_score(score_value2):
 
 
 def show_live(live_value1):
-    life = fontl.render("Lives :" + str(live_value1), True, (255, 255, 255))
+    life = fonts.render("Lives :" + str(live_value1), True, (255, 255, 255))
     screen.blit(life, (550, 10))
 
 
 def show_other_live(live_value2):
-    life = fontl.render("Other Player Lives :" + str(live_value2), True, (255, 255, 255))
+    life = fonts.render("Other Player Lives :" + str(live_value2), True, (255, 255, 255))
     screen.blit(life, (550, 30))
 
 
@@ -76,135 +205,14 @@ def game_over_screen():
 
 
 def play():
-    class Bunker:
-        def __init__(self, X, Y, Health):
-            self.X = X
-            self.Y = Y
-            self.Health = Health
-
-        def draw(self):
-            image = pygame.image.load('bunker.png')
-            screen.blit(image, (self.X, self.Y))
-
-        def lose_health(self):
-            self.Health -= 1
-            if self.Health == 0:
-                self.X = -50
-
-    class Player:
-        def __init__(self, X, Y, Lives, Score, Bullet_State, bulletImg):
-            self.X = X
-            self.Y = Y
-            self.Lives = Lives
-            self.Score = Score
-            self.Bullet_State = Bullet_State
-            self.bulletImg = bulletImg
-
-        def draw(self, image):
-            screen.blit(image, (self.X, self.Y))
-
-        def add_score(self, bonus):
-            self.Score += bonus
-
-        def lose_lives(self):
-            self.Lives -= 1
-
-        def shoot(self, X, Y):
-            self.Bullet_State = "fire"
-            screen.blit(bulletImg, (X + 16, Y + 10))
-
-    enemyImg = []
-    enemyX = [50]
-    enemyY = [50]
-    enemyX_change = []
-    enemyY_change = []
-    num_of_enemies = 44
-    enemy_vel = 1
-
-    for i in range(num_of_enemies):
-        n = i + 1
-        enemyImg.append(pygame.image.load('enemy.png'))
-        if n % 11 == 0:
-            enemyX.append(50)
-            enemyY.append(enemyY[i - 1] + 50)
-        else:
-            enemyX.append(enemyX[i] + 50)
-            enemyY.append(enemyY[i])
-        enemyX_change.append(enemy_vel)
-        enemyY_change.append(20)
-
-    # player bullet
-    # Ready - You can't see the bullet on the screen
-    # Fire - The bullet is currently moving
-
-    bulletImg = pygame.image.load('player_bullet.png')
-    bulletY_change = 5
-    # player1 bullet
-    player1_bulletX = 0
-    player1_bulletY = 500
-
-    # player2 bullet
-    player2_bulletX = 0
-    player2_bulletY = 500
-
-    # enemy bullet
-    enemy_bulletImg = pygame.image.load('enemy_bullet.png')
-    enemy_bulletX = 0
-    enemy_bulletY = 500
-    enemy_bulletY_change = 5
-    enemy_bullet_state = "ready"
-
-    # server should decide the first one log in would be player1
-    # in this script should have bool FirstLogIn, if true player1, else player2
-    # Player1
-    player1Img = pygame.image.load('player.png')
-    player1X_change = 0
-    # Player2
-    player2Img = pygame.image.load('player2.png')
-    player2X_change = 0
-
-    player_vel = 2
-    Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
-    Player2 = Player(500, 500, 5, 0, "ready", bulletImg)
-
-    # player 1 score
-    score_value1 = Player1.Score
-    # player2 score
-    score_value2 = Player2.Score
-
-    # player1 lives
-    live_value1 = Player1.Lives
-    # player 2 lives
-    live_value2 = Player2.Lives
-
-    # bunker health
-    bunker_health = 2
-    bunkers = []
-    for i in range(4):
-        bunkers.append(Bunker(20 + 240 * i, 450, bunker_health))
-
-    def enemy(x, y, i):
-        screen.blit(enemyImg[i], (x, y))  # blit means to draw
-
-    def isCollision(X1, Y1, X2, Y2):
-        distance = math.sqrt(math.pow(X1 - X2, 2) + math.pow(Y1 - Y2, 2))
-        if distance < 25:
-            return True
-        else:
-            return False
-
-    def enemy_attack(x, y):
-        global enemy_bullet_state
-        enemy_bullet_state = "fire"
-        screen.blit(enemy_bulletImg, (x + 16, y + 10))
 
     # Game Loop
+    global player1X_change, player2X_change, enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY, player2_bulletY
     unavailable = []
     running = True
     while running:
         # RGB Red, Green, Blue color
-        #screen.fill((0, 0, 0))
-        screen.fill("black")
+        screen.fill((0, 0, 0))
 
         for event in pygame.event.get():  # check all the events in the window
             if event.type == pygame.QUIT:
@@ -347,6 +355,7 @@ def play():
         pygame.display.update()
         clock.tick(fps)
 
+
 # to be modified
 def leaderboard():
     while True:
@@ -357,20 +366,20 @@ def leaderboard():
 def start_menu():
     pygame.display.set_caption('Menu')
 
-    position = [400, 250]  # set initial position
+    position = [400, 225]  # set initial position
 
     while True:
         screen.blit(menu_bg, (0, 0))
 
-        menu_text = fonts.render("MAIN MENU", True, "#b68f40")
+        menu_text = fontl.render("MAIN MENU", True, "#b68f40")
         menu_rect = menu_text.get_rect(center=(400, 100))
 
-        play_button = Button(image=pygame.image.load("Play Rect.png"), pos=(400, 250),
-                             text_input="PLAY", font=fonts, base_color="#b68f40", hovering_color="white")
-        leaderboard_button = Button(image=pygame.image.load("Options Rect.png"), pos=(400, 400),
-                                    text_input="LEADERBOARD", font=fonts, base_color="#b68f40", hovering_color="White")
-        quit_button = Button(image=pygame.image.load("Quit Rect.png"), pos=(400, 550),
-                             text_input="QUIT", font=fonts, base_color="#b68f40", hovering_color="#ffffff")
+        play_button = Button(image=pygame.image.load("Play Rect.png"), pos=(400, 225),
+                             text_input="PLAY", font=font, base_color="#b68f40", hovering_color="white")
+        leaderboard_button = Button(image=pygame.image.load("Leaderboard Rect.png"), pos=(400, 350),
+                                    text_input="LEADERBOARD", font=font, base_color="#b68f40", hovering_color="White")
+        quit_button = Button(image=pygame.image.load("Quit Rect.png"), pos=(400, 475),
+                             text_input="QUIT", font=font, base_color="#b68f40", hovering_color="#ffffff")
 
         screen.blit(menu_text, menu_rect)
 
@@ -384,23 +393,23 @@ def start_menu():
                 sys.exit()
             if menu_event.type == pygame.KEYUP:
                 if menu_event.key == pygame.K_RETURN:
-                    if position[1] == 250:  # select play
+                    if position[1] == 225:  # select play
                         play()
-                    if position[1] == 400:  # select leaderboard
+                    if position[1] == 350:  # select leaderboard
                         leaderboard()
-                    if position[1] == 550:  # select quit
+                    if position[1] == 475:  # select quit
                         pygame.quit()
                         sys.exit()
                 if menu_event.key == pygame.K_UP:
-                    if position[1] == 250:
-                        position[1] = 250
+                    if position[1] == 225:
+                        position[1] = 225
                     else:
-                        position[1] = position[1] - 150
+                        position[1] = position[1] - 125
                 elif menu_event.key == pygame.K_DOWN:
-                    if position[1] == 550:
-                        position[1] = 550
+                    if position[1] == 475:
+                        position[1] = 475
                     else:
-                        position[1] = position[1] + 150
+                        position[1] = position[1] + 125
                 for button in [play_button, leaderboard_button, quit_button]:
                     button.changeColor(position)
                     button.update(screen)
