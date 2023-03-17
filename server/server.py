@@ -26,17 +26,17 @@ while len(clients) < 2:
 while True:
         
         try:
-            client1_incoming = clients[0].recv(1024)
+            client1_incoming = clients[0].recv(1024).decode()
         except:
             client1_incoming = ''
 
         try:
-            client2_incoming = clients[1].recv(1024)
+            client2_incoming = clients[1].recv(1024).decode()
         except:
             client2_incoming = ''
         
         client1_outgoing, client2_outgoing = game_server.update(client1_incoming, client2_incoming)
         if client1_outgoing != '':
-            clients[0].send(client1_outgoing)
+            clients[0].send(client1_outgoing.encode())
         if client2_outgoing != '':
-            clients[1].send(client2_outgoing)
+            clients[1].send(client2_outgoing.encode())

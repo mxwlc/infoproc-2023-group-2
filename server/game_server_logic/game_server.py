@@ -1,10 +1,21 @@
 import time
 import random
 
-from leaderboard_functions import *
-from create_leaderboard import *
+# from game_server_logic.leaderboard_functions import *
+# from game_server_logic.create_leaderboard import *
+# Remove leaderboard functionality for now to speed up testing
+# (can run server on local machine)
 
-NUM_ENEMIES = 55
+def create_leaderboard():
+    pass
+
+def update_leaderboard():
+    pass
+
+def get_leaderboard():
+    pass
+
+NUM_ENEMIES = 44
 SCORE_INCREMENT = 10 # How much a player's score should increase by upon killing an enemy.
 ENEMY_BULLET_INTERVAL = 2 # Time in seconds between spawnings of enemy bullets.
 
@@ -67,12 +78,14 @@ class GameServer:
             elif m == 'g': # Notification of game end
                 self.end_game()
             else:
-                print("Error")
+                print("Error: received message " + raw_message)
     
     # Parses messages if the game is not in progress.
     def parse_outofgame(self, client_index, raw_message):
         response = ''
-        if raw_message == 'l': # Request for leaderboard
+        if len(raw_message) == 0: # Empty messages of trailing ;
+            pass
+        elif raw_message == 'l': # Request for leaderboard
             leaderboard = get_leaderboard()
             for entry in leaderboard:
                 response += 'n' + entry['name']
@@ -81,7 +94,7 @@ class GameServer:
             self.player_ready[client_index] = True
             self.player_name[client_index] = raw_message[1:]
         else:
-            print("Error")
+            print("Error: received message " + raw_message)
         return response
     
     # Update variables that track time when the game is running.
@@ -98,6 +111,8 @@ class GameServer:
             # Only create a new enemy bullet if one does not already exist.
             self.time_since_bullet = 0
             enemy_id = random.randint(0, NUM_ENEMIES - 1)
+            while not self.remaining_enemies[enemy_id]:
+                enemy_id = random.randint(0, NUM_ENEMIES - 1)
             self.enemy_bullet = True
             return 'e' + str(enemy_id)
         else:
