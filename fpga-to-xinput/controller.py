@@ -18,9 +18,6 @@ class fpga_controller:
         keyboard : Controller Object
             Simulates key presses and releases to control the player
 
-        Alphabet : Array
-            Array containing all Upper case Ascii Characters
-
         Name : Array
             Array containing the name of the player
 
@@ -39,6 +36,9 @@ class fpga_controller:
 
         stop()
             stops the player from moving
+            
+        set_name(name):
+            sets the name of the player
 
         left_or_right(accel_input)
             decides whether the player should move left or right
@@ -57,8 +57,6 @@ class fpga_controller:
         """
         self.keyboard = Controller()
         self.name = []
-        self.alphabet = list(string.ascii_uppercase)
-        self.pointer = 0;
 
     def shoot(self):
         """
@@ -105,6 +103,9 @@ class fpga_controller:
         else:
             self.stop()
 
+    def set_name(self, name):
+        self.name = list(name)        
+    
     def uhex_to_shex(uhex):
         """
         Converts the unsigned 32-bit hex data to signed 32-bit decimal
@@ -117,10 +118,3 @@ class fpga_controller:
             return - (uhex & 0x79999999)
         else:
             return uhex & 0x79999999
-            
-    def cycle(self):
-        """
-        Allows the player to cycle through the alphabet on the player name 
-        """
-        
-

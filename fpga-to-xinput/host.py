@@ -39,7 +39,6 @@ def main():
         
         ##key one shoot/confirm
         ##key two cycle
-        name = choose_name(controller=keyboard, cycle=key_two, confirm=key_one)
 
         ## send name to fpga
 
@@ -52,3 +51,7 @@ def main():
 
         
     rc = process.poll()
+    
+    
+if __name__ == "__main__":
+    main()
