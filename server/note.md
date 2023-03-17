@@ -1,0 +1,1 @@
+This folder contains all server-side logic, including the TCP server, game server logic, and DynamoDB interface.
