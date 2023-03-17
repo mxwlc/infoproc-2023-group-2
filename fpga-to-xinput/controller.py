@@ -3,10 +3,7 @@
 
 from pynput.keyboard import Key, Controller
 import time
-import string
-
-
-class fpga_controller:
+class keyboard_controller:
     """
     Controller Class used to control the movements of the player
         ...
