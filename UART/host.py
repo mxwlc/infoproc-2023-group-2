@@ -1,33 +1,19 @@
-# import subprocess
-#
-# process = subprocess.Popen("nios2-terminal", stdout=subprocess.PIPE)
-#
-# while True:
-#     output = process.stdout.readline()
-#     if process.poll() is not None:
-#         break
-#     if output:
-#         accel, key_one, key_two = output.strip().decode().split("|")
-# rc = process.poll()
+import intel_jtag_uart as _uart
 
-import sys
-import time
-import intel_jtag_uart
+class FPGAController:
 
-try:
-    ju = intel_jtag_uart.intel_jtag_uart()
+    def __init__(self, **kwargs):
+        self._jtag_uart = _uart.intel_jtag_uart(**kwargs)
 
-except Exception as e:
-    print(e)
-    sys.exit(0)
+    def _send_command(self, command: str, argument: str = "") -> str:
+        self._jtag_uart.write(f"{command} {argument}".encode())
+        return self._jtag_uart.read().decode()
+    
+    def read_inputs(self) -> tuple:
+        return self._send_command("r").split("|")
+    
+    def update_leds(self, num: int):
+        self._send_command("l", str(min(num, 9)))
 
-print("Initialised")
-
-ju.write(b'r\n')
-print("read: ", ju.read())
-ju.write(b's\n')
-print("read: ", ju.read())
-ju.write(b'l\n')
-print("read: ", ju.read())
-ju.write(b'u\n')
-print("read: ", ju.read())
+    def update_hex(self, text: str):
+        self._send_command("s", text[0:6].lower())
