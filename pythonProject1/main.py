@@ -3,6 +3,9 @@ import random
 import math
 import sys
 import os
+import host
+
+
 from button import Button
 
 pygame.init()
@@ -22,6 +25,7 @@ text_colour = (255, 255, 255)  # colours
 colour_active = pygame.Color('lightskyblue3')
 colour_passive = pygame.Color('gray15')
 colour_gold = '#b68f40'
+fpga = host.FPGAController()
 
 
 class Bunker:
@@ -484,7 +488,7 @@ def start_menu():  # Todo: change input method to FPGA input
 
 
 def input_id():
-    # Todo: 1.change input method to FPGA input
+    # Todo: 1.change input method to FPGA input done
     #  2.let each player input their names separately, game can't start until both players have input their names
     # use keyboard up, down, left and right to navigate; use 'enter' to select
     pygame.display.set_caption('Input ID')
@@ -579,6 +583,7 @@ def input_id():
         input_rect1.w = max(200, text_surface1.get_width() + 10)
         input_rect2.w = max(200, text_surface2.get_width() + 10)
 
+        fpga.update_hex(player1_name)
         pygame.display.flip()
 
 
