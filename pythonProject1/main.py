@@ -20,6 +20,7 @@ over_font = pygame.font.SysFont('arialblack', 72)
 text_colour = (255, 255, 255)  # colours
 colour_active = pygame.Color('lightskyblue3')
 colour_passive = pygame.Color('gray15')
+colour_gold = '#b68f40'
 
 
 class Bunker:
@@ -224,7 +225,7 @@ def EnemyLevelUp():  # reset positions and bodycount
         enemyY_change.append(20)
 
 
-def play():
+def play():  # Todo: 1.change input method to FPGA input  2.send data to server
     pygame.display.set_caption('Space Invaders')
     # add fps to synchronise the game on different devices
     clock = pygame.time.Clock()
@@ -309,7 +310,7 @@ def play():
                     game_over_screen(I_Won)
                     pygame.display.update()
                 running = False
-                start_menu()
+                leaderboard()
 
             if enemyX[i] == 1000:
                 enemyX_change[i] = 0
@@ -405,12 +406,28 @@ def play():
 
 # to be modified
 def leaderboard():
+    pygame.display.set_caption('Leaderboard')
     while True:
-        lb_text = fonts.render("LEADERBOARD", True, (255, 255, 255))
-        screen.blit(lb_text, (200, 250))
+        screen.blit(menu_bg, (0, 0))
+        lb_text = font.render("LEADERBOARD", True, colour_gold)
+        screen.blit(lb_text, (250, 50))
+        return_text = fontss.render("Press 'Enter' to continue", True, (255, 255, 255))
+        screen.blit(return_text, (550, 550))
+
+        # Todo: get leaderboard information from server and print them on the screen
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    start_menu()
+        pygame.display.update()
 
 
-def start_menu():
+def start_menu():  # Todo: change input method to FPGA input
+    # use keyboard up and down to navigate; use 'enter' to select
     pygame.display.set_caption('Menu')
 
     position = [400, 225]  # set initial position
@@ -418,15 +435,15 @@ def start_menu():
     while True:
         screen.blit(menu_bg, (0, 0))
 
-        menu_text = fontl.render("MAIN MENU", True, '#b68f40')
+        menu_text = fontl.render("MAIN MENU", True, colour_gold)
         menu_rect = menu_text.get_rect(center=(400, 100))
 
         play_button = Button(image=pygame.image.load("Play Rect.png"), pos=(400, 225),
-                             text_input="PLAY", font=font, base_color="#b68f40", hovering_color=colour_active)
+                             text_input="PLAY", font=font, base_color=colour_gold, hovering_color=colour_active)
         leaderboard_button = Button(image=pygame.image.load("Leaderboard Rect.png"), pos=(400, 350),
-                                    text_input="LEADERBOARD", font=font, base_color="#b68f40", hovering_color=colour_active)
+                                    text_input="LEADERBOARD", font=font, base_color=colour_gold, hovering_color=colour_active)
         quit_button = Button(image=pygame.image.load("Quit Rect.png"), pos=(400, 475),
-                             text_input="QUIT", font=font, base_color="#b68f40", hovering_color=colour_active)
+                             text_input="QUIT", font=font, base_color=colour_gold, hovering_color=colour_active)
 
         screen.blit(menu_text, menu_rect)
 
@@ -465,6 +482,9 @@ def start_menu():
 
 
 def input_id():
+    # Todo: 1.change input method to FPGA input
+    #  2.let each player input their names separately, game can't start until both players have input their names
+    # use keyboard up, down, left and right to navigate; use 'enter' to select
     pygame.display.set_caption('Input ID')
 
     user1_text = ''
@@ -523,7 +543,7 @@ def input_id():
         screen.blit(menu_bg, (0, 0))
 
         start_button = Button(image=pygame.image.load("Start Rect.png"), pos=(400, 400),
-                              text_input="START GAME", font=fonts, base_color="#b68f40", hovering_color=colour_active)
+                              text_input="START GAME", font=fonts, base_color=colour_gold, hovering_color=colour_active)
         start_button.changeColor(position)
         start_button.update(screen)
 
