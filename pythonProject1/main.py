@@ -2,15 +2,16 @@ import pygame
 import random
 import math
 import sys
+import os
 from button import Button
 
 pygame.init()
 width = 800
 height = 600
 screen = pygame.display.set_mode((width, height))
-menu_bg = pygame.image.load('menu_bg.png')  # images
+menu_bg = pygame.image.load(os.path.join("assets", "menu_bg.png"))
 pygame.display.set_caption("Menu")
-icon = pygame.image.load('icon.png')
+icon = pygame.image.load(os.path.join("assets", "icon.png"))
 pygame.display.set_icon(icon)
 font = pygame.font.SysFont('arialblack', 35)  # fonts
 fontl = pygame.font.SysFont('cambria', 64)
@@ -30,7 +31,7 @@ class Bunker:
         self.Health = Health
 
     def draw(self):
-        image = pygame.image.load('bunker.png')
+        image = pygame.image.load(os.path.join("assets", "bunker.png"))
         screen.blit(image, (self.X, self.Y))
 
     def lose_health(self):
@@ -71,19 +72,19 @@ enemyY = [50]
 num_of_enemies = 44
 
 for i in range(num_of_enemies):
-    enemyImg.append(pygame.image.load('enemy.png'))
+    enemyImg.append(pygame.image.load(os.path.join("assets", "enemy.png")))
 
 # bullet
 # Ready - You can't see the bullet on the screen
 # Fire - The bullet is currently moving
 
-bulletImg = pygame.image.load('player_bullet.png')
+bulletImg = pygame.image.load(os.path.join("assets", "player_bullet.png"))
 bulletY_change = 5
 player1_bulletX = 0  # player1 bullet
 player1_bulletY = 500
 player2_bulletX = 0  # player2 bullet
 player2_bulletY = 500
-enemy_bulletImg = pygame.image.load('enemy_bullet.png')  # enemy bullet
+enemy_bulletImg = pygame.image.load(os.path.join("assets", "enemy_bullet.png"))  # enemy bullet
 enemy_bulletX = 0
 enemy_bulletY = 500
 enemy_bulletY_change = 5
@@ -91,7 +92,7 @@ enemy_bullet_state = "ready"
 
 # Player1
 player1_name = 'Player1'
-player1Img = pygame.image.load('player.png')
+player1Img = pygame.image.load(os.path.join("assets", "player.png"))
 player1X_change = 0
 Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
 score_value1 = Player1.Score  # player 1 score
@@ -99,7 +100,7 @@ live_value1 = Player1.Lives
 
 # Player2/remote player
 player2_name = 'Player2'
-player2Img = pygame.image.load('player2.png')
+player2Img = pygame.image.load(os.path.join("assets", "player2.png"))
 player2X_change = 0
 Player2 = Player(500, 500, 5, 0, "ready", bulletImg)
 score_value2 = Player2.Score
@@ -111,7 +112,7 @@ enemy_vel = 1
 
 # bunker
 bunker_health = 4
-bunker_width = pygame.image.load('bunker.png').get_width()
+bunker_width = pygame.image.load(os.path.join("assets", "bunker.png")).get_width()
 space = (width - 80 - bunker_width * 4) / 3 + bunker_width
 bunkers = []
 for i in range(4):
@@ -240,12 +241,13 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
 
     while running:
         # RGB Red, Green, Blue color
-        # screen.fill((0, 0, 0))
-        screen.blit(menu_bg, (0, 0))
+        screen.fill((0, 0, 0))
+        #screen.blit(menu_bg, (0, 0))
 
         for event in pygame.event.get():  # check all the events in the window
             if event.type == pygame.QUIT:
                 running = False
+                start_menu()
             # # if keystroke is pressed check whether its right or left
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -438,11 +440,11 @@ def start_menu():  # Todo: change input method to FPGA input
         menu_text = fontl.render("MAIN MENU", True, colour_gold)
         menu_rect = menu_text.get_rect(center=(400, 100))
 
-        play_button = Button(image=pygame.image.load("Play Rect.png"), pos=(400, 225),
+        play_button = Button(image=pygame.image.load(os.path.join("assets", "Play Rect.png")), pos=(400, 225),
                              text_input="PLAY", font=font, base_color=colour_gold, hovering_color=colour_active)
-        leaderboard_button = Button(image=pygame.image.load("Leaderboard Rect.png"), pos=(400, 350),
+        leaderboard_button = Button(image=pygame.image.load(os.path.join("assets", "Leaderboard Rect.png")), pos=(400, 350),
                                     text_input="LEADERBOARD", font=font, base_color=colour_gold, hovering_color=colour_active)
-        quit_button = Button(image=pygame.image.load("Quit Rect.png"), pos=(400, 475),
+        quit_button = Button(image=pygame.image.load(os.path.join("assets", "Quit Rect.png")), pos=(400, 475),
                              text_input="QUIT", font=font, base_color=colour_gold, hovering_color=colour_active)
 
         screen.blit(menu_text, menu_rect)
@@ -542,12 +544,12 @@ def input_id():
 
         screen.blit(menu_bg, (0, 0))
 
-        start_button = Button(image=pygame.image.load("Start Rect.png"), pos=(400, 400),
+        start_button = Button(image=pygame.image.load(os.path.join("assets", "Start Rect.png")), pos=(400, 400),
                               text_input="START GAME", font=fonts, base_color=colour_gold, hovering_color=colour_active)
         start_button.changeColor(position)
         start_button.update(screen)
 
-        return_button = Button(image=pygame.image.load("Return Rect.png"), pos=(700, 500),
+        return_button = Button(image=pygame.image.load(os.path.join("assets", "Return Rect.png")), pos=(700, 500),
                                text_input="RETURN", font=fontss, base_color="black", hovering_color=colour_active)
         return_button.changeColor(position)
         return_button.update(screen)
