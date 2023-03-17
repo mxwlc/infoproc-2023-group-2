@@ -1,0 +1,16 @@
+Analysis & Synthesis Status : Successful - Fri Mar 17 14:35:01 2023
+Quartus Prime Version : 18.0.0 Build 614 04/24/2018 SJ Lite Edition
+Revision Name : LangProcProject_top
+Top-level Entity Name : LangProcProject_top
+Family : MAX 10
+Total logic elements : 2,510
+    Total combinational functions : 2,198
+    Dedicated logic registers : 1,378
+Total registers : 1378
+Total pins : 185
+Total virtual pins : 0
+Total memory bits : 535,552
+Embedded Multiplier 9-bit elements : 0
+Total PLLs : 0
+UFM blocks : 0
+ADC blocks : 0
