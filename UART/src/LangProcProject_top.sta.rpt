@@ -1,5 +1,5 @@
 Timing Analyzer report for LangProcProject_top
-Thu Mar 16 10:56:53 2023
+Fri Mar 17 14:35:36 2023
 Quartus Prime Version 18.0.0 Build 614 04/24/2018 SJ Lite Edition
 
 
@@ -94,13 +94,13 @@ refer to the applicable agreement for further details.
 ; Number detected on machine ; 16          ;
 ; Maximum allowed            ; 16          ;
 ;                            ;             ;
-; Average used               ; 2.56        ;
+; Average used               ; 2.34        ;
 ; Maximum used               ; 16          ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
-;     Processor 2            ;  10.5%      ;
-;     Processors 3-16        ;  10.4%      ;
+;     Processor 2            ;   9.0%      ;
+;     Processors 3-16        ;   8.9%      ;
 +----------------------------+-------------+
 
 
@@ -109,8 +109,8 @@ refer to the applicable agreement for further details.
 +-----------------------------------------------------------------------------------------------------------------------------------+--------+--------------------------+
 ; SDC File Path                                                                                                                     ; Status ; Read at                  ;
 +-----------------------------------------------------------------------------------------------------------------------------------+--------+--------------------------+
-; c:/users/james/onedrive/documents/github/infoproc-2023-group-2/uart/src/db/ip/nios_project/submodules/altera_reset_controller.sdc ; OK     ; Thu Mar 16 10:56:50 2023 ;
-; c:/users/james/onedrive/documents/github/infoproc-2023-group-2/uart/src/db/ip/nios_project/submodules/nios_project_cpu_cpu.sdc    ; OK     ; Thu Mar 16 10:56:50 2023 ;
+; c:/users/james/onedrive/documents/github/infoproc-2023-group-2/uart/src/db/ip/nios_project/submodules/altera_reset_controller.sdc ; OK     ; Fri Mar 17 14:35:33 2023 ;
+; c:/users/james/onedrive/documents/github/infoproc-2023-group-2/uart/src/db/ip/nios_project/submodules/nios_project_cpu_cpu.sdc    ; OK     ; Fri Mar 17 14:35:33 2023 ;
 +-----------------------------------------------------------------------------------------------------------------------------------+--------+--------------------------+
 
 
@@ -1413,7 +1413,7 @@ No non-DPA dedicated SERDES Receiver circuitry present in device or used in desi
 Info: *******************************************************************
 Info: Running Quartus Prime Timing Analyzer
     Info: Version 18.0.0 Build 614 04/24/2018 SJ Lite Edition
-    Info: Processing started: Thu Mar 16 10:56:49 2023
+    Info: Processing started: Fri Mar 17 14:35:31 2023
 Info: Command: quartus_sta LangProcProject -c LangProcProject_top
 Info: qsta_default_script.tcl version: #2
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
@@ -1588,9 +1588,9 @@ Info (332114): Report Metastability: Found 3 synchronizer chains.
 Info (332102): Design is not fully constrained for setup requirements
 Info (332102): Design is not fully constrained for hold requirements
 Info: Quartus Prime Timing Analyzer was successful. 0 errors, 16 warnings
-    Info: Peak virtual memory: 5009 megabytes
-    Info: Processing ended: Thu Mar 16 10:56:53 2023
-    Info: Elapsed time: 00:00:04
+    Info: Peak virtual memory: 5006 megabytes
+    Info: Processing ended: Fri Mar 17 14:35:36 2023
+    Info: Elapsed time: 00:00:05
     Info: Total CPU time (on all processors): 00:00:06
 
 

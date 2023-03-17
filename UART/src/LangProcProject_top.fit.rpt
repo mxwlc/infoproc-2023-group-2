@@ -1,5 +1,5 @@
 Fitter report for LangProcProject_top
-Thu Mar 16 10:56:42 2023
+Fri Mar 17 14:35:24 2023
 Quartus Prime Version 18.0.0 Build 614 04/24/2018 SJ Lite Edition
 
 
@@ -68,7 +68,7 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Fitter Summary                                                                   ;
 +------------------------------------+---------------------------------------------+
-; Fitter Status                      ; Successful - Thu Mar 16 10:56:42 2023       ;
+; Fitter Status                      ; Successful - Fri Mar 17 14:35:24 2023       ;
 ; Quartus Prime Version              ; 18.0.0 Build 614 04/24/2018 SJ Lite Edition ;
 ; Revision Name                      ; LangProcProject_top                         ;
 ; Top-level Entity Name              ; LangProcProject_top                         ;
@@ -154,19 +154,19 @@ refer to the applicable agreement for further details.
 ; Number detected on machine ; 16          ;
 ; Maximum allowed            ; 16          ;
 ;                            ;             ;
-; Average used               ; 1.72        ;
+; Average used               ; 1.55        ;
 ; Maximum used               ; 16          ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
-;     Processor 2            ;   4.8%      ;
-;     Processor 3            ;   4.8%      ;
-;     Processor 4            ;   4.8%      ;
-;     Processor 5            ;   4.8%      ;
-;     Processor 6            ;   4.8%      ;
-;     Processor 7            ;   4.8%      ;
-;     Processor 8            ;   4.8%      ;
-;     Processors 9-16        ;   4.7%      ;
+;     Processor 2            ;   3.7%      ;
+;     Processor 3            ;   3.7%      ;
+;     Processor 4            ;   3.7%      ;
+;     Processor 5            ;   3.7%      ;
+;     Processor 6            ;   3.7%      ;
+;     Processor 7            ;   3.7%      ;
+;     Processor 8            ;   3.7%      ;
+;     Processors 9-16        ;   3.7%      ;
 +----------------------------+-------------+
 
 
@@ -2429,7 +2429,7 @@ Info (176353): Automatically promoted node nios_project:u0|altera_reset_controll
 Info (176233): Starting register packing
 Info (176235): Finished register packing
     Extra Info (176218): Packed 8 registers into blocks of type Block RAM
-Info (171121): Fitter preparation operations ending: elapsed time is 00:00:03
+Info (171121): Fitter preparation operations ending: elapsed time is 00:00:04
 Info (14896): Fitter has disabled Advanced Physical Optimization because it is not supported for the current family.
 Info (170189): Fitter placement preparation operations beginning
 Info (170190): Fitter placement preparation operations ending: elapsed time is 00:00:00
@@ -2443,7 +2443,7 @@ Info (170199): The Fitter performed an Auto Fit compilation.  Optimizations were
     Info (170201): Optimizations that may affect the design's routability were skipped
     Info (170200): Optimizations that may affect the design's timing were skipped
 Info (170194): Fitter routing operations ending: elapsed time is 00:00:01
-Info (11888): Total time spent on timing analysis during the Fitter is 0.34 seconds.
+Info (11888): Total time spent on timing analysis during the Fitter is 0.39 seconds.
 Info (334003): Started post-fitting delay annotation
 Info (334004): Delay annotation completed successfully
 Info (334003): Started post-fitting delay annotation
@@ -2611,10 +2611,10 @@ Warning (169064): Following 70 pins have no output enable or a GND or VCC output
     Info (169065): Pin GPIO[35] has a permanently disabled output enable File: C:/Users/james/OneDrive/Documents/GitHub/infoproc-2023-group-2/UART/src/langprocproject_top.v Line: 58
 Info (144001): Generated suppressed messages file C:/Users/james/OneDrive/Documents/GitHub/infoproc-2023-group-2/UART/src/LangProcProject_top.fit.smsg
 Info: Quartus Prime Fitter was successful. 0 errors, 10 warnings
-    Info: Peak virtual memory: 6660 megabytes
-    Info: Processing ended: Thu Mar 16 10:56:44 2023
-    Info: Elapsed time: 00:00:17
-    Info: Total CPU time (on all processors): 00:00:17
+    Info: Peak virtual memory: 6659 megabytes
+    Info: Processing ended: Fri Mar 17 14:35:25 2023
+    Info: Elapsed time: 00:00:23
+    Info: Total CPU time (on all processors): 00:00:18
 
 
 +----------------------------+
