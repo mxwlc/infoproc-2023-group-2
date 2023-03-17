@@ -161,10 +161,10 @@ def show_other_live(live_value2):
 
 
 def game_over_screen(I_Won):
-    over_text = over_font.render("GAME OVER", True, (255, 255, 255))
+    over_text = over_font.render("GAME OVER", True, 'white')
     screen.blit(over_text, (width / 2 - over_text.get_width() / 2, 150))
-    win = fonts.render("You Win!", True, (255, 255, 255))
-    lose = fonts.render("You Lose", True, (255, 255, 255))
+    win = fonts.render("You Win!", True, 'white')
+    lose = fonts.render("You Lose", True, 'white')
     if I_Won:
         screen.blit(win, (width / 2 - win.get_width() / 2, 300))
     else:
@@ -225,6 +225,7 @@ def EnemyLevelUp():  # reset positions and bodycount
 
 
 def play():
+    pygame.display.set_caption('Space Invaders')
     # add fps to synchronise the game on different devices
     clock = pygame.time.Clock()
     fps = 60
@@ -238,7 +239,8 @@ def play():
 
     while running:
         # RGB Red, Green, Blue color
-        screen.fill((0, 0, 0))
+        # screen.fill((0, 0, 0))
+        screen.blit(menu_bg, (0, 0))
 
         for event in pygame.event.get():  # check all the events in the window
             if event.type == pygame.QUIT:
