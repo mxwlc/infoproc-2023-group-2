@@ -6,6 +6,8 @@ import os
 #import host
 from button import Button
 
+from tcp_client import *
+
 pygame.init()
 width = 800
 height = 600
