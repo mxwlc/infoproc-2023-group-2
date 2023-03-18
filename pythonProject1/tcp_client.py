@@ -8,6 +8,10 @@ class TCPClient:
         self.peer_port = 5556
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.peer_socket = None
+
+    def close(self):
+        self.clientsocket.close()
+        self.peer_socket.close()
     
     def connect_to_server(self):
         self.clientsocket.connect((self.server_name, self.server_port))
@@ -24,6 +28,7 @@ class TCPClient:
                 break
             except:
                 pass
+        welcome_socket.close()
     
     def connect_to_peer(self, ip):
         print(ip)

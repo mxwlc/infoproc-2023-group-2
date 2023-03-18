@@ -5,6 +5,7 @@ import sys
 import os
 #import host
 from button import Button
+import atexit
 
 from tcp_client import *
 
@@ -31,6 +32,13 @@ colour_gold = '#b68f40'
 
 tcp_client = TCPClient()
 tcp_client.connect_to_server()
+
+def exit_handler():
+    tcp_client.send_server('x')
+    tcp_client.send_peer('x')
+    tcp_client.close()
+
+atexit.register(exit_handler)
 
 
 class Bunker:
