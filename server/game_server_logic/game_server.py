@@ -91,12 +91,15 @@ class GameServer:
             leaderboard = get_leaderboard()
             for entry in leaderboard:
                 response += 'n' + entry['name']
-                response += 's' + entry['score']
+                response += 's' + str(entry['score'])
         elif raw_message[0] == 'r': # Notification of readiness
             self.player_ready[client_index] = True
             self.player_name[client_index] = raw_message[1:]
         else:
             print("Error: received message " + raw_message)
+            # Note that there is a delay between one player claiming the end of the game and the other player
+            # receiving the notification that led to that event. Therefore, there will be some residual in-game
+            # messages from the other player.
         return response
     
     # Update variables that track time when the game is running.

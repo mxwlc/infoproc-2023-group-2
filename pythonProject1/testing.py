@@ -375,6 +375,8 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                     game_over_screen(I_Won) #display game over and whether you lost/won
                     pygame.display.update()
                 running = False
+                while tcp_client.recv() != '': # Discard all residual incoming messages
+                    pass
                 leaderboard()
 
             if enemyX[i] == 1000: #when an enemy is killed, its x position sets to 1000(removed from screen)
@@ -464,7 +466,26 @@ def leaderboard():
         return_text = fontss.render("Press 'Enter' to continue", True, (255, 255, 255))
         screen.blit(return_text, (550, 550))
 
-        # Todo: get leaderboard information from server and print them on the screen
+        tcp_client.send('l')
+        response = ''
+        while True:
+            response = tcp_client.recv()
+            if response != '':
+                break
+        
+        raw_pairs = response.split('n')
+        pairs = []
+        for pair in raw_pairs:
+            if pair == '':
+                continue
+            pairs.append(pair.split('s'))
+        # pairs is an array where each element is a 2-element array representing the name and score of a player.
+        # e.g. pairs[0][0] is the first name, and pairs[0][1] is the score for that player.
+        print(pairs)
+        for pair in pairs:
+            print('Name: ' + pair[0] + ', Score: ' + pair[1])
+
+        # TODO display names and scores on the screen
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
