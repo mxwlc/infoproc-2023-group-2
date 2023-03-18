@@ -9,11 +9,11 @@ import random
 def create_leaderboard():
     pass
 
-def update_leaderboard():
+def update_leaderboard(a, b):
     pass
 
 def get_leaderboard():
-    pass
+    return [{'name': 'player 1', 'score': 100}, {'name': 'player 2', 'score': 150}]
 
 NUM_ENEMIES = 44
 SCORE_INCREMENT = 10 # How much a player's score should increase by upon killing an enemy.
@@ -75,6 +75,8 @@ class GameServer:
                     self.enemy_bullet = False
                     return_messages.append('p')
                     relay_messages.append('o')
+            elif m == 'd': # Enemy bullet destroyed
+                self.enemy_bullet = False
             elif m == 'g': # Notification of game end
                 self.end_game()
             else:
@@ -159,8 +161,9 @@ class GameServer:
                 response1 = 's'
                 response2 = 's'
 
-        if response1 != '':
-            print("1: " + response1)
-        if response2 != '':
-            print("2: " + response2)
+        # if response1 != '':
+        #     print("1: " + response1)
+        # if response2 != '':
+        #     print("2: " + response2)
+
         return response1, response2

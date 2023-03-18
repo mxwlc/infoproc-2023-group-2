@@ -244,7 +244,6 @@ def parse_ingame():
             pass
         elif m[0].isdigit(): # Other player position
             Player2.X = int(m)
-            print(Player2.X)
         elif m == 'c': # Other player bullet creation
             player2_bulletX = Player2.X
             Player2.shoot(player2_bulletX, player2_bulletY)
@@ -425,8 +424,9 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
             player2_bulletY -= bulletY_change
 
         # enemy bullet movement
-        if enemy_bulletY >= 610:
+        if enemy_bulletY >= 610 and enemy_bulletY != 1000:
             enemy_bulletY = 1000
+            responses.append('d')
             enemy_bullet_state = "ready"
 
         if enemy_bullet_state == "fire":
