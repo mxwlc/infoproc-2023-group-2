@@ -3,7 +3,7 @@ import socket
 class TCPClient:
 
     def __init__(self):
-        self.server_name = 'localhost'
+        self.server_name = '18.234.107.233'
         self.server_port = 5555
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     

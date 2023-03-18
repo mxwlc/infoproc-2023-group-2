@@ -279,6 +279,10 @@ def parse_ingame():
         else:
             print("Error")
 
+def send_responses(responses):
+    if len(responses) != 0:
+        tcp_client.send(';'.join(str(x) for x in responses) + ';')
+
 def play():  # Todo: 1.change input method to FPGA input  2.send data to server
     pygame.display.set_caption('Space Invaders')
     # add fps to synchronise the game on different devices
@@ -312,6 +316,8 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                     player1X_change = -player_vel
                 if event.key == pygame.K_RIGHT:
                     player1X_change = player_vel
+                if event.key == pygame.K_DOWN: # Kill button
+                    Player1.Lives = 0
                 # if event.key == pygame.K_a:
                 #     player2X_change = -player_vel
                 # if event.key == pygame.K_d:
@@ -367,7 +373,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                 # for j in range(num_of_enemies):
                 #     enemyY[j] = -2000
                 responses.append('g')
-                tcp_client.send(';'.join(str(x) for x in responses)) # Flush responses immediately
+                send_responses(responses) # Flush responses immediately
 
                 game_over_time = pygame.time.get_ticks()
                 while pygame.time.get_ticks() - game_over_time < 3000: #display game over for 3 seconds
@@ -453,7 +459,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         pygame.display.update()
         clock.tick(fps)
 
-        tcp_client.send(';'.join(str(x) for x in responses))
+        send_responses(responses)
 
 
 # to be modified
@@ -604,7 +610,7 @@ def input_id():
                         while True:
                             response = tcp_client.recv()
                             if response != '':
-                                if response != 's':
+                                if response[0] != 's':
                                     print("Error: received message " + response)
                                 player2_name = response[1:]
                                 break

@@ -56,11 +56,14 @@ class GameServer:
     # Relay messages: messages to relay to the other client.
     def parse_ingame(self, client_index, raw_message, return_messages, relay_messages):
         messages = raw_message.split(';')
-        for m in messages:
+        sent_position = False
+        for m in messages: # TODO consider iterating backwards through messages
             if len(m) == 0: # Empty messages or trailing ;
                 pass
             elif m[0].isdigit(): # Player position
-                relay_messages.append(m)
+                if not sent_position:
+                    relay_messages.append(m)
+                    sent_position = True
             elif m == 'c': # Player bullet creation
                 relay_messages.append(m)
             elif m[0] == 'e': # Own enemy hit
@@ -78,9 +81,10 @@ class GameServer:
             elif m == 'd': # Enemy bullet destroyed
                 self.enemy_bullet = False
             elif m == 'g': # Notification of game end
+                print('end game')
                 self.end_game()
             else:
-                print("Error: received message " + raw_message)
+                print("Error: received in-game message " + raw_message)
     
     # Parses messages if the game is not in progress.
     def parse_outofgame(self, client_index, raw_message):
@@ -96,7 +100,7 @@ class GameServer:
             self.player_ready[client_index] = True
             self.player_name[client_index] = raw_message[1:]
         else:
-            print("Error: received message " + raw_message)
+            print("Error: received out-of-game message " + raw_message)
             # Note that there is a delay between one player claiming the end of the game and the other player
             # receiving the notification that led to that event. Therefore, there will be some residual in-game
             # messages from the other player.
@@ -144,8 +148,9 @@ class GameServer:
 
                 ## Check if we can create a new enemy projectile
                 enemy_bullet_message = self.create_enemy_bullet()
-                arr1.append(enemy_bullet_message) # This message may be empty
-                arr2.append(enemy_bullet_message)
+                if enemy_bullet_message != '':
+                    arr1.append(enemy_bullet_message) # This message may be empty
+                    arr2.append(enemy_bullet_message)
 
             response1 = ';'.join(str(x) for x in arr1) + ';'
             response2 = ';'.join(str(x) for x in arr2) + ';'
