@@ -202,6 +202,9 @@ def LevelUpReset(): #when all enemy killed and game level up, the list of 'dead'
 
 def NewGameReset(): #resets all global variables, new game
     global Player1, Player2, bunkers, player1X_change, player2X_change, score_value1, live_value1, score_value2, live_value2, enemy_vel
+    global hit_enemy_id, was_hit
+    hit_enemy_id = -1
+    was_hit = False
     player1X_change = 0
     Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
     score_value1 = Player1.Score
@@ -443,7 +446,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                 enemyY[i] += enemyY_change[i]
 
             # collision detection
-            if isCollision(enemyX[i], enemyY[i], player1_bulletX, player1_bulletY): #for player1
+            if isCollision(enemyX[i], enemyY[i], player1_bulletX, player1_bulletY) and i != hit_enemy_id: #for player1
                 peer_responses.append('b' + str(i))
                 hit_enemy_id = i
             # if isCollision(enemyX[i], enemyY[i], player2_bulletX, player2_bulletY): #for player2
@@ -510,31 +513,31 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
 # to be modified
 def leaderboard():
     pygame.display.set_caption('Leaderboard')
+
+    tcp_client.send_server('l')
+    response = ''
+    while True:
+        response = tcp_client.recv_server()
+        if response != '':
+            break
+    
+    raw_pairs = response.split('/')
+    pairs = []
+    for pair in raw_pairs:
+        if pair == '':
+            continue
+        pairs.append(pair.split('$'))
+    # pairs is an array where each element is a 2-element array representing the name and score of a player.
+    # e.g. pairs[0][0] is the first name, and pairs[0][1] is the score for that player.
+    for pair in pairs:
+        print('Name: ' + pair[0] + ', Score: ' + pair[1])
+
     while True:
         screen.blit(menu_bg, (0, 0))
         lb_text = font.render("LEADERBOARD", True, colour_gold)
         screen.blit(lb_text, (250, 50))
         return_text = fontss.render("Press 'Enter' to continue", True, (255, 255, 255))
         screen.blit(return_text, (550, 550))
-
-        tcp_client.send_server('l')
-        response = ''
-        while True:
-            response = tcp_client.recv_server()
-            if response != '':
-                break
-        
-        raw_pairs = response.split('n')
-        pairs = []
-        for pair in raw_pairs:
-            if pair == '':
-                continue
-            pairs.append(pair.split('s'))
-        # pairs is an array where each element is a 2-element array representing the name and score of a player.
-        # e.g. pairs[0][0] is the first name, and pairs[0][1] is the score for that player.
-        print(pairs)
-        for pair in pairs:
-            print('Name: ' + pair[0] + ', Score: ' + pair[1])
 
         # TODO display names and scores on the screen
 
@@ -660,6 +663,8 @@ def input_id():
                                 global sync_var, turn_to_shoot
                                 if response[1] == 'l':
                                     tcp_client.listen_for_peer()
+                                    sync_var = True
+                                    turn_to_shoot = True
                                 elif response[1] == 'c':
                                     tcp_client.connect_to_peer(pair[1])
                                     sync_var = False

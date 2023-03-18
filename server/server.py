@@ -20,6 +20,7 @@ ips = []
 while len(clients) < 2:
     try:
         client, address = tcpserver.accept()
+        client.settimeout(0)
         clients.append(client)
         ips.append(address[0])
         print(f"Client {len(clients)} connected from {address}")

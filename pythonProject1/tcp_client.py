@@ -26,8 +26,11 @@ class TCPClient:
                 pass
     
     def connect_to_peer(self, ip):
+        print(ip)
         self.peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.peer_socket.connect(('localhost', self.peer_port))
+        # TODO find a way to connect via the parameter ip.
+        # The issue likely has something to do with the difference between public and private IP addresses.
         self.peer_socket.settimeout(0)
 
     def send_server(self, message):

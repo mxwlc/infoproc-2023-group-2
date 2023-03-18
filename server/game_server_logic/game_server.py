@@ -1,19 +1,8 @@
 import time
 import random
 
-# from game_server_logic.leaderboard_functions import *
-# from game_server_logic.create_leaderboard import *
-# Remove leaderboard functionality for now to speed up testing
-# (can run server on local machine)
-
-def create_leaderboard():
-    pass
-
-def update_leaderboard(a, b):
-    pass
-
-def get_leaderboard():
-    return [{'name': 'player 1', 'score': 100}, {'name': 'player 2', 'score': 150}]
+from game_server_logic.leaderboard_functions import *
+from game_server_logic.create_leaderboard import *
 
 class GameServer:
 
@@ -21,7 +10,6 @@ class GameServer:
         self.player_ready = [False, False]
         self.player_name = ['', '']
         self.player_score = [0, 0]
-        self.player_addr = ['', '']
         self.game_in_progress = False
 
     def __init__(self):
@@ -42,6 +30,8 @@ class GameServer:
         self.elapsed_time = 0
     
     def end_game(self):
+        print(self.player_name)
+        print(self.player_score)
         for i in range(2):
             update_leaderboard(self.player_name[i], self.player_score[i])
         self.reset_game_state()
@@ -52,7 +42,8 @@ class GameServer:
             pass
         elif m[0] == 'g': # Notification of game end
             pair = m[1:].split(':')
-            self.player_score = pair
+            self.player_score[0] = int(pair[0])
+            self.player_score[1] = int(pair[1])
             self.end_game()
         else:
             print("Error: received in-game message " + m)
@@ -65,8 +56,8 @@ class GameServer:
         elif raw_message == 'l': # Request for leaderboard
             leaderboard = get_leaderboard()
             for entry in leaderboard:
-                response += 'n' + entry['name']
-                response += 's' + str(entry['score'])
+                response += '/' + entry['name']
+                response += '$' + str(entry['score'])
         elif raw_message[0] == 'r': # Notification of readiness
             self.player_ready[client_index] = True
             self.player_name[client_index] = raw_message[1:]
@@ -103,13 +94,17 @@ class GameServer:
     # Returns: messages to send back to clients (in same order).
     def update(self, raw_message1, raw_message2):
 
+        if raw_message1 != '' or raw_message2 != '':
+            print('Received: 1 = ' + raw_message1 + ' 2 = ' + raw_message2)
+
         response1, response2 = '', ''
 
         if self.game_in_progress:
             
-            ## Process messages from clients
             self.parse_ingame(0, raw_message1)
-            self.parse_ingame(1, raw_message2)
+
+            if self.game_in_progress: # Game may have ended
+                self.parse_ingame(1, raw_message2)
 
         else:
 
@@ -124,10 +119,8 @@ class GameServer:
                 self.start_game()
                 response1 = 'sl' + self.player_name[1]
                 response2 = 'sc' + self.player_name[0] + ':' + self.player_addr[0]
-
-        # if response1 != '':
-        #     print("1: " + response1)
-        # if response2 != '':
-        #     print("2: " + response2)
+        
+        if response1 != '' or response2 != '':
+            print('Sent: 1 = ' + response1 + ' 2 = ' + response2)
 
         return response1, response2

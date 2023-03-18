@@ -4,8 +4,7 @@ import boto3
 
 def create_leaderboard():
 
-    if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
     table = dynamodb.create_table(
         TableName = 'Leaderboard',
