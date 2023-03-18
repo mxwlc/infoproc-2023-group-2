@@ -559,9 +559,9 @@ def input_id():
     pygame.display.set_caption('Input ID')
 
     user1_text = ''
-    user2_text = ''
+    # user2_text = ''
     input_rect1 = pygame.Rect(300, 200, 140, 32)  # (left, top, width, height)
-    input_rect2 = pygame.Rect(300, 300, 140, 32)
+    # input_rect2 = pygame.Rect(300, 300, 140, 32)
     colour = [colour_active, colour_passive]
     position = [400, 210]
 
@@ -570,12 +570,13 @@ def input_id():
         # check position
         if position[1] == 210:
             active1 = True
-            active2 = False
-        elif position[1] == 310:
-            active1 = False
-            active2 = True
+            # active2 = False
+        # elif position[1] == 310:
+        #     active1 = False
+        #     active2 = True
         else:
-            active1 = active2 = False
+            active1 = False
+            # active1 = active2 = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -584,9 +585,9 @@ def input_id():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN and position[1] != 410:
-                    position[1] = position[1] + 100
+                    position[1] = position[1] + 200
                 elif event.key == pygame.K_UP and position[1] != 210:
-                    position[1] = position[1] - 100
+                    position[1] = position[1] - 200
                 elif event.key == pygame.K_RIGHT and position[0] == 400:
                     position = [700, 500]
                 elif event.key == pygame.K_LEFT and position[0] == 700:
@@ -597,12 +598,16 @@ def input_id():
                         player1_name = user1_text
                         tcp_client.send('r' + player1_name)
                         # For now, assume that player1_name is the name of this client's player.
-                        # TODO get rid of player 2 name.
                         global player2_name
-                        player2_name = user2_text
+                        response = ''
                         # TODO replace this while loop with a proper waiting screen.
-                        while tcp_client.recv() != 's':
-                            pass
+                        while True:
+                            response = tcp_client.recv()
+                            if response != '':
+                                if response != 's':
+                                    print("Error: received message " + response)
+                                player2_name = response[1:]
+                                break
                         play()
                     if position == [700, 500]:
                         start_menu()
@@ -611,11 +616,11 @@ def input_id():
                         user1_text = user1_text[:-1]
                     else:
                         user1_text += event.unicode
-                if active2:
-                    if event.key == pygame.K_BACKSPACE:
-                        user2_text = user2_text[:-1]
-                    else:
-                        user2_text += event.unicode
+                # if active2:
+                #     if event.key == pygame.K_BACKSPACE:
+                #         user2_text = user2_text[:-1]
+                #     else:
+                #         user2_text += event.unicode
 
         screen.blit(menu_bg, (0, 0))
 
@@ -632,27 +637,27 @@ def input_id():
         if active1:
             colour[0] = colour_active
             colour[1] = colour_passive
-        elif active2:
-            colour[0] = colour_passive
-            colour[1] = colour_active
+        # elif active2:
+        #     colour[0] = colour_passive
+        #     colour[1] = colour_active
         else:
             colour = [colour_passive, colour_passive]
 
         text1 = fonts.render("Player1 ID:", True, (255, 255, 255))
         screen.blit(text1, (300, 150))
-        text2 = fonts.render("Player2 ID:", True, (255, 255, 255))
-        screen.blit(text2, (300, 250))
+        # text2 = fonts.render("Player2 ID:", True, (255, 255, 255))
+        # screen.blit(text2, (300, 250))
 
         pygame.draw.rect(screen, colour[0], input_rect1, 2)
-        pygame.draw.rect(screen, colour[1], input_rect2, 2)
+        # pygame.draw.rect(screen, colour[1], input_rect2, 2)
 
         text_surface1 = fonts.render(user1_text, True, (255, 255, 255))
-        text_surface2 = fonts.render(user2_text, True, (255, 255, 255))
+        # text_surface2 = fonts.render(user2_text, True, (255, 255, 255))
         screen.blit(text_surface1, (input_rect1.x + 5, input_rect1.y + 5))
-        screen.blit(text_surface2, (input_rect2.x + 5, input_rect2.y + 5))
+        # screen.blit(text_surface2, (input_rect2.x + 5, input_rect2.y + 5))
 
         input_rect1.w = max(200, text_surface1.get_width() + 10)
-        input_rect2.w = max(200, text_surface2.get_width() + 10)
+        # input_rect2.w = max(200, text_surface2.get_width() + 10)
 
         #fpga.update_hex(player1_name)
         pygame.display.flip()

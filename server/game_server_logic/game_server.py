@@ -161,8 +161,8 @@ class GameServer:
             ## the leaderboard are mutually exclusive.
             if self.player_ready[0] and self.player_ready[1]:
                 self.start_game()
-                response1 = 's'
-                response2 = 's'
+                response1 = 's' + self.player_name[1]
+                response2 = 's' + self.player_name[0]
 
         # if response1 != '':
         #     print("1: " + response1)

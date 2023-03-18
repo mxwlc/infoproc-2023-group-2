@@ -12,6 +12,8 @@ tcpserver.listen(2)
 
 game_server = GameServer()
 
+print ('Waiting for clients...')
+
 # Wait for two clients to connect
 clients = []
 while len(clients) < 2:
