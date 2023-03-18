@@ -64,12 +64,12 @@ class GameServer:
             elif m == 'c': # Player bullet creation
                 relay_messages.append(m)
             elif m[0] == 'e': # Own enemy hit
-                enemy_id = m[1:]
+                enemy_id = int(m[1:])
                 if self.remaining_enemies[enemy_id]: # If enemy is still alive
                     self.remaining_enemies[enemy_id] = False
                     self.player_score[client_index] += SCORE_INCREMENT
-                    return_messages.append('w' + enemy_id)
-                    relay_messages.append('t' + enemy_id)
+                    return_messages.append('w' + str(enemy_id))
+                    relay_messages.append('t' + str(enemy_id))
             elif m == 'p': # Own player hit
                 if self.enemy_bullet: # If enemy bullet still exists
                     self.enemy_bullet = False
@@ -142,8 +142,8 @@ class GameServer:
                 arr1.append(enemy_bullet_message) # This message may be empty
                 arr2.append(enemy_bullet_message)
 
-            response1 = ';'.join(str(x) for x in arr1)
-            response2 = ';'.join(str(x) for x in arr2)
+            response1 = ';'.join(str(x) for x in arr1) + ';'
+            response2 = ';'.join(str(x) for x in arr2) + ';'
 
         else:
 
@@ -159,4 +159,8 @@ class GameServer:
                 response1 = 's'
                 response2 = 's'
 
+        if response1 != '':
+            print("1: " + response1)
+        if response2 != '':
+            print("2: " + response2)
         return response1, response2

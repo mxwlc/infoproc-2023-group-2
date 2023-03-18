@@ -3,9 +3,11 @@ import socket
 class TCPClient:
 
     def __init__(self):
-        self.server_name = '18.133.242.186'
+        self.server_name = 'localhost'
         self.server_port = 5555
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    def connect(self):
         self.clientsocket.connect((self.server_name, self.server_port))
         self.clientsocket.settimeout(0)
     
@@ -13,4 +15,8 @@ class TCPClient:
         self.clientsocket.send(message.encode())
     
     def recv(self):
-        return self.clientsocket.recv(1024).decode()
+        try:
+            response = self.clientsocket.recv(1024).decode()
+            return response
+        except:
+            return ''
