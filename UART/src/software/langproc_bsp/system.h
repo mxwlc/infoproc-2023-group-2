@@ -4,7 +4,7 @@
  * Machine generated for CPU 'cpu' in SOPC Builder design 'nios_project'
  * SOPC Builder design path: ../../nios_project.sopcinfo
  *
- * Generated: Fri Mar 17 14:36:33 GMT 2023
+ * Generated: Sun Mar 19 04:29:25 GMT 2023
  */
 
 /*
@@ -419,7 +419,7 @@
 #define LED_BIT_CLEARING_EDGE_REGISTER 0
 #define LED_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define LED_CAPTURE 0
-#define LED_DATA_WIDTH 10
+#define LED_DATA_WIDTH 4
 #define LED_DO_TEST_BENCH_WIRING 0
 #define LED_DRIVEN_SIM_VALUE 0
 #define LED_EDGE_TYPE "NONE"
