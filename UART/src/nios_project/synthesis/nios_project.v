@@ -16,7 +16,7 @@ module nios_project (
 		output wire [6:0] hex3_external_connection_export,                    //             hex3_external_connection.export
 		output wire [6:0] hex4_external_connection_export,                    //             hex4_external_connection.export
 		output wire [6:0] hex5_external_connection_export,                    //             hex5_external_connection.export
-		output wire [9:0] led_external_connection_export,                     //              led_external_connection.export
+		output wire [3:0] led_external_connection_export,                     //              led_external_connection.export
 		input  wire       reset_reset_n,                                      //                                reset.reset_n
 		input  wire [9:0] switch_external_connection_export                   //           switch_external_connection.export
 	);

@@ -1,14 +1,14 @@
-Fitter Status : Successful - Fri Mar 17 14:35:24 2023
+Fitter Status : Successful - Sun Mar 19 04:24:11 2023
 Quartus Prime Version : 18.0.0 Build 614 04/24/2018 SJ Lite Edition
 Revision Name : LangProcProject_top
 Top-level Entity Name : LangProcProject_top
 Family : MAX 10
 Device : 10M50DAF484C7G
 Timing Models : Final
-Total logic elements : 2,385 / 49,760 ( 5 % )
-    Total combinational functions : 2,203 / 49,760 ( 4 % )
-    Dedicated logic registers : 1,370 / 49,760 ( 3 % )
-Total registers : 1370
+Total logic elements : 2,362 / 49,760 ( 5 % )
+    Total combinational functions : 2,185 / 49,760 ( 4 % )
+    Dedicated logic registers : 1,358 / 49,760 ( 3 % )
+Total registers : 1358
 Total pins : 185 / 360 ( 51 % )
 Total virtual pins : 0
 Total memory bits : 535,552 / 1,677,312 ( 32 % )

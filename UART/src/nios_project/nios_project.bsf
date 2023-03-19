@@ -117,8 +117,8 @@ refer to the applicable agreement for further details.
 	(port
 		(pt 0 480)
 		(output)
-		(text "led_external_connection_export[9..0]" (rect 0 0 145 12)(font "Arial" (font_size 8)))
-		(text "led_external_connection_export[9..0]" (rect 4 469 220 480)(font "Arial" (font_size 8)))
+		(text "led_external_connection_export[3..0]" (rect 0 0 145 12)(font "Arial" (font_size 8)))
+		(text "led_external_connection_export[3..0]" (rect 4 469 220 480)(font "Arial" (font_size 8)))
 		(line (pt 0 480)(pt 304 480)(line_width 3))
 	)
 	(port

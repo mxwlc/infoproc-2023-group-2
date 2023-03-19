@@ -1,5 +1,5 @@
 Flow report for LangProcProject_top
-Fri Mar 17 14:35:36 2023
+Sun Mar 19 04:24:26 2023
 Quartus Prime Version 18.0.0 Build 614 04/24/2018 SJ Lite Edition
 
 
@@ -40,17 +40,17 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Flow Summary                                                                     ;
 +------------------------------------+---------------------------------------------+
-; Flow Status                        ; Successful - Fri Mar 17 14:35:30 2023       ;
+; Flow Status                        ; Successful - Sun Mar 19 04:24:19 2023       ;
 ; Quartus Prime Version              ; 18.0.0 Build 614 04/24/2018 SJ Lite Edition ;
 ; Revision Name                      ; LangProcProject_top                         ;
 ; Top-level Entity Name              ; LangProcProject_top                         ;
 ; Family                             ; MAX 10                                      ;
 ; Device                             ; 10M50DAF484C7G                              ;
 ; Timing Models                      ; Final                                       ;
-; Total logic elements               ; 2,385 / 49,760 ( 5 % )                      ;
-;     Total combinational functions  ; 2,203 / 49,760 ( 4 % )                      ;
-;     Dedicated logic registers      ; 1,370 / 49,760 ( 3 % )                      ;
-; Total registers                    ; 1370                                        ;
+; Total logic elements               ; 2,362 / 49,760 ( 5 % )                      ;
+;     Total combinational functions  ; 2,185 / 49,760 ( 4 % )                      ;
+;     Dedicated logic registers      ; 1,358 / 49,760 ( 3 % )                      ;
+; Total registers                    ; 1358                                        ;
 ; Total pins                         ; 185 / 360 ( 51 % )                          ;
 ; Total virtual pins                 ; 0                                           ;
 ; Total memory bits                  ; 535,552 / 1,677,312 ( 32 % )                ;
@@ -66,7 +66,7 @@ refer to the applicable agreement for further details.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 03/17/2023 14:33:44 ;
+; Start date & time ; 03/19/2023 04:22:45 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; LangProcProject_top ;
 +-------------------+---------------------+
@@ -77,7 +77,7 @@ refer to the applicable agreement for further details.
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
 ; Assignment Name                     ; Value                                  ; Default Value ; Entity Name ; Section Id ;
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
-; COMPILER_SIGNATURE_ID               ; 242174578488910.167906362404256        ; --            ; --          ; --         ;
+; COMPILER_SIGNATURE_ID               ; 242174578488910.167919976507268        ; --            ; --          ; --         ;
 ; MAX_CORE_JUNCTION_TEMP              ; 85                                     ; --            ; --          ; --         ;
 ; MIN_CORE_JUNCTION_TEMP              ; 0                                      ; --            ; --          ; --         ;
 ; PARTITION_COLOR                     ; -- (Not supported for targeted family) ; --            ; --          ; Top        ;
@@ -93,11 +93,11 @@ refer to the applicable agreement for further details.
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name          ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis ; 00:01:15     ; 1.0                     ; 4988 MB             ; 00:00:39                           ;
-; Fitter               ; 00:00:22     ; 1.6                     ; 6659 MB             ; 00:00:17                           ;
-; Assembler            ; 00:00:03     ; 1.0                     ; 4698 MB             ; 00:00:02                           ;
-; Timing Analyzer      ; 00:00:05     ; 2.3                     ; 5006 MB             ; 00:00:06                           ;
-; Total                ; 00:01:45     ; --                      ; --                  ; 00:01:04                           ;
+; Analysis & Synthesis ; 00:01:03     ; 1.0                     ; 4983 MB             ; 00:00:41                           ;
+; Fitter               ; 00:00:19     ; 1.5                     ; 6662 MB             ; 00:00:19                           ;
+; Assembler            ; 00:00:04     ; 1.0                     ; 4695 MB             ; 00:00:01                           ;
+; Timing Analyzer      ; 00:00:05     ; 2.4                     ; 5015 MB             ; 00:00:06                           ;
+; Total                ; 00:01:31     ; --                      ; --                  ; 00:01:07                           ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
