@@ -27,7 +27,7 @@ class FPGAController:
         :param argument: Argument to pass
         :return: Data returned from the FPGA
         """
-        self._jtag_uart.write(f"{command} {argument}".encode())
+        self._jtag_uart.write(f"{command} {argument}\n".encode())
         return self._jtag_uart.read().decode()
     
     def read_inputs(self) -> Inputs:
