@@ -42,7 +42,6 @@ int read_chars() {
 	while (running) {									// Keep running until QUITLETTER is encountered
 		prevLetter = alt_getchar();							// Extract the first character (and create a hold until one arrives)
 		prevLetter = get_input(prevLetter, &length, text, &running);		// Process input text
-		alt_printf("Text: %s\n\n", text);
 		switch (text[0]){
 
 		case 'r':
