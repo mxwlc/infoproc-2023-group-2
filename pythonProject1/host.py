@@ -9,10 +9,10 @@ _BUTTON_TRANSLATE = {
 
 class Inputs:
 
-    def __init__(self, accelerometer: str, buttons: str, switches: str):
+    def __init__(self, buttons: str, switches: str, accelerometer: str):
         self.accelerometer: str = accelerometer
         self.buttons: tuple[bool] = _BUTTON_TRANSLATE.get(buttons, (False, False))
-        self.switches: int = int(switches)
+        self.switches: str = switches
         
 
 class FPGAController:
@@ -35,7 +35,7 @@ class FPGAController:
         Reads inputs for the FPGA
         :return: Inputs class for the data
         """
-        return Inputs(*self._send_command("r").split("|"))
+        return Inputs(*list(self._send_command("r").split("|")))
     
     def update_leds(self, num: int) -> None:
         """
