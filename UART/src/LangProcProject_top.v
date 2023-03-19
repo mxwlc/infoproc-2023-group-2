@@ -57,6 +57,10 @@ module LangProcProject_top(
 	inout 		    [35:0]		GPIO
 );
 
+	LED_Decoder l0 (
+		.in (LED_i),
+		.out (LEDR[9:0])
+	);
 
 
 	
@@ -68,7 +72,7 @@ module LangProcProject_top(
 		.accelerometer_spi_external_interface_I2C_SCLK      (GSENSOR_SCLK),     //    .I2C_SCLK
 		.accelerometer_spi_external_interface_G_SENSOR_CS_N (GSENSOR_CS_N), 		//    .G_SENSOR_CS_N
 		.accelerometer_spi_external_interface_G_SENSOR_INT  (GSENSOR_INT[1]),	//    .G_SENSOR_INT0
-		.led_external_connection_export                     (LEDR[9:0]),        //    led_external_connection.export
+		.led_external_connection_export                     (LED_i),        //    led_external_connection.export
 		.switch_external_connection_export                  (SW[9:0]),          //    switch_external_connection.export
 		.hex0_external_connection_export                    (HEX0),             //    hex0_external_connection.export
 		.hex1_external_connection_export                    (HEX1),             //    hex1_external_connection.export
