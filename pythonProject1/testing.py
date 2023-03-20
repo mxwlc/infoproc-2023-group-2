@@ -264,6 +264,16 @@ def parse_ingame():
             player2_bulletX = Player2.X
             Player2.shoot(player2_bulletX, player2_bulletY)
             print('Other player created bullet.')
+        elif m == 'm': # Other player bullet went out of bounds
+            player2_bulletY = 500
+            Player2.Bullet_State = "ready"
+            print('Other player bullet went out of bounds.')
+        elif m[0] == 'b': # Other player bullet hit base
+            player2_bulletY = 500
+            Player2.Bullet_State = "ready"
+            base_id = int(m[1:])
+            bunkers[base_id].lose_health()
+            print('Other player bullet hit base ' + m[1:] + '.')
         elif m[0] == 'w': # Own player hits enemy with bullet
             player1_bulletY = 500
             Player1.Bullet_State = "ready"
@@ -432,20 +442,28 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                 bunkers[i].lose_health()
                 enemy_bulletY = 1000
                 # remove bunker from screen
+            if isCollision(bunkers[i].X, bunkers[i].Y, player1_bulletX, player1_bulletY):
+                player1_bulletY = 500
+                Player1.Bullet_State = 'ready'
+                bunkers[i].lose_health()
+                responses.append('b' + str(i))
+                print('Bullet collided with base ' + str(i) + '.')
 
         # player1_bullet movement
 
         if player1_bulletY <= -5: #when bullet out of scope, player can shoot again
             player1_bulletY = 500
             Player1.Bullet_State = "ready"
+            responses.append('m')
+            print('Bullet out of bounds.')
 
         if Player1.Bullet_State == "fire": 
             Player1.shoot(player1_bulletX, player1_bulletY)
             player1_bulletY -= bulletY_change
 
-        if player2_bulletY <= -5:
-            player2_bulletY = 500
-            Player2.Bullet_State = "ready"
+        # if player2_bulletY <= -5:
+        #     player2_bulletY = 500
+        #     Player2.Bullet_State = "ready"
 
         if Player2.Bullet_State == "fire":
             Player2.shoot(player2_bulletX, player2_bulletY)

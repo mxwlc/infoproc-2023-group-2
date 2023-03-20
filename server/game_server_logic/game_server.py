@@ -65,6 +65,14 @@ class GameServer:
                 relay_messages.append(m)
                 self.player_bullets[client_index] = True
                 print('Player ' + str(client_index + 1) + ' created bullet.')
+            elif m == 'm': # Player bullet out of bounds
+                relay_messages.append(m)
+                self.player_bullets[client_index] = False
+                print('Player ' + str(client_index + 1) + ' bullet went out of bounds.')
+            elif m[0] == 'b': # Player bullet hit base
+                relay_messages.append(m)
+                self.player_bullets[client_index] = False
+                print('Player ' + str(client_index + 1) + ' bullet hit base ' + m[1:] + '.')
             elif m[0] == 'e': # Own enemy hit
                 enemy_id = int(m[1:])
                 if self.player_bullets[client_index] and self.remaining_enemies[enemy_id]: # If bullet still exists and enemy is still alive
