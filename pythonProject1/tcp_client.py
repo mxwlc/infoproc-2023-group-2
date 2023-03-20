@@ -52,16 +52,11 @@ class TCPClient:
     def listen_for_peer(self):
         welcome_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         welcome_socket.bind(('0.0.0.0', self.peer_port))
-        welcome_socket.settimeout(0)
         welcome_socket.listen(1)
         print('Listening for peer...')
-        while True:
-            try:
-                self.peer_socket, address = welcome_socket.accept()
-                break
-            except:
-                pass
+        self.peer_socket, address = welcome_socket.accept()
         print('Found peer.')
+        self.peer_socket.settimeout(0)
         welcome_socket.close()
     
     def connect_to_peer(self, ips):
