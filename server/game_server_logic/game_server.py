@@ -89,6 +89,7 @@ class GameServer:
                 self.player_score[0] = int(pair[0])
                 self.player_score[1] = int(pair[1])
                 self.end_game()
+                break # Don't need to process any more messages after game ends
             else:
                 print("Error: received in-game message " + m)
     
@@ -152,9 +153,10 @@ class GameServer:
             ## Process messages from clients and take direct action
             arr1, arr2 = [], []
             self.parse_ingame(0, raw_message1, arr1, arr2)
-            self.parse_ingame(1, raw_message2, arr2, arr1)
 
             if self.game_in_progress: # Check again since parsing messages may have ended the game
+
+                self.parse_ingame(1, raw_message2, arr2, arr1)
 
                 ## Update time
                 self.update_time()
