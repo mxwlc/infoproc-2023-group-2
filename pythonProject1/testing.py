@@ -666,15 +666,15 @@ def input_id():
                         while True:
                             response = tcp_client.recv_server()
                             if response != '' and response[0] == 's':
-                                pair = response[2:].split(':')
-                                player2_name = pair[0]
+                                triple = response[2:].split(':')
+                                player2_name = triple[0]
                                 global sync_var, turn_to_shoot
                                 if response[1] == 'l':
                                     tcp_client.listen_for_peer()
                                     sync_var = True
                                     turn_to_shoot = True
                                 elif response[1] == 'c':
-                                    tcp_client.connect_to_peer(pair[1])
+                                    tcp_client.connect_to_peer(triple[1:])
                                     sync_var = False
                                     turn_to_shoot = False
                                 else:

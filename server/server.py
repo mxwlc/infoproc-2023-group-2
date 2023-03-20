@@ -14,7 +14,8 @@ game_server = GameServer()
 
 # Wait for two clients to connect
 clients = []
-ips = []
+public_ips = []
+private_ips = []
 
 def check_connection(msg1, msg2):
     client1_disc = False
@@ -29,13 +30,16 @@ def check_connection(msg1, msg2):
         print('Client 2 disconnected.')
     if client1_disc and client2_disc:
         clients.clear()
-        ips.clear()
+        public_ips.clear()
+        private_ips.clear()
     elif client1_disc:
         clients.pop(0)
-        ips.pop(0)
+        public_ips.pop(0)
+        private_ips.pop(0)
     elif client2_disc:
         clients.pop(1)
-        ips.pop(1)
+        public_ips.pop(1)
+        private_ips.pop(1)
     return client1_disc or client2_disc
 
 while True:
@@ -54,14 +58,16 @@ while True:
 
         try:
             client, address = tcpserver.accept()
+            local_ip = client.recv(1024).decode()
+            private_ips.append(local_ip)
             client.settimeout(0)
             clients.append(client)
-            ips.append(address[0])
+            public_ips.append(address[0])
             print(f"Client {len(clients)} connected from {address}.")
         except:
             continue
 
-    game_server.init_clients(ips)
+    game_server.init_clients(public_ips, private_ips)
 
     # Start the game loop
     while True:

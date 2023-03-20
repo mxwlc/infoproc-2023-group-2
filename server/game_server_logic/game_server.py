@@ -21,8 +21,9 @@ class GameServer:
             pass
         self.reset_game_state()
 
-    def init_clients(self, ips):
-        self.player_addr = ips
+    def init_clients(self, public_ips, private_ips):
+        self.public_ips = public_ips
+        self.private_ips = private_ips
 
     def start_game(self):
         self.game_in_progress = True
@@ -118,7 +119,7 @@ class GameServer:
             if self.player_ready[0] and self.player_ready[1]:
                 self.start_game()
                 response1 = 'sl' + self.player_name[1]
-                response2 = 'sc' + self.player_name[0] + ':' + self.player_addr[0]
+                response2 = 'sc' + self.player_name[0] + ':' + self.public_ips[0] + ':' + self.private_ips[0]
         
         if response1 != '' or response2 != '':
             print('Sent: 1 = ' + response1 + ' 2 = ' + response2)

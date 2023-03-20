@@ -3,7 +3,7 @@ import socket
 class TCPClient:
 
     def __init__(self):
-        self.server_name = '52.91.132.54'
+        self.server_name = '100.26.250.2'
         self.server_port = 5555
         self.peer_port = 5556
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -15,6 +15,7 @@ class TCPClient:
     
     def connect_to_server(self):
         self.clientsocket.connect((self.server_name, self.server_port))
+        self.clientsocket.send(socket.gethostbyname(socket.gethostname()).encode())
         self.clientsocket.settimeout(0)
     
     def listen_for_peer(self):
@@ -30,12 +31,17 @@ class TCPClient:
                 pass
         welcome_socket.close()
     
-    def connect_to_peer(self, ip):
-        print(ip)
+    def connect_to_peer(self, ips):
         self.peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.peer_socket.connect(('localhost', self.peer_port))
-        # TODO find a way to connect via the parameter ip.
-        # The issue likely has something to do with the difference between public and private IP addresses.
+        # TODO see if there is a better way of connecting to peers on the same network.
+        # Currently, it tries to connect via both the public and private ips, which doesn't
+        # feel like the best solution.
+        try:
+            self.peer_socket.connect((ips[0], self.peer_port))
+            # Try public IP first
+        except:
+            self.peer_socket.connect((ips[1], self.peer_port))
+            # If public IP doesn't work, try private IP
         self.peer_socket.settimeout(0)
 
     def send_server(self, message):
