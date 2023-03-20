@@ -547,7 +547,12 @@ def leaderboard():
         return_text = fontss.render("Press 'Enter' to continue", True, (255, 255, 255))
         screen.blit(return_text, (550, 550))
 
-        # TODO display names and scores on the screen
+        # Display names and scores on the screen
+        for pair in pairs:
+            name_text = font.render(pair[0], True, 'white')
+            score_text = font.render(pair[1], True, 'white')
+            screen.blit(name_text, (200, 150 + (pair*30)))
+            screen.blit(score_text, (500, 150 + (pair*30)))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
