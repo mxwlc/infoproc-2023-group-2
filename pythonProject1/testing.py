@@ -545,7 +545,21 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         
         return_peer(peer_responses)
 
-
+def waiting():
+    pygame.display.set_caption('Wait for player')
+    while True:
+        screen.blit(menu_bg, (0, 0))
+        return_text = font.render("Please wait for the other player to join", True, (255, 255, 255))
+        screen.blit(return_text, (width/2-return_text.get_width()/2, 250))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    start_menu()
+        pygame.display.update()
+        
 # to be modified
 def leaderboard():
     pygame.display.set_caption('Leaderboard')
