@@ -14,8 +14,11 @@ class TCPClient:
         self.peer_socket.close()
     
     def connect_to_server(self):
+        print('Connecting to server...')
         self.clientsocket.connect((self.server_name, self.server_port))
+        print('Connected to server.')
         self.clientsocket.send(socket.gethostbyname(socket.gethostname()).encode())
+        print('Sent private IP.')
         self.clientsocket.settimeout(0)
     
     def listen_for_peer(self):
@@ -23,12 +26,14 @@ class TCPClient:
         welcome_socket.bind(('0.0.0.0', self.peer_port))
         welcome_socket.settimeout(0)
         welcome_socket.listen(1)
+        print('Listening for peer...')
         while True:
             try:
                 self.peer_socket, address = welcome_socket.accept()
                 break
             except:
                 pass
+        print('Found peer.')
         welcome_socket.close()
     
     def connect_to_peer(self, ips):
@@ -37,11 +42,14 @@ class TCPClient:
         # Currently, it tries to connect via both the public and private ips, which doesn't
         # feel like the best solution.
         try:
+            print('Searching for peer via public IP...')
             self.peer_socket.connect((ips[0], self.peer_port))
             # Try public IP first
         except:
+            print('Searching for peer via private IP...')
             self.peer_socket.connect((ips[1], self.peer_port))
             # If public IP doesn't work, try private IP
+        print('Found peer.')
         self.peer_socket.settimeout(0)
 
     def send_server(self, message):

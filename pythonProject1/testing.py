@@ -246,8 +246,10 @@ def EnemyLevelUp():  # reset positions of enemies
         enemyY_change.append(20)
 
 
-sync_var = True
+sync_var = True # A variable used to synchronise events between peers.
 turn_to_shoot = True # Whether it's this client's turn to shoot an enemy bullet.
+shoot_now = True # Whether we should shoot an enemy bullet now.
+shoot_enemy_id = -1 # ID of enemy that should should now.
 hit_enemy_id = -1 # ID of enemy that was hit by this player
 was_hit = False
 
@@ -263,12 +265,14 @@ def parse_peer(responses):
         elif m == 'c': # Other player bullet creation
             player2_bulletX = Player2.X
             Player2.shoot(player2_bulletX, player2_bulletY)
+            print('Other player shot bullet.')
         elif m[0] == 'e': # Enemy creates bullet
             enemy_id = int(m[1:])
             enemy_bulletX = enemyX[enemy_id]
             enemy_bulletY = enemyY[enemy_id]
             enemy_attack(enemy_bulletX, enemy_bulletY)
             turn_to_shoot = True
+            print('From other client: enemy ' + str(enemy_id) + ' shot bullet.')
         elif m[0] == 'b': # Registered collision between enemy and player bullet
             enemy_id = int(m[1:])
             if enemy_id == hit_enemy_id:
@@ -281,6 +285,7 @@ def parse_peer(responses):
                     enemyY[enemy_id] = -1000
                     unavailable.append(enemy_id)
                     killed += 1
+                    print('Decided: own player hit enemy.')
                 else: # Other player hits enemy with bullet
                     player2_bulletY = 500
                     Player2.Bullet_State = "ready"
@@ -290,6 +295,7 @@ def parse_peer(responses):
                     enemyY[enemy_id] = -1000
                     unavailable.append(enemy_id)
                     killed += 1
+                    print('Decided: other player hit enemy.')
                 sync_var = not sync_var
             else:
                 player2_bulletY = 500
@@ -301,6 +307,7 @@ def parse_peer(responses):
                 unavailable.append(enemy_id)
                 killed += 1
                 responses.append('w')
+                print('Other player hit enemy.')
         elif m == 'w': # Own player hits enemy with bullet
             player1_bulletY = 500
             Player1.Bullet_State = "ready"
@@ -309,26 +316,31 @@ def parse_peer(responses):
             enemyY[hit_enemy_id] = -1000
             unavailable.append(hit_enemy_id)
             killed += 1
+            print('Own player hit enemy.')
         elif m == 'p': # Register collision between player and enemy bullet
             if was_hit:
                 if sync_var: # Own player hit
                     enemy_bulletY = 1000
                     Player1.lose_lives()
+                    print('Decided: own player got hit.')
                 else: # Other player hit
                     enemy_bulletY = 1000
                     Player2.lose_lives()
+                    print('Decided: other player got hit.')
                 was_hit = False
                 sync_var = not sync_var
             else:
                 enemy_bulletY = 1000
                 Player2.lose_lives()
                 responses.append('h')
+                print('Other player got hit.')
         elif m == 'h': # Own player gets hit with enemy bullet
             enemy_bulletY = 1000
             Player1.lose_lives()
             was_hit = False
+            print('Own player got hit.')
         else:
-            print("Error")
+            print("Error: received message " + m)
 
 def return_peer(responses):
     if len(responses) != 0:
@@ -379,6 +391,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                         player1_bulletX = Player1.X
                         Player1.shoot(player1_bulletX, player1_bulletY)
                         peer_responses.append('c')
+                        print('Shot bullet.')
                 # if event.key == pygame.K_TAB:
                 #     if Player2.Bullet_State == "ready":
                 #         player2_bulletX = Player2.X
@@ -398,17 +411,22 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
 
         peer_responses.append(str(Player1.X))
 
+        # Delay enemy shooting by one cycle to help with synchronisation
+        if shoot_now:
+            print('Shoot from enemy ' + str(shoot_enemy_id))
+            enemy_bulletX = enemyX[shoot_enemy_id]
+            enemy_bulletY = enemyY[shoot_enemy_id]
+            enemy_attack(enemy_bulletX, enemy_bulletY)
+            shoot_now = False
+        
         # Choose random enemy to shoot
-        if random.randint(0, 100) < 10 and turn_to_shoot:
-            if enemy_bullet_state == "ready":
-                rand_num = random.randint(0, 43)
-                while rand_num in unavailable:
-                    rand_num = random.randint(0, 43)  # the enemy corresponfing to that number will shoot
-                enemy_bulletX = enemyX[rand_num]
-                enemy_bulletY = enemyY[rand_num]
-                enemy_attack(enemy_bulletX, enemy_bulletY)
-                peer_responses.append('e' + str(rand_num))
-                turn_to_shoot = False
+        if random.randint(0, 100) < 10 and turn_to_shoot and enemy_bullet_state == 'ready':
+            shoot_now = True
+            turn_to_shoot = False
+            shoot_enemy_id = random.randint(0, 43)
+            while shoot_enemy_id in unavailable:
+                shoot_enemy_id = random.randint(0, 43)  # the enemy corresponfing to that number will shoot
+            peer_responses.append('e' + str(shoot_enemy_id))
                 
         
         # enemy movement
@@ -429,6 +447,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
             if over:
                 # for j in range(num_of_enemies):
                 #     enemyY[j] = -2000
+                print('Game ended.')
                 tcp_client.send_server('g' + str(Player1.Score) + ':' + str(Player2.Score)) # End game immediately
                 return_peer(peer_responses) # Flush all remaining peer repsonses
 
@@ -457,6 +476,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
             if isCollision(enemyX[i], enemyY[i], player1_bulletX, player1_bulletY) and i != hit_enemy_id: #for player1
                 peer_responses.append('b' + str(i))
                 hit_enemy_id = i
+                print('Detected: player hit enemy.')
             # if isCollision(enemyX[i], enemyY[i], player2_bulletX, player2_bulletY): #for player2
 
             if killed == num_of_enemies:
@@ -523,11 +543,13 @@ def leaderboard():
     pygame.display.set_caption('Leaderboard')
 
     tcp_client.send_server('l')
+    print('Fetching leaderboard...')
     response = ''
     while True:
         response = tcp_client.recv_server()
         if response != '':
             break
+    print('Received leaderboard.')
     
     raw_pairs = response.split('/')
     pairs = []
@@ -663,6 +685,7 @@ def input_id():
                     if position == [400, 410]:
                         global player1_name
                         player1_name = user1_text
+                        print('Contacting server to start game...')
                         tcp_client.send_server('r' + player1_name)
                         # For now, assume that player1_name is the name of this client's player.
                         global player2_name
@@ -671,20 +694,25 @@ def input_id():
                         while True:
                             response = tcp_client.recv_server()
                             if response != '' and response[0] == 's':
+                                print('Response received.')
                                 triple = response[2:].split(':')
                                 player2_name = triple[0]
                                 global sync_var, turn_to_shoot
                                 if response[1] == 'l':
+                                    print('Starting game as listener.')
                                     tcp_client.listen_for_peer()
                                     sync_var = True
                                     turn_to_shoot = True
                                 elif response[1] == 'c':
+                                    print('Starting game as connector.')
                                     tcp_client.connect_to_peer(triple[1:])
                                     sync_var = False
                                     turn_to_shoot = False
                                 else:
                                     print('Error: received message ' + response)
                                 break
+                            else:
+                                print('Error: received response' + response)
                         play()
                     if position == [700, 500]:
                         start_menu()

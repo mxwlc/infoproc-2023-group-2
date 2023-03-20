@@ -11,10 +11,12 @@ class GameServer:
         self.player_name = ['', '']
         self.player_score = [0, 0]
         self.game_in_progress = False
+        print('Reset game state.')
 
     def __init__(self):
         try:
             create_leaderboard()
+            print('Created new leaderboard.')
             # Although create_leaderboard does not need to be called every time a new game instance is started,
             # it makes things easier to do it this way and has very little extra cost.
         except:
@@ -29,13 +31,13 @@ class GameServer:
         self.game_in_progress = True
         self.game_time = time.time()
         self.elapsed_time = 0
+        print('Started game.')
     
     def end_game(self):
-        print(self.player_name)
-        print(self.player_score)
         for i in range(2):
             update_leaderboard(self.player_name[i], self.player_score[i])
         self.reset_game_state()
+        print('Ended game.')
     
     # Parses messages if the game is in progress.
     def parse_ingame(self, client_index, m):
