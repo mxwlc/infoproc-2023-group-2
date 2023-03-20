@@ -252,6 +252,9 @@ shoot_now = True # Whether we should shoot an enemy bullet now.
 shoot_enemy_id = -1 # ID of enemy that should should now.
 hit_enemy_id = -1 # ID of enemy that was hit by this player
 was_hit = False
+rtt = 0 # Round trip time between peers.
+frame_delay = 0 # rtt -> frame delay
+fps = 60
 
 def parse_peer(responses):
     messages = tcp_client.recv_peer().split(';')
@@ -350,15 +353,15 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
     pygame.display.set_caption('Space Invaders')
     # add fps to synchronise the game on different devices
     clock = pygame.time.Clock()
-    fps = 60
     NewGameReset()
     EnemyLevelUp()
     # Game Loop
     global player1X_change, player2X_change, enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY, player2_bulletY, killed, unavailable, enemy_vel
-    global hit_enemy_id, was_hit, sync_var, turn_to_shoot, shoot_now, shoot_enemy_id
+    global hit_enemy_id, was_hit, sync_var, turn_to_shoot, shoot_now, shoot_enemy_id, fps, rtt, frame_delay
     running = True
     over = False
     I_Won = False
+    enemy_shoot_counter = 0
 
     while running:
         # RGB Red, Green, Blue color
@@ -412,12 +415,17 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         peer_responses.append(str(Player1.X))
 
         # Delay enemy shooting by one cycle to help with synchronisation
+        # + number in frame_delay (due to RTT)
         if shoot_now:
-            print('Shoot from enemy ' + str(shoot_enemy_id) + '.')
-            enemy_bulletX = enemyX[shoot_enemy_id]
-            enemy_bulletY = enemyY[shoot_enemy_id]
-            enemy_attack(enemy_bulletX, enemy_bulletY)
-            shoot_now = False
+            if enemy_shoot_counter < frame_delay:
+                enemy_shoot_counter += 1
+            else:
+                print('Shoot from enemy ' + str(shoot_enemy_id) + '.')
+                enemy_bulletX = enemyX[shoot_enemy_id]
+                enemy_bulletY = enemyY[shoot_enemy_id]
+                enemy_attack(enemy_bulletX, enemy_bulletY)
+                shoot_now = False
+                enemy_shoot_counter = 0
         
         # Choose random enemy to shoot
         if random.randint(0, 100) < 10 and turn_to_shoot and enemy_bullet_state == 'ready':
@@ -697,19 +705,24 @@ def input_id():
                                 print('Response received.')
                                 triple = response[2:].split(':')
                                 player2_name = triple[0]
-                                global sync_var, turn_to_shoot
+                                global sync_var, turn_to_shoot, rtt, frame_delay, fps
                                 if response[1] == 'l':
                                     print('Starting game as listener.')
                                     tcp_client.listen_for_peer()
+                                    rtt = tcp_client.transmit_RTT()
+                                    print('RTT calculated as ' + str(rtt) + ' s.')
                                     sync_var = True
                                     turn_to_shoot = True
                                 elif response[1] == 'c':
                                     print('Starting game as connector.')
                                     tcp_client.connect_to_peer(triple[1:])
+                                    rtt = tcp_client.receive_RTT()
+                                    print('RTT calculated as ' + str(rtt) + ' s.')
                                     sync_var = False
                                     turn_to_shoot = False
                                 else:
                                     print('Error: received message ' + response)
+                                frame_delay = round(rtt * fps)
                                 break
                             else:
                                 print('Error: received response' + response)

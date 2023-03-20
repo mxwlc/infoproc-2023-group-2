@@ -1,9 +1,12 @@
 import socket
+import time
+
+N = 10 # The number of iterations of RTT that are calculated.
 
 class TCPClient:
 
     def __init__(self):
-        self.server_name = '100.26.250.2'
+        self.server_name = '54.89.181.213'
         self.server_port = 5555
         self.peer_port = 5556
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,6 +15,31 @@ class TCPClient:
     def close(self):
         self.clientsocket.close()
         self.peer_socket.close()
+    
+    def transmit_RTT(self):
+        start = time.time()
+        for i in range(N):
+            self.send_peer('t')
+            while True:
+                response = self.recv_peer() # Wait until a response is received
+                if response == 't':
+                    break
+        end = time.time()
+        delta = (end - start) / N
+        self.send_peer('t' + str(delta))
+        return delta
+
+    def receive_RTT(self):
+        i = 0
+        while i < N:
+            response = self.recv_peer()
+            if response == 't':
+                self.send_peer('t')
+                i += 1
+        while True:
+            response = self.recv_peer()
+            if response != '' and response[0] == 't':
+                return float(response[1:])
     
     def connect_to_server(self):
         print('Connecting to server...')
