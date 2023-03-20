@@ -355,7 +355,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
     EnemyLevelUp()
     # Game Loop
     global player1X_change, player2X_change, enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY, player2_bulletY, killed, unavailable, enemy_vel
-    global hit_enemy_id, was_hit, sync_var, turn_to_shoot
+    global hit_enemy_id, was_hit, sync_var, turn_to_shoot, shoot_now, shoot_enemy_id
     running = True
     over = False
     I_Won = False
@@ -413,7 +413,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
 
         # Delay enemy shooting by one cycle to help with synchronisation
         if shoot_now:
-            print('Shoot from enemy ' + str(shoot_enemy_id))
+            print('Shoot from enemy ' + str(shoot_enemy_id) + '.')
             enemy_bulletX = enemyX[shoot_enemy_id]
             enemy_bulletY = enemyY[shoot_enemy_id]
             enemy_attack(enemy_bulletX, enemy_bulletY)

@@ -63,7 +63,7 @@ while True:
             client.settimeout(0)
             clients.append(client)
             public_ips.append(address[0])
-            print(f"Client {len(clients)} connected from public IP {address}, private IP {local_ip}.")
+            print(f"Client {len(clients)} connected from {address}, private IP = {local_ip}.")
         except:
             continue
 
