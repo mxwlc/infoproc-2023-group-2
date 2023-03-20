@@ -10,6 +10,7 @@ import atexit
 from tcp_client import *
 
 SCORE_INCREMENT = 10
+PLAYER_LIVES = 50
 
 pygame.init()
 width = 800
@@ -110,7 +111,7 @@ enemy_bullet_state = "ready"
 player1_name = 'Player1'
 player1Img = pygame.image.load(os.path.join("assets", "player.png"))
 player1X_change = 0 
-Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
+Player1 = Player(300, 500, PLAYER_LIVES, 0, "ready", bulletImg)
 score_value1 = Player1.Score  # player 1 score
 live_value1 = Player1.Lives
 
@@ -118,7 +119,7 @@ live_value1 = Player1.Lives
 player2_name = 'Player2'
 player2Img = pygame.image.load(os.path.join("assets", "player2.png"))
 player2X_change = 0
-Player2 = Player(500, 500, 5, 0, "ready", bulletImg)
+Player2 = Player(500, 500, PLAYER_LIVES, 0, "ready", bulletImg)
 score_value2 = Player2.Score
 live_value2 = Player2.Lives
 
