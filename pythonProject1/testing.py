@@ -423,8 +423,9 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
             # if isCollision(enemyX[i], enemyY[i], player2_bulletX, player2_bulletY): #for player2
 
             if killed == num_of_enemies:
-                EnemyLevelUp()
                 enemy_vel += 1
+                EnemyLevelUp()
+                
 
         for i in range(4):
             if isCollision(bunkers[i].X, bunkers[i].Y, enemy_bulletX, enemy_bulletY):
