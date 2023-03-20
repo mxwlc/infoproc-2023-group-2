@@ -578,11 +578,12 @@ def leaderboard():
         screen.blit(return_text, (550, 550))
 
         # Display names and scores on the screen
-        for pair in pairs:
+        for i in range(len(pairs)):
+            pair = pairs[i]
             name_text = font.render(pair[0], True, 'white')
             score_text = font.render(pair[1], True, 'white')
-            screen.blit(name_text, (200, 150 + (pair*30)))
-            screen.blit(score_text, (500, 150 + (pair*30)))
+            screen.blit(name_text, (200, 150 + (i*30)))
+            screen.blit(score_text, (500, 150 + (i*30)))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
