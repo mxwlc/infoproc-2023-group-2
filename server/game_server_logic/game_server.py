@@ -14,6 +14,7 @@ class GameServer:
         self.player_ready = [False, False]
         self.player_name = ['', '']
         self.player_score = [0, 0]
+        self.player_bullets = [False, False] # Whether or not there exists a bullet for each player.
         self.game_in_progress = False
         self.remaining_enemies = []
         for i in range(NUM_ENEMIES):
@@ -62,10 +63,12 @@ class GameServer:
                     sent_position = True
             elif m == 'c': # Player bullet creation
                 relay_messages.append(m)
+                self.player_bullets[client_index] = True
                 print('Player ' + str(client_index + 1) + ' created bullet.')
             elif m[0] == 'e': # Own enemy hit
                 enemy_id = int(m[1:])
-                if self.remaining_enemies[enemy_id]: # If enemy is still alive
+                if self.player_bullets[client_index] and self.remaining_enemies[enemy_id]: # If bullet still exists and enemy is still alive
+                    self.player_bullets[client_index] = False
                     self.remaining_enemies[enemy_id] = False
                     self.killed_enemies += 1
                     self.player_score[client_index] += SCORE_INCREMENT
