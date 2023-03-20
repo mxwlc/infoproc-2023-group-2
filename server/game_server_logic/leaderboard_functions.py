@@ -51,7 +51,7 @@ def update_score(name, score, response, dynamodb):
 # 3. Player does exist in leaderboard, and their new score is higher.
 def update_leaderboard(name, score):
     print('name: ' + name + ' score: ' + str(score))
-    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
     response = get_player(name, dynamodb)
     if response == None:
         new_player(name, score, dynamodb)
@@ -59,7 +59,7 @@ def update_leaderboard(name, score):
         update_score(name, score, response, dynamodb)
 
 def get_leaderboard():
-    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
     
     table = dynamodb.Table('Leaderboard')
     response = table.query(

@@ -9,7 +9,7 @@ import time
 def clear_leaderboard():
 
     try:
-        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+        dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
         table = dynamodb.Table('Leaderboard')
         table.delete()
         print('Table deleted.')

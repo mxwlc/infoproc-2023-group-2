@@ -2,20 +2,18 @@ import socket
 
 from game_server_logic.game_server import *
 
+TIMEOUT = 0
+
 port = 5555
 tcpserver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcpserver.bind(('0.0.0.0', port))
-
-tcpserver.settimeout(0)
-
 tcpserver.listen(2)
 
 game_server = GameServer()
 
 # Wait for two clients to connect
 clients = []
-public_ips = []
-private_ips = []
+ips = []
 
 def check_connection(msg1, msg2):
     client1_disc = False
@@ -30,16 +28,13 @@ def check_connection(msg1, msg2):
         print('Client 2 disconnected.')
     if client1_disc and client2_disc:
         clients.clear()
-        public_ips.clear()
-        private_ips.clear()
+        ips.clear()
     elif client1_disc:
         clients.pop(0)
-        public_ips.pop(0)
-        private_ips.pop(0)
+        ips.pop(0)
     elif client2_disc:
         clients.pop(1)
-        public_ips.pop(1)
-        private_ips.pop(1)
+        ips.pop(1)
     return client1_disc or client2_disc
 
 while True:
@@ -56,18 +51,11 @@ while True:
                 pass
             check_connection(msg, '')
 
-        try:
-            client, address = tcpserver.accept()
-            local_ip = client.recv(1024).decode()
-            private_ips.append(local_ip)
-            client.settimeout(0)
-            clients.append(client)
-            public_ips.append(address[0])
-            print(f"Client {len(clients)} connected from {address}, private IP = {local_ip}.")
-        except:
-            continue
-
-    game_server.init_clients(public_ips, private_ips)
+        client, address = tcpserver.accept()
+        client.settimeout(TIMEOUT)
+        clients.append(client)
+        ips.append(address[0])
+        print(f"Client {len(clients)} connected from {address}.")
 
     # Start the game loop
     while True:
