@@ -214,11 +214,11 @@ def NewGameReset(): #resets all global variables, new game
     hit_enemy_id = -1
     was_hit = False
     player1X_change = 0
-    Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
+    Player1 = Player(300, 500, PLAYER_LIVES, 0, "ready", bulletImg)
     score_value1 = Player1.Score
     live_value1 = Player1.Lives
     player2X_change = 0
-    Player2 = Player(500, 500, 5, 0, "ready", bulletImg)
+    Player2 = Player(500, 500, PLAYER_LIVES, 0, "ready", bulletImg)
     score_value2 = Player2.Score
     live_value2 = Player2.Lives
     enemy_vel = 1
