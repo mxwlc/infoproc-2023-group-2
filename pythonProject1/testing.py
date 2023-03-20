@@ -490,7 +490,7 @@ def start_menu():  # Todo: change input method to FPGA input
                 pygame.quit()
                 sys.exit()
             if menu_event.type == pygame.KEYDOWN:
-                if menu_event.key == pygame.K_RETURN:
+                if menu_event.key == pygame.K_SPACE:
                     if position[1] == 225:  # select play
                         input_id()
                     if position[1] == 350:  # select leaderboard
@@ -498,12 +498,12 @@ def start_menu():  # Todo: change input method to FPGA input
                     if position[1] == 475:  # select quit
                         pygame.quit()
                         sys.exit()
-                if menu_event.key == pygame.K_UP:
+                if menu_event.key == pygame.K_LEFT:
                     if position[1] == 225:
                         position[1] = 225
                     else:
                         position[1] = position[1] - 125
-                elif menu_event.key == pygame.K_DOWN:
+                elif menu_event.key == pygame.K_RIGHT:
                     if position[1] == 475:
                         position[1] = 475
                     else:
@@ -546,15 +546,15 @@ def input_id():
                 sys.exit()
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_DOWN and position[1] != 410:
+                if event.key == pygame.K_RIGHT and position[1] != 410:
                     position[1] = position[1] + 100
-                elif event.key == pygame.K_UP and position[1] != 210:
+                elif event.key == pygame.K_LEFT and position[1] != 210:
                     position[1] = position[1] - 100
-                elif event.key == pygame.K_RIGHT and position[0] == 400:
+                elif event.key == pygame.K_RIGHT and position[1] == 410:
                     position = [700, 500]
                 elif event.key == pygame.K_LEFT and position[0] == 700:
                     position = [400, 410]
-                elif event.key == pygame.K_RETURN:
+                elif event.key == pygame.K_SPACE:
                     if position == [400, 410]:
                         global player1_name
                         player1_name = user1_text
