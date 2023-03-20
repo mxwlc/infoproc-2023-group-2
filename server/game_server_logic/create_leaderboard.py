@@ -1,6 +1,6 @@
 import boto3
 
-### Run this script once on the EC2 instance to set up the leaderboard.
+### Run this script to set up the leaderboard.
 
 def create_leaderboard():
 
