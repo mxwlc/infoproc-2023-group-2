@@ -7,7 +7,7 @@ N = 10 # The number of iterations of RTT that are calculated.
 class TCPClient:
 
     def __init__(self):
-        self.server_name = '18.130.146.140'
+        self.server_name = '34.203.29.112'
         self.server_port = 5555
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
