@@ -10,7 +10,7 @@ import atexit
 from tcp_client import *
 
 SCORE_INCREMENT = 10
-PLAYER_LIVES = 50
+PLAYER_LIVES = 5
 
 pygame.init()
 width = 800
@@ -522,11 +522,14 @@ def leaderboard():
         for pair in raw_pairs:
             if pair == '':
                 continue
+
             pairs.append(pair.split('$'))
         # pairs is an array where each element is a 2-element array representing the name and score of a player.
         # e.g. pairs[0][0] is the first name, and pairs[0][1] is the score for that player.
-        for pair in pairs:
-            print('Name: ' + pair[0] + ', Score: ' + pair[1])
+    
+    pairs.sort(key = lambda x : int(x[1]), reverse = True) # Sort entries from highest to lowest score
+    for pair in pairs:
+        print('Name: ' + pair[0] + ', Score: ' + pair[1])
 
     while True:
         screen.blit(menu_bg, (0, 0))
