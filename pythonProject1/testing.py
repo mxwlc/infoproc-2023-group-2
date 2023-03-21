@@ -337,6 +337,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
 
     # Open file for lives
     life_file.write(str(PLAYER_LIVES))
+    life_file.flush()
 
     while running:
         # RGB Red, Green, Blue color
