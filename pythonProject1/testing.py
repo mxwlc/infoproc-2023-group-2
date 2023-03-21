@@ -36,6 +36,7 @@ tcp_client.connect_to_server()
 
 life_file = open('life.txt', 'w')
 life_file.write('0')
+life_file.close()
 
 def exit_handler():
     tcp_client.send_server('x')
@@ -78,6 +79,9 @@ class Player:
 
     def lose_lives(self):
         self.Lives -= 1
+        life_file = open('life.txt', 'w')
+        life_file.write(str(self.Lives))
+        life_file.close()
 
     def shoot(self, X, Y):
         self.Bullet_State = "fire"
@@ -336,8 +340,9 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
     I_Won = False
 
     # Open file for lives
+    life_file = open('life.txt', 'w')
     life_file.write(str(PLAYER_LIVES))
-    life_file.flush()
+    life_file.close()
 
     while running:
         # RGB Red, Green, Blue color
@@ -508,8 +513,6 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         pygame.display.update()
         clock.tick(fps)
 
-        life_file.write(str(Player1.Lives))
-        
         send_responses(responses)
 
 
