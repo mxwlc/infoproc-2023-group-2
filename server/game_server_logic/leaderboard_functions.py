@@ -19,11 +19,13 @@ def new_player(name, score, dynamodb):
 # If no entry exists for this player, return None.
 def get_player(name, dynamodb):
     table = dynamodb.Table('Leaderboard')
+    item = None
     try:
         response = table.get_item(Key = {'leaderboard' : 1, 'name' : name})
-        return response['Item']
-    except ClientError as e:
-        return None
+        item = response['Item']
+    except:
+        pass
+    return item
 
 # Updates the score of an existing player if their new score is higher than their old score.
 # The old score must have been fetched previously and is provided in repsonse.
@@ -48,17 +50,16 @@ def update_score(name, score, response, dynamodb):
 # 2. Player does exist in leaderboard, but their old score was higher.
 # 3. Player does exist in leaderboard, and their new score is higher.
 def update_leaderboard(name, score):
-    if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    print('name: ' + name + ' score: ' + str(score))
+    dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
     response = get_player(name, dynamodb)
     if response == None:
         new_player(name, score, dynamodb)
     else:
         update_score(name, score, response, dynamodb)
 
-def get_leaderboard(dynamodb=None):
-    if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+def get_leaderboard():
+    dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
     
     table = dynamodb.Table('Leaderboard')
     response = table.query(
