@@ -1,6 +1,14 @@
 import socket
+import atexit
 
 from game_server_logic.game_server import *
+
+def exit_handler():
+    tcpserver.close()
+    for client in clients:
+        client.close()
+
+atexit.register(exit_handler)
 
 TIMEOUT = 0
 

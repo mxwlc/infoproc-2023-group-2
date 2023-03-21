@@ -34,9 +34,13 @@ colour_gold = '#b68f40'
 tcp_client = TCPClient()
 tcp_client.connect_to_server()
 
+life_file = open('life.txt', 'w')
+life_file.write('0')
+
 def exit_handler():
     tcp_client.send_server('x')
     tcp_client.close()
+    life_file.close()
 
 atexit.register(exit_handler)
 
@@ -331,6 +335,9 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
     over = False
     I_Won = False
 
+    # Open file for lives
+    life_file.write(str(PLAYER_LIVES))
+
     while running:
         # RGB Red, Green, Blue color
         screen.fill((0, 0, 0))
@@ -499,6 +506,8 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         show_other_live(Player2.Lives)
         pygame.display.update()
         clock.tick(fps)
+
+        life_file.write(str(Player1.Lives))
         
         send_responses(responses)
 
