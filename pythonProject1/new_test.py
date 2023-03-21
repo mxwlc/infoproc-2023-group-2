@@ -10,7 +10,6 @@ import atexit
 from tcp_client import *
 
 SCORE_INCREMENT = 10
-PLAYER_LIVES = 5
 
 pygame.init()
 width = 800
@@ -36,6 +35,7 @@ tcp_client.connect_to_server()
 
 def exit_handler():
     tcp_client.send_server('x')
+    tcp_client.send_peer('x')
     tcp_client.close()
 
 atexit.register(exit_handler)
@@ -111,7 +111,7 @@ enemy_bullet_state = "ready"
 player1_name = 'Player1'
 player1Img = pygame.image.load(os.path.join("assets", "player.png"))
 player1X_change = 0 
-Player1 = Player(300, 500, PLAYER_LIVES, 0, "ready", bulletImg)
+Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
 score_value1 = Player1.Score  # player 1 score
 live_value1 = Player1.Lives
 
@@ -119,7 +119,7 @@ live_value1 = Player1.Lives
 player2_name = 'Player2'
 player2Img = pygame.image.load(os.path.join("assets", "player2.png"))
 player2X_change = 0
-Player2 = Player(500, 500, PLAYER_LIVES, 0, "ready", bulletImg)
+Player2 = Player(500, 500, 5, 0, "ready", bulletImg)
 score_value2 = Player2.Score
 live_value2 = Player2.Lives
 
@@ -214,11 +214,11 @@ def NewGameReset(): #resets all global variables, new game
     hit_enemy_id = -1
     was_hit = False
     player1X_change = 0
-    Player1 = Player(300, 500, PLAYER_LIVES, 0, "ready", bulletImg)
+    Player1 = Player(300, 500, 5, 0, "ready", bulletImg)
     score_value1 = Player1.Score
     live_value1 = Player1.Lives
     player2X_change = 0
-    Player2 = Player(500, 500, PLAYER_LIVES, 0, "ready", bulletImg)
+    Player2 = Player(500, 500, 5, 0, "ready", bulletImg)
     score_value2 = Player2.Score
     live_value2 = Player2.Lives
     enemy_vel = 1
@@ -246,16 +246,15 @@ def EnemyLevelUp():  # reset positions of enemies
         enemyY_change.append(20)
 
 
+sync_var = True
+turn_to_shoot = True # Whether it's this client's turn to shoot an enemy bullet.
 hit_enemy_id = -1 # ID of enemy that was hit by this player
 was_hit = False
-rtt = 0 # Round trip time between peers.
-frame_delay = 0 # rtt -> frame delay
-fps = 60
 
-def parse_ingame():
-    messages = tcp_client.recv_server().split(';')
+def parse_peer(responses):
+    messages = tcp_client.recv_peer().split(';')
     global player1X_change, player2X_change, enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY, player2_bulletY, killed, unavailable, enemy_vel
-    global hit_enemy_id, was_hit
+    global sync_var, hit_enemy_id, was_hit, turn_to_shoot
     for m in messages: # TODO consider iterating backwards through messages
         if len(m) == 0: # Empty messages or trailing ;
             pass
@@ -264,69 +263,87 @@ def parse_ingame():
         elif m == 'c': # Other player bullet creation
             player2_bulletX = Player2.X
             Player2.shoot(player2_bulletX, player2_bulletY)
-            print('Other player created bullet.')
-        elif m == 'm': # Other player bullet went out of bounds
-            player2_bulletY = 500
-            Player2.Bullet_State = "ready"
-            print('Other player bullet went out of bounds.')
-        elif m[0] == 'b': # Other player bullet hit base
-            player2_bulletY = 500
-            Player2.Bullet_State = "ready"
-            base_id = int(m[1:])
-            bunkers[base_id].lose_health()
-            print('Other player bullet hit base ' + m[1:] + '.')
-        elif m[0] == 'w': # Own player hits enemy with bullet
-            player1_bulletY = 500
-            Player1.Bullet_State = "ready"
-            Player1.add_score(SCORE_INCREMENT)
-            enemy_id = int(m[1:])
-            enemyX[enemy_id] = 1000
-            enemyY[enemy_id] = -1000
-            unavailable.append(enemy_id)
-            killed += 1
-            print('Own player hit enemy ' + m[1:] + '.')
-        elif m[0] == 't': # Other player hits enemy with bullet
-            player2_bulletY = 500
-            Player2.Bullet_State = "ready"
-            Player2.add_score(SCORE_INCREMENT)
-            enemy_id = int(m[1:])
-            enemyX[enemy_id] = 1000
-            enemyY[enemy_id] = -1000
-            unavailable.append(enemy_id)
-            killed += 1
-            print('Other player hit enemy ' + m[1:] + '.')
         elif m[0] == 'e': # Enemy creates bullet
             enemy_id = int(m[1:])
             enemy_bulletX = enemyX[enemy_id]
             enemy_bulletY = enemyY[enemy_id]
             enemy_attack(enemy_bulletX, enemy_bulletY)
-            print('Enemy ' + m[1:] + ' created bullet.')
-        elif m == 'p': # Own player gets hit with enemy bullet
+            turn_to_shoot = True
+        elif m[0] == 'b': # Registered collision between enemy and player bullet
+            enemy_id = int(m[1:])
+            if enemy_id == hit_enemy_id:
+                if sync_var: # Own player hits enemy with bullet
+                    player1_bulletY = 500
+                    Player1.Bullet_State = "ready"
+                    Player1.add_score(SCORE_INCREMENT)
+                    enemy_id = int(m[1:])
+                    enemyX[enemy_id] = 1000
+                    enemyY[enemy_id] = -1000
+                    unavailable.append(enemy_id)
+                    killed += 1
+                else: # Other player hits enemy with bullet
+                    player2_bulletY = 500
+                    Player2.Bullet_State = "ready"
+                    Player2.add_score(SCORE_INCREMENT)
+                    enemy_id = int(m[1:])
+                    enemyX[enemy_id] = 1000
+                    enemyY[enemy_id] = -1000
+                    unavailable.append(enemy_id)
+                    killed += 1
+                sync_var = not sync_var
+            else:
+                player2_bulletY = 500
+                Player2.Bullet_State = "ready"
+                Player2.add_score(SCORE_INCREMENT)
+                enemy_id = int(m[1:])
+                enemyX[enemy_id] = 1000
+                enemyY[enemy_id] = -1000
+                unavailable.append(enemy_id)
+                killed += 1
+                responses.append('w')
+        elif m == 'w': # Own player hits enemy with bullet
+            player1_bulletY = 500
+            Player1.Bullet_State = "ready"
+            Player1.add_score(SCORE_INCREMENT)
+            enemyX[hit_enemy_id] = 1000
+            enemyY[hit_enemy_id] = -1000
+            unavailable.append(hit_enemy_id)
+            killed += 1
+        elif m == 'p': # Register collision between player and enemy bullet
+            if was_hit:
+                if sync_var: # Own player hit
+                    enemy_bulletY = 1000
+                    Player1.lose_lives()
+                else: # Other player hit
+                    enemy_bulletY = 1000
+                    Player2.lose_lives()
+                was_hit = False
+                sync_var = not sync_var
+            else:
+                enemy_bulletY = 1000
+                Player2.lose_lives()
+                responses.append('h')
+        elif m == 'h': # Own player gets hit with enemy bullet
             enemy_bulletY = 1000
             Player1.lose_lives()
             was_hit = False
-            print('Own player got hit.')
-        elif m == 'o': # Other player gets hit with enemy bullet
-            enemy_bulletY = 1000
-            Player2.lose_lives()
-            was_hit = False
-            print('Other player got hit.')
         else:
-            print("Error: received message " + m)
+            print("Error")
 
-def send_responses(responses):
+def return_peer(responses):
     if len(responses) != 0:
-        tcp_client.send_server(';'.join(str(x) for x in responses) + ';')
+        tcp_client.send_peer(';'.join(str(x) for x in responses) + ';')
 
 def play():  # Todo: 1.change input method to FPGA input  2.send data to server
     pygame.display.set_caption('Space Invaders')
     # add fps to synchronise the game on different devices
     clock = pygame.time.Clock()
+    fps = 60
     NewGameReset()
     EnemyLevelUp()
     # Game Loop
     global player1X_change, player2X_change, enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY, player2_bulletY, killed, unavailable, enemy_vel
-    global hit_enemy_id, was_hit, fps, rtt, frame_delay
+    global hit_enemy_id, was_hit, sync_var, turn_to_shoot
     running = True
     over = False
     I_Won = False
@@ -336,10 +353,10 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         screen.fill((0, 0, 0))
         #screen.blit(menu_bg, (0, 0))
 
-        # Handle incoming messages
-        parse_ingame()
+        peer_responses = []
 
-        responses = []
+        # Handle incoming messages
+        parse_peer(peer_responses)
 
         for event in pygame.event.get():  # check all the events in the window
             if event.type == pygame.QUIT:
@@ -361,8 +378,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                     if Player1.Bullet_State == "ready":
                         player1_bulletX = Player1.X
                         Player1.shoot(player1_bulletX, player1_bulletY)
-                        responses.append('c')
-                        print('Shot bullet.')
+                        peer_responses.append('c')
                 # if event.key == pygame.K_TAB:
                 #     if Player2.Bullet_State == "ready":
                 #         player2_bulletX = Player2.X
@@ -380,7 +396,20 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         Player1.X = boundary(Player1.X)
         # Player2.X = boundary(Player2.X)
 
-        responses.append(str(Player1.X))
+        peer_responses.append(str(Player1.X))
+
+        # Choose random enemy to shoot
+        if random.randint(0, 100) < 10 and turn_to_shoot:
+            if enemy_bullet_state == "ready":
+                rand_num = random.randint(0, 43)
+                while rand_num in unavailable:
+                    rand_num = random.randint(0, 43)  # the enemy corresponfing to that number will shoot
+                enemy_bulletX = enemyX[rand_num]
+                enemy_bulletY = enemyY[rand_num]
+                enemy_attack(enemy_bulletX, enemy_bulletY)
+                peer_responses.append('e' + str(rand_num))
+                turn_to_shoot = False
+                
         
         # enemy movement
         for i in range(num_of_enemies):
@@ -400,9 +429,8 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
             if over:
                 # for j in range(num_of_enemies):
                 #     enemyY[j] = -2000
-                print('Game ended.')
-                responses.append('g' + str(Player1.Score) + ':' + str(Player2.Score)) # End game immediately
-                send_responses(responses) # Flush all remaining peer repsonses
+                tcp_client.send_server('g' + str(Player1.Score) + ':' + str(Player2.Score)) # End game immediately
+                return_peer(peer_responses) # Flush all remaining peer repsonses
 
                 game_over_time = pygame.time.get_ticks()
                 while pygame.time.get_ticks() - game_over_time < 3000: #display game over for 3 seconds
@@ -410,7 +438,6 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                     game_over_screen(I_Won) #display game over and whether you lost/won
                     pygame.display.update()
                 running = False
-                tcp_client.recv_server() # Discard all residual incoming messages
                 leaderboard()
 
             if enemyX[i] == 1000: #when an enemy is killed, its x position sets to 1000(removed from screen)
@@ -428,9 +455,8 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
 
             # collision detection
             if isCollision(enemyX[i], enemyY[i], player1_bulletX, player1_bulletY) and i != hit_enemy_id: #for player1
-                responses.append('e' + str(i))
+                peer_responses.append('b' + str(i))
                 hit_enemy_id = i
-                print('Detected: player hit enemy ' + str(i) + '.')
             # if isCollision(enemyX[i], enemyY[i], player2_bulletX, player2_bulletY): #for player2
 
             if killed == num_of_enemies:
@@ -443,28 +469,20 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                 bunkers[i].lose_health()
                 enemy_bulletY = 1000
                 # remove bunker from screen
-            if isCollision(bunkers[i].X, bunkers[i].Y, player1_bulletX, player1_bulletY):
-                player1_bulletY = 500
-                Player1.Bullet_State = 'ready'
-                bunkers[i].lose_health()
-                responses.append('b' + str(i))
-                print('Bullet collided with base ' + str(i) + '.')
 
         # player1_bullet movement
 
         if player1_bulletY <= -5: #when bullet out of scope, player can shoot again
             player1_bulletY = 500
             Player1.Bullet_State = "ready"
-            responses.append('m')
-            print('Bullet out of bounds.')
 
         if Player1.Bullet_State == "fire": 
             Player1.shoot(player1_bulletX, player1_bulletY)
             player1_bulletY -= bulletY_change
 
-        # if player2_bulletY <= -5:
-        #     player2_bulletY = 500
-        #     Player2.Bullet_State = "ready"
+        if player2_bulletY <= -5:
+            player2_bulletY = 500
+            Player2.Bullet_State = "ready"
 
         if Player2.Bullet_State == "fire":
             Player2.shoot(player2_bulletX, player2_bulletY)
@@ -474,15 +492,13 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         if enemy_bulletY >= 610 and enemy_bulletY != 1000:
             enemy_bulletY = 1000
             enemy_bullet_state = "ready"
-            responses.append('d')
-            print('Destroyed enemy bullet.')
 
         if enemy_bullet_state == "fire":
             enemy_attack(enemy_bulletX, enemy_bulletY)
             enemy_bulletY += enemy_bulletY_change
 
         if isCollision(Player1.X, Player1.Y, enemy_bulletX, enemy_bulletY) and not was_hit:
-            responses.append('p')
+            peer_responses.append('p')
             was_hit = True
         # if isCollision(Player2.X, Player2.Y, enemy_bulletX, enemy_bulletY):
 
@@ -500,47 +516,35 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         pygame.display.update()
         clock.tick(fps)
         
-        send_responses(responses)
+        return_peer(peer_responses)
 
 
 # to be modified
 def leaderboard():
     pygame.display.set_caption('Leaderboard')
-<<<<<<< HEAD
 
     tcp_client.send_server('l')
-    print('Fetching leaderboard...')
     response = ''
     while True:
         response = tcp_client.recv_server()
         if response != '':
             break
-    print('Received leaderboard.')
     
+    raw_pairs = response.split('/')
     pairs = []
-    if response != 'n':
-        raw_pairs = response.split('/')
-        for pair in raw_pairs:
-            if pair == '':
-                continue
-
-            pairs.append(pair.split('$'))
-        # pairs is an array where each element is a 2-element array representing the name and score of a player.
-        # e.g. pairs[0][0] is the first name, and pairs[0][1] is the score for that player.
-    
-    pairs.sort(key = lambda x : int(x[1]), reverse = True) # Sort entries from highest to lowest score
-    for pair in pairs:
-        print('Name: ' + pair[0] + ', Score: ' + pair[1])
-
-=======
-    pairs = [('Alice', '10'), ('Bob', '5'), ('Charlie', '8')]
+    for pair in raw_pairs:
+        if pair == '':
+            continue
+        pairs.append(pair.split('$'))
+    # pairs is an array where each element is a 2-element array representing the name and score of a player.
+    # e.g. pairs[0][0] is the first name, and pairs[0][1] is the score for that player.
     board_content = []
     for pair in pairs:
-        #print('Name: ' + pair[0] + ', Score: ' + pair[1])
+        print('Name: ' + pair[0] + ', Score: ' + pair[1])
         output_string = ''
         output_string += 'Name: ' + pair[0] + ', Score: ' + pair[1]
         board_content.append(output_string)
->>>>>>> fd3ac7b4f9a8c8c3e785959b28f72287f2a27a31
+
     while True:
         screen.blit(menu_bg, (0, 0))
         lb_text = font.render("LEADERBOARD", True, colour_gold)
@@ -548,6 +552,7 @@ def leaderboard():
         return_text = fontss.render("Press 'Enter' to continue", True, (255, 255, 255))
         screen.blit(return_text, (550, 550))
         row = 0
+        # TODO display names and scores on the screen
         for content in board_content:
             text = fontss.render(content, True, 'white')
             screen.blit(text, (200, 150+row*30))
@@ -555,30 +560,7 @@ def leaderboard():
             if row > 5: #display top 5?
                 break
 
-        # Display names and scores on the screen
-        for i in range(len(pairs)):
-            pair = pairs[i]
-            name_text = font.render(pair[0], True, 'white')
-            score_text = font.render(pair[1], True, 'white')
-            screen.blit(name_text, (200, 150 + (i*30)))
-            screen.blit(score_text, (500, 150 + (i*30)))
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    start_menu()
-        pygame.display.update()
-
-
-def waiting():
-    pygame.display.set_caption('Wait for player')
-    while True:
-        screen.blit(menu_bg, (0, 0))
-        return_text = font.render("Please wait for the other player to join", True, (255, 255, 255))
-        screen.blit(return_text, (width/2-return_text.get_width()/2, 250))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -619,7 +601,7 @@ def start_menu():  # Todo: change input method to FPGA input
                 pygame.quit()
                 sys.exit()
             if menu_event.type == pygame.KEYDOWN:
-                if menu_event.key == pygame.K_SPACE:
+                if menu_event.key == pygame.K_RETURN:
                     if position[1] == 225:  # select play
                         input_id()
                     if position[1] == 350:  # select leaderboard
@@ -627,12 +609,12 @@ def start_menu():  # Todo: change input method to FPGA input
                     if position[1] == 475:  # select quit
                         pygame.quit()
                         sys.exit()
-                if menu_event.key == pygame.K_LEFT:
+                if menu_event.key == pygame.K_UP:
                     if position[1] == 225:
                         position[1] = 225
                     else:
                         position[1] = position[1] - 125
-                elif menu_event.key == pygame.K_RIGHT:
+                elif menu_event.key == pygame.K_DOWN:
                     if position[1] == 475:
                         position[1] = 475
                     else:
@@ -643,6 +625,14 @@ def start_menu():  # Todo: change input method to FPGA input
 
         pygame.display.update()
 
+def wait_screen():
+    pygame.display.set_caption('Wait for player')
+    while True:
+        screen.blit(menu_bg, (0, 0))
+        return_text = font.render("Please wait for the other player to join", True, (255, 255, 255))
+        screen.blit(return_text, (width/2-return_text.get_width()/2, 250))
+        pygame.display.update()
+
 
 def input_id():
     # Todo: 1.change input method to FPGA input done
@@ -651,9 +641,7 @@ def input_id():
     pygame.display.set_caption('Input ID')
 
     user1_text = ''
-    # user2_text = ''
     input_rect1 = pygame.Rect(300, 200, 140, 32)  # (left, top, width, height)
-    # input_rect2 = pygame.Rect(300, 300, 140, 32)
     colour = [colour_active, colour_passive]
     position = [400, 210]
 
@@ -662,13 +650,8 @@ def input_id():
         # check position
         if position[1] == 210:
             active1 = True
-            # active2 = False
-        # elif position[1] == 310:
-        #     active1 = False
-        #     active2 = True
         else:
             active1 = False
-            # active1 = active2 = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -676,41 +659,43 @@ def input_id():
                 sys.exit()
 
             if event.type == pygame.KEYDOWN:
-<<<<<<< HEAD
                 if event.key == pygame.K_DOWN and position[1] != 410:
                     position[1] = position[1] + 200
                 elif event.key == pygame.K_UP and position[1] != 210:
                     position[1] = position[1] - 200
                 elif event.key == pygame.K_RIGHT and position[0] == 400:
-=======
-                if event.key == pygame.K_RIGHT and position[1] != 410:
-                    position[1] = position[1] + 100
-                elif event.key == pygame.K_LEFT and position[1] != 210:
-                    position[1] = position[1] - 100
-                elif event.key == pygame.K_RIGHT and position[1] == 410:
->>>>>>> fd3ac7b4f9a8c8c3e785959b28f72287f2a27a31
                     position = [700, 500]
                 elif event.key == pygame.K_LEFT and position[0] == 700:
                     position = [400, 410]
-                elif event.key == pygame.K_SPACE:
+                elif event.key == pygame.K_RETURN:
                     if position == [400, 410]:
                         global player1_name
                         player1_name = user1_text
-                        print('Contacting server to start game...')
                         tcp_client.send_server('r' + player1_name)
                         # For now, assume that player1_name is the name of this client's player.
                         global player2_name
                         response = ''
                         # TODO replace this while loop with a proper waiting screen.
-                        while True:
+                        waiting = True
+                        while waiting:
                             response = tcp_client.recv_server()
                             if response != '' and response[0] == 's':
-                                player2_name = response[1:]
-                                # Consider adding RTT calculation here
-                                # rtt = tcp_client.calc_RTT()
-                                # print('RTT calculated as ' + str(rtt) + ' s.')
-                                # frame_delay = round(rtt * fps)
-                                break
+                                pair = response[2:].split(':')
+                                player2_name = pair[0]
+                                global sync_var, turn_to_shoot
+                                if response[1] == 'l': #sl: Both players ready, start game as listener 
+                                    tcp_client.listen_for_peer()
+                                    sync_var = True
+                                    turn_to_shoot = True
+                                elif response[1] == 'c': #sc: Start game as connector 
+                                    tcp_client.connect_to_peer(pair[1])
+                                    sync_var = False
+                                    turn_to_shoot = False
+                                else:
+                                    print('Error: received message ' + response)
+                                waiting = False
+                        if waiting:
+                            wait_screen()
                         play()
                     if position == [700, 500]:
                         start_menu()

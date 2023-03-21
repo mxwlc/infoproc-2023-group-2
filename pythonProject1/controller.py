@@ -93,17 +93,17 @@ class keyboard_controller:
             accel_input : raw hex readings from the fpga
         """
         accel_input = int(self.uhex_to_shex(accel_input))
-        if accel_input < -10:
-            self.moveleft()
-        elif accel_input > 10:
+        if accel_input < -20:
             self.moveright()
+        elif accel_input > 20:
+            self.moveleft()
         else:
             self.stop()
 
     def set_name(self, name):
         self.name = list(name)        
     
-    def uhex_to_shex(uhex):
+    def uhex_to_shex(self, uhex):
         """
         Converts the unsigned 32-bit hex data to signed 32-bit decimal
         ...
