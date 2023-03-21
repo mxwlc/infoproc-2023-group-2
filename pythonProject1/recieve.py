@@ -12,10 +12,12 @@ def main():
     
     while True:
         lives = open("life.txt", "r")
-        current_life = int(lives.readline())
-        print(current_life)
-                       
-        fpga.update_leds(current_life)
+        try:
+            current_life = int(lives.readline())
+            print(current_life)
+            fpga.update_leds(current_life)
+        except ValueError:
+            print("empty")
         
         current = fpga.read_inputs()
         keyboard.left_or_right(int(current.accelerometer,16))
