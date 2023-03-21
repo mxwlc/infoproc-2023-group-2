@@ -566,6 +566,15 @@ def leaderboard():
 def waiting():
     pygame.display.set_caption('Wait for player')
     while True:
+        response = tcp_client.recv_server()
+        if response != '' and response[0] == 's':
+            player2_name = response[1:]
+            # Consider adding RTT calculation here
+            # rtt = tcp_client.calc_RTT()
+            # print('RTT calculated as ' + str(rtt) + ' s.')
+            # frame_delay = round(rtt * fps)
+            break
+
         screen.blit(menu_bg, (0, 0))
         return_text = font.render("Please wait for the other player to join", True, (255, 255, 255))
         screen.blit(return_text, (width/2-return_text.get_width()/2, 250))
@@ -577,6 +586,7 @@ def waiting():
                 if event.key == pygame.K_RETURN:
                     start_menu()
         pygame.display.update()
+    play()
 
 
 def start_menu():  # Todo: change input method to FPGA input
@@ -683,17 +693,7 @@ def input_id():
                         # For now, assume that player1_name is the name of this client's player.
                         global player2_name
                         response = ''
-                        # TODO replace this while loop with a proper waiting screen.
-                        while True:
-                            response = tcp_client.recv_server()
-                            if response != '' and response[0] == 's':
-                                player2_name = response[1:]
-                                # Consider adding RTT calculation here
-                                # rtt = tcp_client.calc_RTT()
-                                # print('RTT calculated as ' + str(rtt) + ' s.')
-                                # frame_delay = round(rtt * fps)
-                                break
-                        play()
+                        waiting()
                     if position == [700, 500]:
                         start_menu()
                 if active1:
