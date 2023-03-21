@@ -667,9 +667,9 @@ def input_id():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT and position[1] != 410:
-                    position[1] = position[1] + 100
+                    position[1] = position[1] + 200
                 elif event.key == pygame.K_LEFT and position[1] != 210:
-                    position[1] = position[1] - 100
+                    position[1] = position[1] - 200
                 elif event.key == pygame.K_RIGHT and position[1] == 410:
                     position = [700, 500]
                 elif event.key == pygame.K_LEFT and position[0] == 700:
