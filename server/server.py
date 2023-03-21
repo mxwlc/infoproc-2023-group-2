@@ -3,13 +3,6 @@ import atexit
 
 from game_server_logic.game_server import *
 
-def exit_handler():
-    tcpserver.close()
-    for client in clients:
-        client.close()
-
-atexit.register(exit_handler)
-
 TIMEOUT = 0
 
 port = 5555
@@ -22,6 +15,13 @@ game_server = GameServer()
 # Wait for two clients to connect
 clients = []
 ips = []
+
+def exit_handler():
+    tcpserver.close()
+    for client in clients:
+        client.close()
+
+atexit.register(exit_handler)
 
 def check_connection(msg1, msg2):
     client1_disc = False
