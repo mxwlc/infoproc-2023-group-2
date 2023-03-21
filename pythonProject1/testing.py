@@ -506,7 +506,6 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
 # to be modified
 def leaderboard():
     pygame.display.set_caption('Leaderboard')
-<<<<<<< HEAD
 
     tcp_client.send_server('l')
     print('Fetching leaderboard...')
@@ -532,28 +531,19 @@ def leaderboard():
     for pair in pairs:
         print('Name: ' + pair[0] + ', Score: ' + pair[1])
 
-=======
-    pairs = [('Alice', '10'), ('Bob', '5'), ('Charlie', '8')]
-    board_content = []
-    for pair in pairs:
-        #print('Name: ' + pair[0] + ', Score: ' + pair[1])
-        output_string = ''
-        output_string += 'Name: ' + pair[0] + ', Score: ' + pair[1]
-        board_content.append(output_string)
->>>>>>> fd3ac7b4f9a8c8c3e785959b28f72287f2a27a31
     while True:
         screen.blit(menu_bg, (0, 0))
         lb_text = font.render("LEADERBOARD", True, colour_gold)
         screen.blit(lb_text, (250, 50))
         return_text = fontss.render("Press 'Enter' to continue", True, (255, 255, 255))
         screen.blit(return_text, (550, 550))
-        row = 0
-        for content in board_content:
-            text = fontss.render(content, True, 'white')
-            screen.blit(text, (200, 150+row*30))
-            row += 1
-            if row > 5: #display top 5?
-                break
+        # row = 0
+        # for content in board_content:
+        #     text = fontss.render(content, True, 'white')
+        #     screen.blit(text, (200, 150+row*30))
+        #     row += 1
+        #     if row > 5: #display top 5?
+        #         break
 
         # Display names and scores on the screen
         for i in range(len(pairs)):
@@ -676,19 +666,11 @@ def input_id():
                 sys.exit()
 
             if event.type == pygame.KEYDOWN:
-<<<<<<< HEAD
-                if event.key == pygame.K_DOWN and position[1] != 410:
-                    position[1] = position[1] + 200
-                elif event.key == pygame.K_UP and position[1] != 210:
-                    position[1] = position[1] - 200
-                elif event.key == pygame.K_RIGHT and position[0] == 400:
-=======
                 if event.key == pygame.K_RIGHT and position[1] != 410:
                     position[1] = position[1] + 100
                 elif event.key == pygame.K_LEFT and position[1] != 210:
                     position[1] = position[1] - 100
                 elif event.key == pygame.K_RIGHT and position[1] == 410:
->>>>>>> fd3ac7b4f9a8c8c3e785959b28f72287f2a27a31
                     position = [700, 500]
                 elif event.key == pygame.K_LEFT and position[0] == 700:
                     position = [400, 410]
