@@ -12,9 +12,9 @@ def main():
     
     while True:
         lives = open("life.txt", "r")
-        current_life = lives.readline()
-        lives.close()
-               
+        current_life = int(lives.readline())
+        print(current_life)
+                       
         fpga.update_leds(current_life)
         
         current = fpga.read_inputs()
