@@ -63,13 +63,14 @@ class Bunker:
 
 
 class Player:
-    def __init__(self, X, Y, Lives, Score, Bullet_State, bulletImg):
+    def __init__(self, X, Y, Lives, Score, Bullet_State, bulletImg, id):
         self.X = X
         self.Y = Y
         self.Lives = Lives
         self.Score = Score
         self.Bullet_State = Bullet_State
         self.bulletImg = bulletImg
+        self.id = id
 
     def draw(self, image):
         screen.blit(image, (self.X, self.Y))
@@ -79,9 +80,10 @@ class Player:
 
     def lose_lives(self):
         self.Lives -= 1
-        life_file = open('life.txt', 'w')
-        life_file.write(str(self.Lives))
-        life_file.close()
+        if self.id == 1:
+            life_file = open('life.txt', 'w')
+            life_file.write(str(self.Lives))
+            life_file.close()
 
     def shoot(self, X, Y):
         self.Bullet_State = "fire"
@@ -119,7 +121,7 @@ enemy_bullet_state = "ready"
 player1_name = 'Player1'
 player1Img = pygame.image.load(os.path.join("assets", "player.png"))
 player1X_change = 0 
-Player1 = Player(300, 500, PLAYER_LIVES, 0, "ready", bulletImg)
+Player1 = Player(300, 500, PLAYER_LIVES, 0, "ready", bulletImg, 1)
 score_value1 = Player1.Score  # player 1 score
 live_value1 = Player1.Lives
 
@@ -127,7 +129,7 @@ live_value1 = Player1.Lives
 player2_name = 'Player2'
 player2Img = pygame.image.load(os.path.join("assets", "player2.png"))
 player2X_change = 0
-Player2 = Player(500, 500, PLAYER_LIVES, 0, "ready", bulletImg)
+Player2 = Player(500, 500, PLAYER_LIVES, 0, "ready", bulletImg, 2)
 score_value2 = Player2.Score
 live_value2 = Player2.Lives
 
@@ -222,11 +224,11 @@ def NewGameReset(): #resets all global variables, new game
     hit_enemy_id = -1
     was_hit = False
     player1X_change = 0
-    Player1 = Player(300, 500, PLAYER_LIVES, 0, "ready", bulletImg)
+    Player1 = Player(300, 500, PLAYER_LIVES, 0, "ready", bulletImg, 1)
     score_value1 = Player1.Score
     live_value1 = Player1.Lives
     player2X_change = 0
-    Player2 = Player(500, 500, PLAYER_LIVES, 0, "ready", bulletImg)
+    Player2 = Player(500, 500, PLAYER_LIVES, 0, "ready", bulletImg, 2)
     score_value2 = Player2.Score
     live_value2 = Player2.Lives
     enemy_vel = 1
