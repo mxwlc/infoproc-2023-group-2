@@ -10,8 +10,6 @@ clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientsocket.connect((server_name, server_port))
 clientsocket.settimeout(0)
 
-
-
 pygame.font.init()
 
 WIDTH, HEIGHT = 750, 650
