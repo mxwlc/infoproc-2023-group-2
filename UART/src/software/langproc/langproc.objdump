@@ -9,78 +9,78 @@ Program Header:
     LOAD off    0x00001000 vaddr 0x00010000 paddr 0x00010000 align 2**12
          filesz 0x00000020 memsz 0x00000020 flags r-x
     LOAD off    0x00001020 vaddr 0x00010020 paddr 0x00010020 align 2**12
-         filesz 0x00000920 memsz 0x00000920 flags r-x
-    LOAD off    0x00001940 vaddr 0x00010940 paddr 0x000109e0 align 2**12
+         filesz 0x00000970 memsz 0x00000970 flags r-x
+    LOAD off    0x00001990 vaddr 0x00010990 paddr 0x00010a30 align 2**12
          filesz 0x000000a0 memsz 0x000000a0 flags rw-
-    LOAD off    0x00001a80 vaddr 0x00010a80 paddr 0x00010a80 align 2**12
+    LOAD off    0x00001ad0 vaddr 0x00010ad0 paddr 0x00010ad0 align 2**12
          filesz 0x00000000 memsz 0x00000010 flags rw-
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
   0 .entry        00000020  00010000  00010000  00001000  2**5
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .exceptions   00000000  00010020  00010020  000019e0  2**0
+  1 .exceptions   00000000  00010020  00010020  00001a30  2**0
                   CONTENTS
   2 .text         000008b4  00010020  00010020  00001020  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  3 .rodata       0000006c  000108d4  000108d4  000018d4  2**2
+  3 .rodata       000000bc  000108d4  000108d4  000018d4  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  4 .rwdata       000000a0  00010940  000109e0  00001940  2**2
+  4 .rwdata       000000a0  00010990  00010a30  00001990  2**2
                   CONTENTS, ALLOC, LOAD, DATA, SMALL_DATA
-  5 .bss          00000010  00010a80  00010a80  00001a80  2**2
+  5 .bss          00000010  00010ad0  00010ad0  00001ad0  2**2
                   ALLOC, SMALL_DATA
-  6 .onchip_memory 00000000  00010a90  00010a90  000019e0  2**0
+  6 .onchip_memory 00000000  00010ae0  00010ae0  00001a30  2**0
                   CONTENTS
-  7 .comment      00000023  00000000  00000000  000019e0  2**0
+  7 .comment      00000023  00000000  00000000  00001a30  2**0
                   CONTENTS, READONLY
-  8 .debug_aranges 000002a0  00000000  00000000  00001a08  2**3
+  8 .debug_aranges 000002a0  00000000  00000000  00001a58  2**3
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_info   0000290a  00000000  00000000  00001ca8  2**0
+  9 .debug_info   000028e4  00000000  00000000  00001cf8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_abbrev 00001050  00000000  00000000  000045b2  2**0
+ 10 .debug_abbrev 00001050  00000000  00000000  000045dc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_line   000011a5  00000000  00000000  00005602  2**0
+ 11 .debug_line   000011a6  00000000  00000000  0000562c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_frame  000003c0  00000000  00000000  000067a8  2**2
+ 12 .debug_frame  000003c0  00000000  00000000  000067d4  2**2
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_str    00000c2f  00000000  00000000  00006b68  2**0
+ 13 .debug_str    00000c41  00000000  00000000  00006b94  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_loc    00000718  00000000  00000000  00007797  2**0
+ 14 .debug_loc    00000718  00000000  00000000  000077d5  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_alt_sim_info 00000010  00000000  00000000  00007eb0  2**2
+ 15 .debug_alt_sim_info 00000010  00000000  00000000  00007ef0  2**2
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_ranges 00000110  00000000  00000000  00007ec0  2**3
+ 16 .debug_ranges 00000110  00000000  00000000  00007f00  2**3
                   CONTENTS, READONLY, DEBUGGING
- 17 .thread_model 00000003  00000000  00000000  00009206  2**0
+ 17 .thread_model 00000003  00000000  00000000  00009246  2**0
                   CONTENTS, READONLY
- 18 .cpu          00000003  00000000  00000000  00009209  2**0
+ 18 .cpu          00000003  00000000  00000000  00009249  2**0
                   CONTENTS, READONLY
- 19 .qsys         00000001  00000000  00000000  0000920c  2**0
+ 19 .qsys         00000001  00000000  00000000  0000924c  2**0
                   CONTENTS, READONLY
- 20 .simulation_enabled 00000001  00000000  00000000  0000920d  2**0
+ 20 .simulation_enabled 00000001  00000000  00000000  0000924d  2**0
                   CONTENTS, READONLY
- 21 .stderr_dev   00000009  00000000  00000000  0000920e  2**0
+ 21 .stderr_dev   00000009  00000000  00000000  0000924e  2**0
                   CONTENTS, READONLY
- 22 .stdin_dev    00000009  00000000  00000000  00009217  2**0
+ 22 .stdin_dev    00000009  00000000  00000000  00009257  2**0
                   CONTENTS, READONLY
- 23 .stdout_dev   00000009  00000000  00000000  00009220  2**0
+ 23 .stdout_dev   00000009  00000000  00000000  00009260  2**0
                   CONTENTS, READONLY
- 24 .sopc_system_name 0000000c  00000000  00000000  00009229  2**0
+ 24 .sopc_system_name 0000000c  00000000  00000000  00009269  2**0
                   CONTENTS, READONLY
- 25 .quartus_project_dir 00000047  00000000  00000000  00009235  2**0
+ 25 .quartus_project_dir 00000021  00000000  00000000  00009275  2**0
                   CONTENTS, READONLY
- 26 .jdi          00004a20  00000000  00000000  0000927c  2**0
+ 26 .jdi          00004a20  00000000  00000000  00009296  2**0
                   CONTENTS, READONLY
- 27 .sopcinfo     0006d2ee  00000000  00000000  0000dc9c  2**0
+ 27 .sopcinfo     00071012  00000000  00000000  0000dcb6  2**0
                   CONTENTS, READONLY
 SYMBOL TABLE:
 00010000 l    d  .entry	00000000 .entry
 00010020 l    d  .exceptions	00000000 .exceptions
 00010020 l    d  .text	00000000 .text
 000108d4 l    d  .rodata	00000000 .rodata
-00010940 l    d  .rwdata	00000000 .rwdata
-00010a80 l    d  .bss	00000000 .bss
-00010a90 l    d  .onchip_memory	00000000 .onchip_memory
+00010990 l    d  .rwdata	00000000 .rwdata
+00010ad0 l    d  .bss	00000000 .bss
+00010ae0 l    d  .onchip_memory	00000000 .onchip_memory
 00000000 l    d  .comment	00000000 .comment
 00000000 l    d  .debug_aranges	00000000 .debug_aranges
 00000000 l    d  .debug_info	00000000 .debug_info
@@ -94,14 +94,14 @@ SYMBOL TABLE:
 00000000 l    df *ABS*	00000000 ../langproc_bsp//obj/HAL/src/crt0.o
 00010058 l       .text	00000000 alt_after_alt_main
 00000000 l    df *ABS*	00000000 hello_world_small.c
-00010922 l     O .rodata	00000012 CSWTCH.5
+00010922 l     O .rodata	00000062 CSWTCH.5
 00000000 l    df *ABS*	00000000 alt_getchar.c
 00000000 l    df *ABS*	00000000 alt_load.c
 00000000 l    df *ABS*	00000000 alt_main.c
 00000000 l    df *ABS*	00000000 alt_printf.c
 00000000 l    df *ABS*	00000000 alt_putchar.c
 00000000 l    df *ABS*	00000000 alt_sys_init.c
-00010940 l     O .rwdata	0000002c accelerometer_spi
+00010990 l     O .rwdata	0000002c accelerometer_spi
 00000000 l    df *ABS*	00000000 altera_avalon_jtag_uart_read.c
 00000000 l    df *ABS*	00000000 altera_avalon_jtag_uart_write.c
 00000000 l    df *ABS*	00000000 altera_up_avalon_accelerometer_spi.c
@@ -117,54 +117,54 @@ SYMBOL TABLE:
 00000000 l    df *ABS*	00000000 memcmp.c
 00000000 l    df *ABS*	00000000 strlen.c
 0001038c g     F .text	0000002c alt_main
-000109e0 g       *ABS*	00000000 __flash_rwdata_start
+00010a30 g       *ABS*	00000000 __flash_rwdata_start
 00010110 g     F .text	00000154 read_chars
-000109c4 g     O .rwdata	00000004 jtag_uart
+00010a14 g     O .rwdata	00000004 jtag_uart
 00010880 g     F .text	00000008 altera_nios2_gen2_irq_init
 00010000 g     F .entry	0000000c __reset
 00010688 g     F .text	00000058 alt_up_accelerometer_spi_read_x_axis
 00010020 g       *ABS*	00000000 __flash_exceptions_start
-00010a8c g     O .bss	00000004 errno
-00010a84 g     O .bss	00000004 alt_argv
-000189c4 g       *ABS*	00000000 _gp
-0001096c g     O .rwdata	00000030 alt_fd_list
+00010adc g     O .bss	00000004 errno
+00010ad4 g     O .bss	00000004 alt_argv
+00018a14 g       *ABS*	00000000 _gp
+000109bc g     O .rwdata	00000030 alt_fd_list
 00010808 g     F .text	00000074 alt_find_dev
 000105a0 g     F .text	0000005c altera_avalon_jtag_uart_read
-000109c8 g     O .rwdata	00000004 alt_max_fd
-00010a90 g       *ABS*	00000000 __bss_end
+00010a18 g     O .rwdata	00000004 alt_max_fd
+00010ae0 g       *ABS*	00000000 __bss_end
 00010268 g     F .text	00000044 alt_getchar
-0001099c g     O .rwdata	00000028 alt_dev_null
+000109ec g     O .rwdata	00000028 alt_dev_null
 00010790 g     F .text	00000004 alt_dcache_flush_all
-000109e0 g       *ABS*	00000000 __ram_rwdata_end
+00010a30 g       *ABS*	00000000 __ram_rwdata_end
 00010000 g       *ABS*	00000000 __alt_mem_onchip_memory
-000109cc g     O .rwdata	00000008 alt_dev_list
-00010940 g       *ABS*	00000000 __ram_rodata_end
-00010a90 g       *ABS*	00000000 end
+00010a1c g     O .rwdata	00000008 alt_dev_list
+00010990 g       *ABS*	00000000 __ram_rodata_end
+00010ae0 g       *ABS*	00000000 end
 00020000 g       *ABS*	00000000 __alt_stack_pointer
 000105fc g     F .text	00000034 altera_avalon_jtag_uart_write
 000103b8 g     F .text	00000170 alt_printf
 00010020 g     F .text	0000003c _start
 00010590 g     F .text	00000010 alt_sys_init
 00010638 g     F .text	00000014 alt_up_accelerometer_spi_read_address_register
-00010940 g       *ABS*	00000000 __ram_rwdata_start
+00010990 g       *ABS*	00000000 __ram_rwdata_start
 000108d4 g       *ABS*	00000000 __ram_rodata_start
 000106e0 g     F .text	00000058 alt_up_accelerometer_spi_read_y_axis
 00010888 g     F .text	00000030 memcmp
-00010a90 g       *ABS*	00000000 __alt_stack_base
+00010ae0 g       *ABS*	00000000 __alt_stack_base
 0001079c g     F .text	0000006c alt_dev_llist_insert
-00010a80 g       *ABS*	00000000 __bss_start
+00010ad0 g       *ABS*	00000000 __bss_start
 00010264 g     F .text	00000004 main
-00010a80 g     O .bss	00000004 alt_envp
-000109dc g     O .rwdata	00000004 alt_errno
+00010ad0 g     O .bss	00000004 alt_envp
+00010a2c g     O .rwdata	00000004 alt_errno
 000108d4 g       *ABS*	00000000 __flash_rodata_start
 00010570 g     F .text	00000020 alt_irq_init
-00010a88 g     O .bss	00000004 alt_argc
-000109d4 g     O .rwdata	00000008 alt_fs_list
+00010ad8 g     O .bss	00000004 alt_argc
+00010a24 g     O .rwdata	00000008 alt_fs_list
 00010020 g       *ABS*	00000000 __ram_exceptions_start
 00010630 g     F .text	00000008 alt_up_accelerometer_spi_open_dev
 0001005c g     F .text	000000b4 get_input
-000109e0 g       *ABS*	00000000 _edata
-00010a90 g       *ABS*	00000000 _end
+00010a30 g       *ABS*	00000000 _edata
+00010ae0 g       *ABS*	00000000 _end
 00010020 g       *ABS*	00000000 __ram_exceptions_end
 00010738 g     F .text	00000058 alt_up_accelerometer_spi_read_z_axis
 00020000 g       *ABS*	00000000 __alt_data_end
@@ -211,7 +211,7 @@ Disassembly of section .text:
     movhi gp, %hi(_gp)
    10028:	06800074 	movhi	gp,1
     ori gp, gp, %lo(_gp)
-   1002c:	d6a27114 	ori	gp,gp,35268
+   1002c:	d6a28514 	ori	gp,gp,35348
  */
 #ifndef ALT_SIM_OPTIMIZE
     /* Log that the BSS is about to be cleared. */
@@ -220,12 +220,12 @@ Disassembly of section .text:
     movhi r2, %hi(__bss_start)
    10030:	00800074 	movhi	r2,1
     ori r2, r2, %lo(__bss_start)
-   10034:	1082a014 	ori	r2,r2,2688
+   10034:	1082b414 	ori	r2,r2,2768
 
     movhi r3, %hi(__bss_end)
    10038:	00c00074 	movhi	r3,1
     ori r3, r3, %lo(__bss_end)
-   1003c:	18c2a414 	ori	r3,r3,2704
+   1003c:	18c2b814 	ori	r3,r3,2784
 
     beq r2, r3, 1f
    10040:	10c00326 	beq	r2,r3,10050 <_start+0x30>
@@ -481,7 +481,7 @@ int read_chars() {
    101e4:	21023e04 	addi	r4,r4,2296
    101e8:	00001206 	br	10234 <read_chars+0x124>
    101ec:	d8800083 	ldbu	r2,2(sp)
-   101f0:	00c00204 	movi	r3,8
+   101f0:	00c00c04 	movi	r3,48
    101f4:	10bff3c4 	addi	r2,r2,-49
    101f8:	10803fcc 	andi	r2,r2,255
    101fc:	18800436 	bltu	r3,r2,10210 <read_chars+0x100>
@@ -553,7 +553,7 @@ int main() {
 
     if (ALT_DRIVER_READ(ALT_STDIN_DEV, &c, 1, alt_fd_list[STDIN_FILENO].fd_flags) <= 0) {
    10268:	00800074 	movhi	r2,1
-   1026c:	10825b04 	addi	r2,r2,2412
+   1026c:	10826f04 	addi	r2,r2,2492
    10270:	11c00217 	ldw	r7,8(r2)
  * Uses the ALT_DRIVER_READ() macro to call directly to driver if available.
  * Otherwise, uses newlib provided getchar() routine.
@@ -571,7 +571,7 @@ alt_getchar(void)
    10278:	01000074 	movhi	r4,1
    1027c:	01800044 	movi	r6,1
    10280:	d80b883a 	mov	r5,sp
-   10284:	21027104 	addi	r4,r4,2500
+   10284:	21028504 	addi	r4,r4,2580
  * Uses the ALT_DRIVER_READ() macro to call directly to driver if available.
  * Otherwise, uses newlib provided getchar() routine.
  */
@@ -620,8 +620,8 @@ void alt_load (void)
    102b0:	01000074 	movhi	r4,1
    102b4:	01400074 	movhi	r5,1
    102b8:	dfc00015 	stw	ra,0(sp)
-   102bc:	21025004 	addi	r4,r4,2368
-   102c0:	29427804 	addi	r5,r5,2528
+   102bc:	21026404 	addi	r4,r4,2448
+   102c0:	29428c04 	addi	r5,r5,2608
 
 static void ALT_INLINE alt_load_section (alt_u32* from, 
                                          alt_u32* to, 
@@ -636,7 +636,7 @@ static void ALT_INLINE alt_load_section (alt_u32* from,
    102d8:	2140121e 	bne	r4,r5,10324 <alt_load+0x78>
    102dc:	00000b06 	br	1030c <alt_load+0x60>
    102e0:	00c00074 	movhi	r3,1
-   102e4:	18c27804 	addi	r3,r3,2528
+   102e4:	18c28c04 	addi	r3,r3,2608
    102e8:	1907c83a 	sub	r3,r3,r4
    102ec:	0005883a 	mov	r2,zero
   {
@@ -696,7 +696,7 @@ static void ALT_INLINE alt_load_section (alt_u32* from,
   alt_icache_flush_all();
    1035c:	001087c1 	jmpi	1087c <alt_icache_flush_all>
    10360:	00c00074 	movhi	r3,1
-   10364:	18c25004 	addi	r3,r3,2368
+   10364:	18c26404 	addi	r3,r3,2448
    10368:	1907c83a 	sub	r3,r3,r4
 
 static void ALT_INLINE alt_load_section (alt_u32* from, 
@@ -1057,7 +1057,7 @@ alt_putchar(int c)
    1053c:	000f883a 	mov	r7,zero
    10540:	01800044 	movi	r6,1
    10544:	d80b883a 	mov	r5,sp
-   10548:	21027104 	addi	r4,r4,2500
+   10548:	21028504 	addi	r4,r4,2580
  * Uses the ALT_DRIVER_WRITE() macro to call directly to driver if available.
  * Otherwise, uses newlib provided putchar() routine.
  */
@@ -1122,7 +1122,7 @@ static ALT_INLINE int alt_dev_reg (alt_dev* dev)
   return alt_dev_llist_insert ((alt_dev_llist*) dev, &alt_dev_list);
    10590:	01000074 	movhi	r4,1
    10594:	d1600204 	addi	r5,gp,-32760
-   10598:	21025004 	addi	r4,r4,2368
+   10598:	21026404 	addi	r4,r4,2448
    1059c:	001079c1 	jmpi	1079c <alt_dev_llist_insert>
 
 000105a0 <altera_avalon_jtag_uart_read>:
