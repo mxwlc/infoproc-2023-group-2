@@ -19,6 +19,7 @@ class FPGAController:
 
     def __init__(self, **kwargs):
         self._jtag_uart = _uart.intel_jtag_uart(**kwargs)
+        self.update_hex("Ready")
 
     def _send_command(self, command: str, argument: str = "") -> str:
         """
@@ -49,4 +50,4 @@ class FPGAController:
         Updates the HEX display to the text, up to 6 characters
         :param text: Text to display
         """
-        self._send_command("s", text[0:6].lower())
+        self._send_command("s", text[0:6].ljust(6))
