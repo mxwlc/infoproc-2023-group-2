@@ -70,13 +70,13 @@ while True:
             
             client1_incoming = ''
             try:
-                client1_incoming += clients[0].recv(1024).decode()
+                client1_incoming = clients[0].recv(1024).decode()
             except:
                 pass
 
             client2_incoming = ''
             try:
-                client2_incoming += clients[1].recv(1024).decode()
+                client2_incoming = clients[1].recv(1024).decode()
             except:
                 pass
 

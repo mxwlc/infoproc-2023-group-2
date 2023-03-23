@@ -26,7 +26,7 @@ class TCPClient:
     def recv_server(self):
         response = ''
         try:
-            response += self.clientsocket.recv(1024).decode()
+            response = self.clientsocket.recv(1024).decode()
         except:
             pass
         return response
