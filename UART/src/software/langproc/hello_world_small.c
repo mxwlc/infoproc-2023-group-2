@@ -54,7 +54,7 @@ int read_chars() {
 			break;
 
 		case 'l':
-			switch(text[2]){
+			switch(text[4]){
 			case '1':
 				lives = 0b1;
 				break;
@@ -89,7 +89,7 @@ int read_chars() {
 				lives = 0b0;
 				break;
 			}
-			alt_printf("Lives %s", &text[2]);
+			alt_printf("Lives %s", &text[4]);
 			IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, lives);
 			break;
 
