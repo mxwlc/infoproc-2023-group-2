@@ -31,13 +31,18 @@ colour_passive = pygame.Color('gray15')
 colour_gold = '#b68f40'
 #fpga = host.FPGAController()
 
+# Instantiate the tcp client and connect to the server.
 tcp_client = TCPClient()
 tcp_client.connect_to_server()
 
+# Open a file to store the player's lives. This is accessed by receive.py to
+# display the lives on the FPGA.
 life_file = open('life.txt', 'w')
 life_file.write('0')
 life_file.close()
 
+# If the game crashes, send a disconnect message to the server so that it
+# knows to go back to a state of waiting for new clients.
 def exit_handler():
     tcp_client.send_server('x')
     tcp_client.close()
@@ -80,7 +85,7 @@ class Player:
 
     def lose_lives(self):
         self.Lives -= 1
-        if self.id == 1:
+        if self.id == 1: # If this is the client's own player, update life.txt to update FPGA display.
             life_file = open('life.txt', 'w')
             life_file.write(str(self.Lives))
             life_file.close()
@@ -325,7 +330,7 @@ def parse_ingame():
             print("Error: received message " + m)
 
 def send_responses(responses):
-    if len(responses) != 0:
+    if len(responses) != 0: # Do not send an empty message.
         tcp_client.send_server(';'.join(str(x) for x in responses) + ';')
 
 def play():  # Todo: 1.change input method to FPGA input  2.send data to server
@@ -376,7 +381,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                     if Player1.Bullet_State == "ready":
                         player1_bulletX = Player1.X
                         Player1.shoot(player1_bulletX, player1_bulletY)
-                        responses.append('c')
+                        responses.append('c') # Create player bullet
                         print('Shot bullet.')
                 # if event.key == pygame.K_TAB:
                 #     if Player2.Bullet_State == "ready":
@@ -417,6 +422,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                 #     enemyY[j] = -2000
                 print('Game ended.')
                 responses.append('g' + str(Player1.Score) + ':' + str(Player2.Score)) # End game immediately
+                # (and inform server of player scores)
                 send_responses(responses) # Flush all remaining peer repsonses
 
                 game_over_time = pygame.time.get_ticks()
@@ -443,7 +449,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
 
             # collision detection
             if isCollision(enemyX[i], enemyY[i], player1_bulletX, player1_bulletY) and i != hit_enemy_id: #for player1
-                responses.append('e' + str(i))
+                responses.append('e' + str(i)) # Player hits enemy with bullet
                 hit_enemy_id = i
                 print('Detected: player hit enemy ' + str(i) + '.')
             # if isCollision(enemyX[i], enemyY[i], player2_bulletX, player2_bulletY): #for player2
@@ -462,7 +468,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                 player1_bulletY = 500
                 Player1.Bullet_State = 'ready'
                 bunkers[i].lose_health()
-                responses.append('b' + str(i))
+                responses.append('b' + str(i)) # Player hits base with bulllet
                 print('Bullet collided with base ' + str(i) + '.')
 
         # player1_bullet movement
@@ -470,7 +476,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         if player1_bulletY <= -5: #when bullet out of scope, player can shoot again
             player1_bulletY = 500
             Player1.Bullet_State = "ready"
-            responses.append('m')
+            responses.append('m') # Player bullet goes out of bounds (off the screen)
             print('Bullet out of bounds.')
 
         if Player1.Bullet_State == "fire": 
@@ -489,7 +495,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         if enemy_bulletY >= 610 and enemy_bulletY != 1000:
             enemy_bulletY = 1000
             enemy_bullet_state = "ready"
-            responses.append('d')
+            responses.append('d') # Enemy bullet is destroyed, either through player/base collision or out of bounds.
             print('Destroyed enemy bullet.')
 
         if enemy_bullet_state == "fire":
@@ -497,7 +503,7 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
             enemy_bulletY += enemy_bulletY_change
 
         if isCollision(Player1.X, Player1.Y, enemy_bulletX, enemy_bulletY) and not was_hit:
-            responses.append('p')
+            responses.append('p') # Player is hit by enemy bullet.
             was_hit = True
         # if isCollision(Player2.X, Player2.Y, enemy_bulletX, enemy_bulletY):
 
@@ -515,23 +521,24 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
         pygame.display.update()
         clock.tick(fps)
 
-        send_responses(responses)
+        send_responses(responses) # Send message to server.
 
 
 # to be modified
 def leaderboard():
     pygame.display.set_caption('Leaderboard')
 
-    tcp_client.send_server('l')
+    tcp_client.send_server('l') # Request for leaderboard.
     print('Fetching leaderboard...')
     response = ''
-    while True:
+    while True: # Wait for response
         response = tcp_client.recv_server()
         if response != '':
             break
     print('Received leaderboard.')
     
     pairs = []
+    # Parse leaderboard message
     if response != 'n':
         raw_pairs = response.split('/')
         for pair in raw_pairs:
@@ -580,7 +587,7 @@ def leaderboard():
 
 def waiting():
     pygame.display.set_caption('Wait for player')
-    while True:
+    while True: # Wait until server sends notification of game start.
         response = tcp_client.recv_server()
         if response != '' and response[0] == 's':
             player2_name = response[1:]
@@ -704,11 +711,10 @@ def input_id():
                         global player1_name
                         player1_name = user1_text
                         print('Contacting server to start game...')
-                        tcp_client.send_server('r' + player1_name)
-                        # For now, assume that player1_name is the name of this client's player.
+                        tcp_client.send_server('r' + player1_name) # Notification of readiness.
                         global player2_name
                         response = ''
-                        waiting()
+                        waiting() # Wait for other player to join.
                     if position == [700, 500]:
                         start_menu()
                 if active1:

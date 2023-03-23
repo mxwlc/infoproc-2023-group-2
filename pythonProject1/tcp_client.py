@@ -18,14 +18,15 @@ class TCPClient:
         print('Connecting to server...')
         self.clientsocket.connect((self.server_name, self.server_port))
         print('Connected to server.')
-        self.clientsocket.settimeout(TIMEOUT)
+        self.clientsocket.settimeout(TIMEOUT) # Set the client socket to non-blocking so that we can skip
+                                              # if there are no messages to receive, instead of waiting.
 
     def send_server(self, message):
         self.clientsocket.send(message.encode())
     
     def recv_server(self):
         response = ''
-        try:
+        try: # Since the socket is non-blocking, an exception is thrown if there is nothing to receive.
             response = self.clientsocket.recv(1024).decode()
         except:
             pass

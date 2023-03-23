@@ -2,6 +2,9 @@ import boto3
 
 ### Run this script to set up the leaderboard.
 
+# The leaderboard has only one partition, which is leaderboard=1.
+# In this partition the sort key is the name of the player, and the value is their score.
+
 def create_leaderboard():
 
     dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')

@@ -1,3 +1,5 @@
+# Run this script on the EC2 instance to start the server.
+
 import socket
 import atexit
 
@@ -5,6 +7,7 @@ from game_server_logic.game_server import *
 
 TIMEOUT = 0
 
+# Create a welcome socket.
 port = 5555
 tcpserver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcpserver.bind(('0.0.0.0', port))
@@ -12,10 +15,11 @@ tcpserver.listen(2)
 
 game_server = GameServer()
 
-# Wait for two clients to connect
+# Wait for two clients to connect.
 clients = []
 ips = []
 
+# If the server crashes, close all sockets for a smoother disconnection.
 def exit_handler():
     tcpserver.close()
     for client in clients:
@@ -23,13 +27,15 @@ def exit_handler():
 
 atexit.register(exit_handler)
 
+# Check if one of the clients has disconnected, and if so, remove them from the lists of clients/ips.
 def check_connection(msg1, msg2):
     client1_disc = False
     client2_disc = False
     if msg1 == 'x':
         client1_disc = True
         print('Client 1 disconnected.')
-        if len(clients) == 2:
+        if len(clients) == 2: # If client 1 disconnects, then client 2 becomes client 1
+                              # (clients are identified by their positions in the list)
             print('    client 2 -> client 1')
     if msg2 == 'x':
         client2_disc = True
@@ -45,10 +51,12 @@ def check_connection(msg1, msg2):
         ips.pop(1)
     return client1_disc or client2_disc
 
+# Main program loop
 while True:
 
     print('Waiting for clients...')
 
+    # Wait until 2 clients have connected.
     while len(clients) < 2:
 
         if len(clients) == 1:
@@ -65,7 +73,7 @@ while True:
         ips.append(address[0])
         print(f"Client {len(clients)} connected from {address}.")
 
-    # Start the game loop
+    # When 2 clients have connected, start the main game loop.
     while True:
             
             client1_incoming = ''
@@ -83,7 +91,9 @@ while True:
             if check_connection(client1_incoming, client2_incoming):
                 break
             
+            # Update server with incoming messages, and generate outgoing messages.
             client1_outgoing, client2_outgoing = game_server.update(client1_incoming, client2_incoming)
+            # Do not send an empty string.
             if client1_outgoing != '':
                 clients[0].send(client1_outgoing.encode())
             if client2_outgoing != '':

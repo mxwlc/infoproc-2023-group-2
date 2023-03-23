@@ -10,6 +10,9 @@ ENEMY_BULLET_INTERVAL = 2 # Time in seconds between spawnings of enemy bullets.
 
 class GameServer:
 
+    # The game state is reset in two situations:
+    # 1. The game server object is initialised.
+    # 2. The game ends.
     def reset_game_state(self):
         self.player_ready = [False, False]
         self.player_name = ['', '']
@@ -19,7 +22,8 @@ class GameServer:
         self.remaining_enemies = []
         for i in range(NUM_ENEMIES):
             self.remaining_enemies.append(True)
-        self.killed_enemies = 0
+        self.killed_enemies = 0 # The number of enemies that have been killed; when this reaches 
+                                # the total number of enemies, spawn a new wave.
         self.enemy_bullet = False # Whether or not there exists an enemy bullet.
         print('Reset game state.')
 
@@ -41,7 +45,7 @@ class GameServer:
         print('Started game.')
     
     def end_game(self):
-        for i in range(2):
+        for i in range(2): # Update leaderboard with both players' names and scores.
             update_leaderboard(self.player_name[i], self.player_score[i])
         self.reset_game_state()
         print('Ended game.')
@@ -109,8 +113,8 @@ class GameServer:
         elif raw_message == 'l': # Request for leaderboard
             leaderboard = get_leaderboard()
             if len(leaderboard) == 0:
-                response = 'n'
-            for entry in leaderboard:
+                response = 'n' # 'Null response' if the leaderboard is empty.
+            for entry in leaderboard: # Encode entries in leaderboard into a single string to send.
                 response += '/' + entry['name']
                 response += '$' + str(entry['score'])
         elif raw_message[0] == 'r': # Notification of readiness
@@ -138,7 +142,8 @@ class GameServer:
             # Only create a new enemy bullet if one does not already exist.
             self.time_since_bullet = 0
             enemy_id = random.randint(0, NUM_ENEMIES - 1)
-            while not self.remaining_enemies[enemy_id]:
+            while not self.remaining_enemies[enemy_id]: # Keep generating random numbers until we get one
+                                                        # that corresponds to a living enemy.
                 enemy_id = random.randint(0, NUM_ENEMIES - 1)
             self.enemy_bullet = True
             print('Created bullet at enemy ' + str(enemy_id) + '.')
@@ -181,6 +186,7 @@ class GameServer:
                     arr1.append(enemy_bullet_message)
                     arr2.append(enemy_bullet_message)
 
+            # Join messages from array together into a single string to send.
             if len(arr1) != 0:
                 response1 = ';'.join(str(x) for x in arr1) + ';'
             if len(arr2) != 0:
@@ -200,6 +206,7 @@ class GameServer:
                 response1 = 's' + self.player_name[1]
                 response2 = 's' + self.player_name[0]
         
+        # Do not send an empty string.
         if response1 != '' or response2 != '':
             print('Sent: 1 = ' + response1 + ' 2 = ' + response2)
 
