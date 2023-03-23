@@ -411,7 +411,7 @@ int read_chars() {
 				lives = 0b0;
 				break;
 			}
-			alt_printf("Lives %s", &text[2]);
+			alt_printf("Lives %s", &text[4]);
 			IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, lives);
    10154:	04c000b4 	movhi	r19,2
    10158:	05000074 	movhi	r20,1
@@ -428,7 +428,7 @@ int read_chars() {
 				lives = 0b0;
 				break;
 			}
-			alt_printf("Lives %s", &text[2]);
+			alt_printf("Lives %s", &text[4]);
 			IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, lives);
    10168:	9cc42404 	addi	r19,r19,4240
    1016c:	a5024884 	addi	r20,r20,2338
@@ -480,7 +480,7 @@ int read_chars() {
    101e0:	01000074 	movhi	r4,1
    101e4:	21023e04 	addi	r4,r4,2296
    101e8:	00001206 	br	10234 <read_chars+0x124>
-   101ec:	d8800083 	ldbu	r2,2(sp)
+   101ec:	d8800103 	ldbu	r2,4(sp)
    101f0:	00c00c04 	movi	r3,48
    101f4:	10bff3c4 	addi	r2,r2,-49
    101f8:	10803fcc 	andi	r2,r2,255
@@ -492,16 +492,16 @@ int read_chars() {
 			break;
 
 		case 'l':
-			switch(text[2]){
+			switch(text[4]){
    10210:	002b883a 	mov	r21,zero
 				break;
 			default:
 				lives = 0b0;
 				break;
 			}
-			alt_printf("Lives %s", &text[2]);
+			alt_printf("Lives %s", &text[4]);
    10214:	01000074 	movhi	r4,1
-   10218:	d9400084 	addi	r5,sp,2
+   10218:	d9400104 	addi	r5,sp,4
    1021c:	21024004 	addi	r4,r4,2304
    10220:	00103b80 	call	103b8 <alt_printf>
 			IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE, lives);
