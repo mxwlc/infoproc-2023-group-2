@@ -39,10 +39,10 @@ class FPGAController:
     
     def update_leds(self, num: int) -> None:
         """
-        Updates the LEDs to be lit up, to a maximum of 9
+        Updates the LEDs to be lit up, to a maximum of 10
         :param num: Number of LEDs to light up
         """
-        self._send_command("l", str(min(num, 9)))
+        self._send_command("l", hex(min(num, 10)))
 
     def update_hex(self, text: str) -> None:
         """
