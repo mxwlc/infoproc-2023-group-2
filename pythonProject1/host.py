@@ -50,4 +50,4 @@ class FPGAController:
         Updates the HEX display to the text, up to 6 characters
         :param text: Text to display
         """
-        self._send_command("s", text[0:6].ljust(6))
+        self._send_command("h", text[0:6].ljust(6))
