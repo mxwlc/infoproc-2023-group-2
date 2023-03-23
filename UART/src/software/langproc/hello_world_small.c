@@ -82,6 +82,9 @@ int read_chars() {
 			case '9':
 				lives = 0b111111111;
 				break;
+			case 'a':
+				lives = 0b1111111111;
+				break;
 			default:
 				lives = 0b0;
 				break;
