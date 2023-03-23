@@ -47,11 +47,8 @@ print('1 received ' + r1 + ', 2 received ' + r2)
 
 # Wait for enemy bullet.
 r1 = recv(1, False)
-f2 = recv(2, False)
-if r1 == r2:
-    print('Both clients received ' + r1)
-else:
-    print('Error')
+r2 = recv(2, False)
+print('1 received ' + r1 + ', 2 received ' + r2)
 
 # Send test messages to server.
 requests = ['10.1', 'c', 'm', 'c', 'b1', 'c', 'e1', 'p', 'g20:30'] # Note that all requests are sent from client 1.

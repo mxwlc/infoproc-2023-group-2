@@ -12,6 +12,7 @@ port = 5555
 tcpserver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcpserver.bind(('0.0.0.0', port))
 tcpserver.listen(2)
+tcpserver.settimeout(TIMEOUT)
 
 game_server = GameServer()
 
@@ -50,6 +51,54 @@ def check_connection(msg1, msg2):
         clients.pop(1)
         ips.pop(1)
     return client1_disc or client2_disc
+
+# Main program loop
+while True:
+
+    # Check to see if we can accept a new client.
+    if len(clients) < 2:
+        try:
+            client, address = tcpserver.accept()
+            client.settimeout(TIMEOUT)
+            clients.append(client)
+            ips.append(address[0])
+            print(f"Client {len(clients)} connected from {address}.")
+        except:
+            pass
+    
+    client1_incoming = ''
+    try:
+        client1_incoming = clients[0].recv(1024).decode()
+        # Note that this statement throws two types of exceptions:
+        # 1. We are connected to client 1 but have no new messages to receive.
+        # 2. We are not connected to client 1.
+    except:
+        pass
+
+    client2_incoming = ''
+    try:
+        client2_incoming = clients[1].recv(1024).decode()
+    except:
+        pass
+
+    if check_connection(client1_incoming, client2_incoming):
+        continue # Stop any further processing this iteration if a client disconnects.
+    
+    # Update server with incoming messages, and generate outgoing messages.
+    client1_outgoing, client2_outgoing = game_server.update(client1_incoming, client2_incoming)
+    # Do not send an empty string.
+    if client1_outgoing != '':
+        try:
+            clients[0].send(client1_outgoing.encode())
+        except:
+            pass
+    if client2_outgoing != '':
+        try:
+            clients[1].send(client2_outgoing.encode())
+        except:
+            pass
+
+## OLD ##
 
 # Main program loop
 while True:
