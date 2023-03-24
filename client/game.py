@@ -364,7 +364,7 @@ def parse_ingame():
     messages = tcp_client.recv_server().split(';')
     global player1X_change, player2X_change, enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY, player2_bulletY, killed, unavailable, enemy_vel
     global hit_enemy_id, was_hit
-    for m in messages: # TODO consider iterating backwards through messages
+    for m in messages:
         if len(m) == 0: # Empty messages or trailing ;
             pass
         elif m[0].isdigit(): # Other player position
@@ -433,7 +433,7 @@ def send_responses(responses):
     if len(responses) != 0: # Do not send an empty message.
         tcp_client.send_server(';'.join(str(x) for x in responses) + ';')
 
-def play(game_state=None):  # Todo: 1.change input method to FPGA input  2.send data to server
+def play(game_state=None):
     pygame.display.set_caption('Space Invaders')
     # add fps to synchronise the game on different devices
     clock = pygame.time.Clock()
