@@ -3,6 +3,7 @@ import time
 
 TIMEOUT = 0
 N = 10 # The number of iterations of RTT that are calculated.
+BUFFER_SIZE = 1024
 
 class TCPClient:
 
@@ -29,7 +30,7 @@ class TCPClient:
     def recv_server(self):
         response = ''
         try: # Since the socket is non-blocking, an exception is thrown if there is nothing to receive.
-            response = self.clientsocket.recv(1024).decode()
+            response = self.clientsocket.recv(BUFFER_SIZE).decode()
         except:
             pass
         return response

@@ -13,7 +13,7 @@ def new_player(name, score, dynamodb):
             'name' : name,
             'score' : score
         }
-    )    
+    )
 
 # Gets the entry associated with a player's name from the leaderboard.
 # If no entry exists for this player, return None.

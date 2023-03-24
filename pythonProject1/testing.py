@@ -6,6 +6,7 @@ import os
 #import host
 from button import Button
 import atexit
+import json
 
 from tcp_client import *
 
@@ -35,21 +36,13 @@ colour_gold = '#b68f40'
 tcp_client = TCPClient()
 tcp_client.connect_to_server()
 
+game_in_progress = False
+
 # Open a file to store the player's lives. This is accessed by receive.py to
 # display the lives on the FPGA.
 life_file = open('life.txt', 'w')
 life_file.write('0')
 life_file.close()
-
-# If the game crashes, send a disconnect message to the server so that it
-# knows to go back to a state of waiting for new clients.
-def exit_handler():
-    tcp_client.send_server('x')
-    tcp_client.close()
-    life_file.close()
-
-atexit.register(exit_handler)
-
 
 class Bunker:
     def __init__(self, X, Y, Health):
@@ -267,6 +260,54 @@ rtt = 0 # Round trip time between peers.
 frame_delay = 0 # rtt -> frame delay
 fps = 60
 
+# If the game crashes, send a disconnect message to the server so that it
+# knows to go back to a state of waiting for new clients.
+def exit_handler():
+
+    if game_in_progress:
+        game_state = {}
+        game_state['player_name'] = [player1_name, player2_name]
+        game_state['player_score'] = [Player1.Score, Player2.Score]
+        game_state['player_lives'] = [Player1.Lives, Player2.Lives]
+        game_state['player_x'] = [Player1.X, Player2.X]
+        game_state['player_bullet_x'] = [player1_bulletX, player2_bulletX]
+        game_state['player_bullet_y'] = [player1_bulletY, player2_bulletY]
+        game_state['enemy_x'] = enemyX
+        game_state['enemy_y'] = enemyY
+        game_state['enemy_xvel'] = enemyX_change
+        game_state['enemy_yvel'] = enemyY_change
+        game_state['enemy_bullet_x'] = enemy_bulletX
+        game_state['enemy_bullet_y'] = enemy_bulletY
+        game_state['enemy_vel'] = enemy_vel
+        bunker_health = []
+        for bunker in bunkers:
+            bunker_health.append(bunker.Health)
+        game_state['bunker_health'] = bunker_health
+        # message = 'z' + str(Player1.Score) + ':' + str(Player2.Score) + ':' + str(Player1.X) + ':'
+        # message += str(Player2.X) + ':' + str(player1_bulletX) + ':' + str(player1_bulletY) + ':'
+        # message += str(player2_bulletX) + ':' + str(player2_bulletY) + ':'
+        # enemy_x = ''
+        # enemy_y = ''
+        # enemy_xvel = ''
+        # enemy_yvel = ''
+        # for i in range(num_of_enemies):
+        #     enemy_x += str(enemyX[i]) + ':'
+        #     enemy_y += str(enemyY[i]) + ':'
+        #     enemy_xvel += str(enemyX_change[i]) + ':'
+        #     enemy_yvel += str(enemyY_change[i]) + ':'
+        # message += enemy_x + enemy_y + enemy_xvel + enemy_yvel
+        # message += str(enemy_bulletX) + ':' + str(enemy_bulletY)
+        message = json.dumps(game_state, separators=(',', ':'))
+        print('Size of game state: ' + str(len(message)) + ' characters.')
+        tcp_client.send_server('z' + message)
+    else:
+        tcp_client.send_server('x')
+        
+    tcp_client.close()
+    life_file.close()
+
+atexit.register(exit_handler)
+
 def parse_ingame():
     messages = tcp_client.recv_server().split(';')
     global player1X_change, player2X_change, enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY, player2_bulletY, killed, unavailable, enemy_vel
@@ -326,6 +367,10 @@ def parse_ingame():
             Player2.lose_lives()
             was_hit = False
             print('Other player got hit.')
+        elif m == 'x': # Client kicked off from game
+            global game_in_progress
+            game_in_progress = False
+            raise SystemExit
         else:
             print("Error: received message " + m)
 
@@ -333,7 +378,7 @@ def send_responses(responses):
     if len(responses) != 0: # Do not send an empty message.
         tcp_client.send_server(';'.join(str(x) for x in responses) + ';')
 
-def play():  # Todo: 1.change input method to FPGA input  2.send data to server
+def play(game_state=None):  # Todo: 1.change input method to FPGA input  2.send data to server
     pygame.display.set_caption('Space Invaders')
     # add fps to synchronise the game on different devices
     clock = pygame.time.Clock()
@@ -341,7 +386,8 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
     EnemyLevelUp()
     # Game Loop
     global player1X_change, player2X_change, enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY, player2_bulletY, killed, unavailable, enemy_vel
-    global hit_enemy_id, was_hit, fps, rtt, frame_delay
+    global hit_enemy_id, was_hit, fps, rtt, frame_delay, game_in_progress, player2_name
+    global Player1, Player2, enemyX, enemyY, enemyX_change, enemyY_change
     running = True
     over = False
     I_Won = False
@@ -350,6 +396,48 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
     life_file = open('life.txt', 'w')
     life_file.write(str(PLAYER_LIVES))
     life_file.close()
+
+    game_in_progress = True
+
+    if game_state != None:
+        player_name = game_state['player_name']
+        player_score = game_state['player_score']
+        player_lives = game_state['player_lives']
+        player_x = game_state['player_x']
+        player_bullet_x = game_state['player_bullet_x']
+        player_bullet_y = game_state['player_bullet_y']
+        i = 1 if player_name[1] == player1_name else 0 # Player 1 name has already been entered by the player.
+        player2_name = player_name[1 - i]
+        Player1.Score = player_score[i]
+        Player2.Score = player_score[1 - i]
+        Player1.Lives = player_lives[i]
+        Player2.Lives = player_lives[1 - i]
+        Player1.X = player_x[i]
+        Player2.X = player_x[1 - i]
+        player1_bulletX = player_bullet_x[i]
+        player1_bulletY = player_bullet_y[i]
+        player2_bulletX = player_bullet_x[1 - i]
+        player2_bulletY = player_bullet_y[1 - i]
+        enemyX = game_state['enemy_x']
+        enemyY = game_state['enemy_y']
+        enemyX_change = game_state['enemy_xvel']
+        enemyY_change = game_state['enemy_yvel']
+        enemy_bulletX = game_state['enemy_bullet_x']
+        enemy_bulletY = game_state['enemy_bullet_y']
+        enemy_vel = game_state['enemy_vel']
+        bunker_health = game_state['bunker_health']
+        for i in range(len(bunker_health)):
+            bunkers[i].Health = bunker_health[i]
+            if bunkers[i].Health == 0:
+                bunkers[i].X = -50
+        if enemy_bulletY == 1000:
+            enemy_bullet_state = 'ready'
+        else:
+            enemy_bullet_state = 'fire'
+        for i in range(num_of_enemies):
+            if enemyY[i] == 1000:
+                killed += 1
+                unavailable.append(i)
 
     while running:
         # RGB Red, Green, Blue color
@@ -425,6 +513,8 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
                 # (and inform server of player scores)
                 send_responses(responses) # Flush all remaining peer repsonses
 
+                game_in_progress = False
+
                 game_over_time = pygame.time.get_ticks()
                 while pygame.time.get_ticks() - game_over_time < 3000: #display game over for 3 seconds
                     # Render the game over text
@@ -436,6 +526,8 @@ def play():  # Todo: 1.change input method to FPGA input  2.send data to server
 
             if enemyX[i] == 1000: #when an enemy is killed, its x position sets to 1000(removed from screen)
                 enemyX_change[i] = 0 #cannot move
+                # Note that setting xchange = 0 does nothing since it is updated when the enemy reaches the edge of the screen.
+                # ychange is a better indicator of whether an enemy is alive or not.
                 enemyY_change[i] = 0
 
             enemyX[i] += enemyX_change[i] #moves horizontally
@@ -587,15 +679,21 @@ def leaderboard():
 
 def waiting():
     pygame.display.set_caption('Wait for player')
+    game_state = None
+    global player2_name
     while True: # Wait until server sends notification of game start.
         response = tcp_client.recv_server()
-        if response != '' and response[0] == 's':
-            player2_name = response[1:]
-            # Consider adding RTT calculation here
-            # rtt = tcp_client.calc_RTT()
-            # print('RTT calculated as ' + str(rtt) + ' s.')
-            # frame_delay = round(rtt * fps)
-            break
+        if response != '':
+            if response[0] == 's':
+                player2_name = response[1:]
+                # Consider adding RTT calculation here
+                # rtt = tcp_client.calc_RTT()
+                # print('RTT calculated as ' + str(rtt) + ' s.')
+                # frame_delay = round(rtt * fps)
+                break
+            elif response[0] == 'z':
+                game_state = json.loads(response[1:])
+                break
 
         screen.blit(menu_bg, (0, 0))
         return_text = font.render("Please wait for the other player to join", True, (255, 255, 255))
@@ -608,7 +706,10 @@ def waiting():
                 if event.key == pygame.K_RETURN:
                     start_menu()
         pygame.display.update()
-    play()
+    if (game_state == None):
+        play()
+    else:
+        play(game_state)
 
 
 def start_menu():  # Todo: change input method to FPGA input

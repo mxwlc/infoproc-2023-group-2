@@ -1,8 +1,13 @@
 import time
 import random
+import json
 
 from game_server_logic.leaderboard_functions import *
 from game_server_logic.create_leaderboard import *
+
+from game_server_logic.recovery_functions import *
+
+from game_server_logic.decimal_encoder import *
 
 NUM_ENEMIES = 44
 SCORE_INCREMENT = 10 # How much a player's score should increase by upon killing an enemy.
@@ -50,10 +55,45 @@ class GameServer:
         self.reset_game_state()
         print('Ended game.')
     
+    def parse_ingame_exit(self, message, ips, recovery_identifiers):
+        identifier = ips[0] + ';' + self.player_name[0] + ';' + ips[1] + ';' + self.player_name[1]
+        recovery_identifiers.append(identifier)
+
+        game_state = json.loads(message[1:])
+        new_recovery(identifier, game_state)
+
+        # game_state = message[1:].split(':')
+        # self.player_score[0] = game_state[0]
+        # self.player_score[1] = game_state[1]
+        # player1_pos = game_state[2 + client_index]
+        # player2_pos = game_state[3 - client_index] # If this is player 2, client_index=1 so these indices
+        #                                            # will get swapped.
+        # player1_bullet_x = game_state[4 + client_index * 2]
+        # player1_bullet_y = game_state[5 + client_index * 2]
+        # player2_bullet_x = game_state[6 - client_index * 2]
+        # player2_bullet_y = game_state[7 - client_index * 2]
+        # enemy_x = []
+        # for i in range(44):
+        #     enemy_x.append(game_state[i + 8])
+        # enemy_y = []
+        # for i in range(44):
+        #     enemy_y.append(game_state[i + 52])
+        # enemy_xvel = []
+        # for i in range(44):
+        #     enemy_xvel.append(game_state[i + 96])
+        # enemy_yvel = []
+        # for i in range(44):
+        #     enemy_yvel.append(game_state[i + 140])
+        # enemy_bullet_x = game_state[184]
+        # enemy_bullet_y = game_state[185]
+        # new_recovery(identifier, self.player_score[0], self.player_score[1], player1_pos, player2_pos, player1_bullet_x,
+        #              player1_bullet_y, player2_bullet_x, player2_bullet_y, enemy_x, enemy_y, enemy_xvel, enemy_yvel,
+        #              enemy_bullet_x, enemy_bullet_y)
+    
     # Parses messages if the game is in progress.
     # Return messages: messages to return to the client that sent the incoming (raw) message.
     # Relay messages: messages to relay to the other client.
-    def parse_ingame(self, client_index, raw_message, return_messages, relay_messages):
+    def parse_ingame(self, client_index, raw_message, return_messages, relay_messages, ips, recovery_identifiers):
         messages = raw_message.split(';')
         sent_position = False
         for m in messages: # TODO consider iterating backwards through messages
@@ -102,8 +142,16 @@ class GameServer:
                 self.player_score[1] = int(pair[1])
                 self.end_game()
                 break # Don't need to process any more messages after game ends
+            elif m[0] == 'z': # Notification of in-game exit
+                self.parse_ingame_exit(m, ips, recovery_identifiers)
+                relay_messages.append('x')
+                self.reset_game_state()
+                return True
+            elif m == 'x': # Notification of out-of-game exit
+                break
             else:
                 print("Error: received in-game message " + m)
+        return False
     
     # Parses messages if the game is not in progress.
     def parse_outofgame(self, client_index, raw_message):
@@ -121,6 +169,8 @@ class GameServer:
             self.player_ready[client_index] = True
             self.player_name[client_index] = raw_message[1:]
             print('Player ' + str(client_index + 1) + ' is ready, name: ' + self.player_name[client_index])
+        elif raw_message == 'x': # Client exit
+            pass
         else:
             print("Error: received out-of-game message " + raw_message)
             # Note that there is a delay between one player claiming the end of the game and the other player
@@ -154,22 +204,23 @@ class GameServer:
     # Main update loop of server-side game logic.
     # Arguments: raw TCP/UDP messages from clients.
     # Returns: messages to send back to clients (in same order).
-    def update(self, raw_message1, raw_message2):
+    def update(self, raw_message1, raw_message2, ips, recovery_identifiers):
 
         if raw_message1 != '' or raw_message2 != '':
             print('Received: 1 = ' + raw_message1 + ' 2 = ' + raw_message2)
 
         response1, response2 = '', ''
+        crash_game = False
 
         if self.game_in_progress:
             
             ## Process messages from clients and take direct action
             arr1, arr2 = [], []
-            self.parse_ingame(0, raw_message1, arr1, arr2)
+            crash_game = self.parse_ingame(0, raw_message1, arr1, arr2, ips, recovery_identifiers)
 
             if self.game_in_progress: # Check again since parsing messages may have ended the game
 
-                self.parse_ingame(1, raw_message2, arr2, arr1)
+                crash_game = self.parse_ingame(1, raw_message2, arr2, arr1, ips, recovery_identifiers)
 
                 ## Update time
                 self.update_time()
@@ -203,11 +254,25 @@ class GameServer:
             ## the leaderboard are mutually exclusive.
             if self.player_ready[0] and self.player_ready[1]:
                 self.start_game()
-                response1 = 's' + self.player_name[1]
-                response2 = 's' + self.player_name[0]
+                identifier = ips[0] + ';' + self.player_name[0] + ';' + ips[1] + ';' + self.player_name[1]
+                if identifier in recovery_identifiers:
+                    game_state = get_recovery(identifier)['game_state']
+                    for i in range(2):
+                        self.player_bullets[i] = game_state['player_bullet_y'][i] != 500
+                    for i in range(NUM_ENEMIES):
+                        if game_state['enemy_yvel'][i] == 0:
+                            self.killed_enemies += 1
+                            self.remaining_enemies[i] = False
+                    self.enemy_bullet = game_state['enemy_bullet_y'] != 1000
+                    response = 'z' + json.dumps(game_state, separators=(',', ':'), cls=DecimalEncoder)
+                    response1 = response
+                    response2 = response
+                else:
+                    response1 = 's' + self.player_name[1]
+                    response2 = 's' + self.player_name[0]
         
         # Do not send an empty string.
         if response1 != '' or response2 != '':
             print('Sent: 1 = ' + response1 + ' 2 = ' + response2)
 
-        return response1, response2
+        return response1, response2, crash_game
