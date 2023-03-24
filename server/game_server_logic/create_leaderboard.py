@@ -1,9 +1,11 @@
-import boto3
-
-### Run this script to set up the leaderboard.
+# Run this script to set up the leaderboard.
+# It only needs to be run once on the EC2 instance. However, it can be run multiple
+# times with no negative effect if that is more convenient.
 
 # The leaderboard has only one partition, which is leaderboard=1.
 # In this partition the sort key is the name of the player, and the value is their score.
+
+import boto3
 
 def create_leaderboard():
 

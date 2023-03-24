@@ -1,12 +1,18 @@
+# Import this class into server.py to execute the server-side game logic.
+# After instantiating the class, the only method needed to interface with it is update.
+
 import time
 import random
 import json
 
+# Import leaderboard interface.
 from game_server_logic.leaderboard_functions import *
 from game_server_logic.create_leaderboard import *
 
+# Import recovery save interface.
 from game_server_logic.recovery_functions import *
 
+# Import Decimal to int encoder.
 from game_server_logic.decimal_encoder import *
 
 NUM_ENEMIES = 44
@@ -60,6 +66,7 @@ class GameServer:
         identifier = [[ips[0], self.player_name[0]], [ips[1], self.player_name[1]]]
         game_state = json.loads(message[1:])
         new_recovery(str(identifier), game_state)
+        print('Created new recovery save with identifier ' + str(identifier) + '.')
     
     # Parses messages if the game is in progress.
     # Return messages: messages to return to the client that sent the incoming (raw) message.
@@ -111,8 +118,8 @@ class GameServer:
                 print('Enemy bullet destroyed.')
             elif m[0] == 'g': # Notification of game end
                 pair = m[1:].split(':')
-                self.player_score[0] = int(pair[0])
-                self.player_score[1] = int(pair[1])
+                for i in range(2):
+                    self.player_score[i] = int(pair[i])
                 self.end_game()
                 break # Don't need to process any more messages after game ends
             elif m[0] == 'z': # Notification of in-game exit
@@ -123,7 +130,7 @@ class GameServer:
             elif m == 'x': # Notification of out-of-game exit
                 break
             else:
-                print("Error: received in-game message " + m)
+                print("Error: received in-game message " + m + '.')
         return False
     
     # Parses messages if the game is not in progress.
@@ -178,10 +185,10 @@ class GameServer:
     # Returns the messages for client 1 and 2.
     def load_from_save(self, recovery_db_response):
         game_state = recovery_db_response['game_state']
-        players_swapped = 1 if self.player_name[1] == game_state['player_name'][0] else 0
+        i = 1 if self.player_name[1] == game_state['player_name'][0] else 0
             # 1 if player 1 and player 2 are swapped in the game state record, 0 otherwise
-        self.player_bullets[players_swapped] = game_state['player_bullet_y'][0] != 500
-        self.player_bullets[1 - players_swapped] = game_state['player_bullet_y'][1] != 500
+        self.player_bullets[i] = game_state['player_bullet_y'][0] != 500
+        self.player_bullets[1 - i] = game_state['player_bullet_y'][1] != 500
         for i in range(NUM_ENEMIES):
             if game_state['enemy_yvel'][i] == 0:
                 self.killed_enemies += 1
@@ -199,7 +206,6 @@ class GameServer:
 
         response = ['', '']
         crash_game = False
-        skip = False
 
         if self.game_in_progress:
             
@@ -207,21 +213,21 @@ class GameServer:
 
             for i in range(2):
                 crash_game = self.parse_ingame(i, raw_message[i], temp_arr, ips)
-                if not self.game_in_progress: # Don't need to parse any more.
-                    break
+                if not self.game_in_progress:
+                    break # Don't need to parse any more.
             
             if self.game_in_progress: # Check if game is still in progress after parsing messages.
 
-                ## Update time
+                # Update time.
                 self.update_time()
 
-                ## See if we are on a new wave of enemies
+                # See if we are on a new wave of enemies.
                 if self.killed_enemies == NUM_ENEMIES:
                     self.killed_enemies = 0
                     for i in range(NUM_ENEMIES):
                         self.remaining_enemies[i] = True
 
-                ## Check if we can create a new enemy projectile
+                # Check if we can create a new enemy projectile.
                 enemy_bullet_message = self.create_enemy_bullet()
                 if enemy_bullet_message != '':
                     for i in range(2):
@@ -234,20 +240,18 @@ class GameServer:
 
         else:
 
-            ## Check for notifications of readiness and leaderboard requests
+            # Check for notifications of readiness and leaderboard requests.
             for i in range(2):
                 response[i] = self.parse_outofgame(i, raw_message[i])
 
-            ## Check if both players are ready so we can start the game.
-            ## Note that notifications of readiness and requests for the leaderboard are mutually exclusive.
+            # Check if both players are ready so we can start the game.
+            # Note that notifications of readiness and requests for the leaderboard are mutually exclusive.
             if self.player_ready[0] and self.player_ready[1]:
                 self.start_game()
                 pair1 = [ips[0], self.player_name[0]]
                 pair2 = [ips[1], self.player_name[1]]
                 id1 = [pair1, pair2]
                 id2 = [pair2, pair1]
-                # order1 = id1 in recovery_identifiers
-                # order2 = id2 in recovery_identifiers
                 recovery_db_response = get_recovery(str(id1))
                 if recovery_db_response == None:
                     recovery_db_response = get_recovery(str(id2))
@@ -255,13 +259,13 @@ class GameServer:
                 # two identical entries in the recovery database, just with the identifiers swapped,
                 # which is not possible because entries are deleted when accessed.
                 
+                # If there is a recovery save, load from that, otherwise start a fresh game.
                 if recovery_db_response != None:
                     response[0] = response[1] = self.load_from_save(recovery_db_response)
                 else:
                     for i in range(2):
                         response[i] = 's' + self.player_name[1 - i]
         
-        # Do not send an empty string.
         if response[0] != '' or response[1] != '':
             print('Sent: 1 = ' + response[0] + ' 2 = ' + response[1])
 

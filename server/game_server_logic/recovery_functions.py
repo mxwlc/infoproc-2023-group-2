@@ -1,9 +1,11 @@
+# Useful functions to manipulate game recovery saves in DynamoDB.
+# Used by GameServer.
+
 import boto3
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
-from decimal import Decimal
-
+# Create a new recovery save with the given identifier and game state dictionary.
 def new_recovery(identifier, game_state, dynamodb=None):
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
@@ -43,10 +45,8 @@ def new_recovery(identifier, game_state, dynamodb=None):
 #         }
 #     )
 
-# Gets a recovery save with a given identifier from the database, then deletes it.
+# Gets a recovery save with a given identifier, then deletes it.
 # If no recovery save with the given identifier can be found, this function returns None.
-# Note that recovery saves are meant to be single use; if the game crashes again, a new save
-# will be generated, with different game state data.
 def get_recovery(identifier, dynamodb=None):
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
@@ -61,6 +61,8 @@ def get_recovery(identifier, dynamodb=None):
                 'identifier' : identifier
             }
         )
+        # Note that recovery saves are meant to be single use; if the game crashes again,
+        # we can just generate another save with the new game state data.
     except:
         pass
     return item

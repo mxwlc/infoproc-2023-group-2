@@ -1,1 +1,0 @@
-This folder contains old client-side game scripts integrated with the TCP client. The TCP client logic will need to be moved to the new game script once it is finished.

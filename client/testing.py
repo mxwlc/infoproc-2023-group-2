@@ -259,8 +259,9 @@ frame_delay = 0 # rtt -> frame delay
 fps = 60
 game_in_progress = False
 
+# Inform the server of an in-game disconnect and send all necessary game state data as a JSON string.
 def save_game_state():
-    game_state = {}
+    game_state = {} # Create a dictionary with all necessary game data to be serialised to JSON.
     game_state['player_name'] = [player1_name, player2_name]
     game_state['player_score'] = [Player1.Score, Player2.Score]
     game_state['player_lives'] = [Player1.Lives, Player2.Lives]
@@ -278,12 +279,56 @@ def save_game_state():
     for bunker in bunkers:
         bunker_health.append(bunker.Health)
     game_state['bunker_health'] = bunker_health
-    message = json.dumps(game_state, separators=(',', ':'))
+    message = json.dumps(game_state, separators=(',', ':')) # Generate JSON string.
     print('Size of game state: ' + str(len(message)) + ' characters.')
     tcp_client.send_server('z' + message)
 
-# If the game crashes, send a disconnect message to the server so that it
-# knows to go back to a state of waiting for new clients.
+# Load the given game state.
+def load_game_state(game_state):
+    global enemy_bullet_state, player1_bulletX, player2_bulletX, enemy_bulletX, enemy_bulletY, player1_bulletY
+    global hit_enemy_id, was_hit, player2_name, Player1, Player2, enemyX, enemyY, enemyX_change, enemyY_change
+    global player2_bulletY, killed, unavailable, enemy_vel
+    player_name = game_state['player_name']
+    player_score = game_state['player_score']
+    player_lives = game_state['player_lives']
+    player_x = game_state['player_x']
+    player_bullet_x = game_state['player_bullet_x']
+    player_bullet_y = game_state['player_bullet_y']
+    i = 1 if player_name[1] == player1_name else 0 # Player 1 name has already been entered by the player.
+    player2_name = player_name[1 - i]
+    Player1.Score = player_score[i]
+    Player2.Score = player_score[1 - i]
+    Player1.Lives = player_lives[i]
+    Player2.Lives = player_lives[1 - i]
+    Player1.X = player_x[i]
+    Player2.X = player_x[1 - i]
+    player1_bulletX = player_bullet_x[i]
+    player1_bulletY = player_bullet_y[i]
+    player2_bulletX = player_bullet_x[1 - i]
+    player2_bulletY = player_bullet_y[1 - i]
+    enemyX = game_state['enemy_x']
+    enemyY = game_state['enemy_y']
+    enemyX_change = game_state['enemy_xvel']
+    enemyY_change = game_state['enemy_yvel']
+    enemy_bulletX = game_state['enemy_bullet_x']
+    enemy_bulletY = game_state['enemy_bullet_y']
+    enemy_vel = game_state['enemy_vel']
+    bunker_health = game_state['bunker_health']
+    for i in range(len(bunker_health)):
+        bunkers[i].Health = bunker_health[i]
+        if bunkers[i].Health == 0:
+            bunkers[i].X = -50
+    if enemy_bulletY == 1000:
+        enemy_bullet_state = 'ready'
+    else:
+        enemy_bullet_state = 'fire'
+    for i in range(num_of_enemies):
+        if enemyY[i] == 1000:
+            killed += 1
+            unavailable.append(i)
+
+# Handle exits gracefully by communicating with the server.
+# If a game was ongoing, then the game state will be sent to create a recovery save.
 def exit_handler():
 
     if game_in_progress:
@@ -379,8 +424,9 @@ def parse_ingame():
             game_in_progress = False
             raise SystemExit
         else:
-            print("Error: received message " + m)
+            print('Error: received in-game message ' + m + '.')
 
+# Formats a list of messages into a string and sends it to the server.
 def send_responses(responses):
     if len(responses) != 0: # Do not send an empty message.
         tcp_client.send_server(';'.join(str(x) for x in responses) + ';')
@@ -407,44 +453,7 @@ def play(game_state=None):  # Todo: 1.change input method to FPGA input  2.send 
     game_in_progress = True
 
     if game_state != None:
-        player_name = game_state['player_name']
-        player_score = game_state['player_score']
-        player_lives = game_state['player_lives']
-        player_x = game_state['player_x']
-        player_bullet_x = game_state['player_bullet_x']
-        player_bullet_y = game_state['player_bullet_y']
-        i = 1 if player_name[1] == player1_name else 0 # Player 1 name has already been entered by the player.
-        player2_name = player_name[1 - i]
-        Player1.Score = player_score[i]
-        Player2.Score = player_score[1 - i]
-        Player1.Lives = player_lives[i]
-        Player2.Lives = player_lives[1 - i]
-        Player1.X = player_x[i]
-        Player2.X = player_x[1 - i]
-        player1_bulletX = player_bullet_x[i]
-        player1_bulletY = player_bullet_y[i]
-        player2_bulletX = player_bullet_x[1 - i]
-        player2_bulletY = player_bullet_y[1 - i]
-        enemyX = game_state['enemy_x']
-        enemyY = game_state['enemy_y']
-        enemyX_change = game_state['enemy_xvel']
-        enemyY_change = game_state['enemy_yvel']
-        enemy_bulletX = game_state['enemy_bullet_x']
-        enemy_bulletY = game_state['enemy_bullet_y']
-        enemy_vel = game_state['enemy_vel']
-        bunker_health = game_state['bunker_health']
-        for i in range(len(bunker_health)):
-            bunkers[i].Health = bunker_health[i]
-            if bunkers[i].Health == 0:
-                bunkers[i].X = -50
-        if enemy_bulletY == 1000:
-            enemy_bullet_state = 'ready'
-        else:
-            enemy_bullet_state = 'fire'
-        for i in range(num_of_enemies):
-            if enemyY[i] == 1000:
-                killed += 1
-                unavailable.append(i)
+        load_game_state(game_state)
 
     while running:
         # RGB Red, Green, Blue color
@@ -694,14 +703,14 @@ def waiting():
     while True: # Wait until server sends notification of game start.
         response = tcp_client.recv_server()
         if response != '':
-            if response[0] == 's':
+            if response[0] == 's': # Starting a fresh game.
                 player2_name = response[1:]
                 # Consider adding RTT calculation here
                 # rtt = tcp_client.calc_RTT()
                 # print('RTT calculated as ' + str(rtt) + ' s.')
                 # frame_delay = round(rtt * fps)
                 break
-            elif response[0] == 'z':
+            elif response[0] == 'z': # Loading from a recovery save.
                 game_state = json.loads(response[1:])
                 break
 

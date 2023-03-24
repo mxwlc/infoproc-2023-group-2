@@ -11,7 +11,7 @@ BUFFER_SIZE = 1024
 # Create a welcome socket.
 port = 5555
 tcpserver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-tcpserver.bind(('0.0.0.0', port))
+tcpserver.bind(('0.0.0.0', port)) # Listen for all addresses.
 tcpserver.listen(2)
 tcpserver.settimeout(TIMEOUT)
 

@@ -1,10 +1,9 @@
+# Run this script to clear the leaderboard.
+# It works by just deleting the table and then re-initialising it.
+
 import boto3
 from create_leaderboard import *
 import time
-
-### Run this script to clear the leaderboard.
-
-# It works by just deleting the table and then re-initialising it.
 
 def clear_leaderboard():
 

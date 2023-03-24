@@ -1,9 +1,8 @@
-import boto3
-
-### Run this script to set up the game recovery DB.
-
+# Run this script to set up the game recovery DB.
 # There is only one partition, which is recovery = 1.
 # In this partition the sort key is an identifier associated with the game state, which is stored by the server.
+
+import boto3
 
 def create_recovery():
 

@@ -1,10 +1,9 @@
+# Run this script to clear the recovery database.
+# It works by just deleting the table and then re-initialising it.
+
 import boto3
 from create_recovery import *
 import time
-
-### Run this script to clear the recovery database.
-
-# It works by just deleting the table and then re-initialising it.
 
 def clear_recovery():
 
