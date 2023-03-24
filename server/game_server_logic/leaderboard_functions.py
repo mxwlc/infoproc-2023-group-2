@@ -1,3 +1,6 @@
+# Useful functions to manipulate the leaderboard in DynamoDB.
+# Used by GameServer.
+
 import boto3
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
@@ -13,7 +16,7 @@ def new_player(name, score, dynamodb):
             'name' : name,
             'score' : score
         }
-    )    
+    )
 
 # Gets the entry associated with a player's name from the leaderboard.
 # If no entry exists for this player, return None.
@@ -28,7 +31,7 @@ def get_player(name, dynamodb):
     return item
 
 # Updates the score of an existing player if their new score is higher than their old score.
-# The old score must have been fetched previously and is provided in repsonse.
+# response is the result of a get_player call.
 def update_score(name, score, response, dynamodb):
     if score > response['score']:
         table = dynamodb.Table('Leaderboard')
@@ -47,7 +50,7 @@ def update_score(name, score, response, dynamodb):
 
 # Update leaderboard with new score. 3 cases to consider:
 # 1. Player does not exist in leaderboard yet, so add them.
-# 2. Player does exist in leaderboard, but their old score was higher.
+# 2. Player does exist in leaderboard, but their old score is higher.
 # 3. Player does exist in leaderboard, and their new score is higher.
 def update_leaderboard(name, score):
     print('name: ' + name + ' score: ' + str(score))
@@ -63,6 +66,6 @@ def get_leaderboard():
     
     table = dynamodb.Table('Leaderboard')
     response = table.query(
-        KeyConditionExpression = Key('leaderboard').eq(1) # The default leaderboard has ID 1.
+        KeyConditionExpression = Key('leaderboard').eq(1) # The only partition key is 1.
     )
     return response['Items']

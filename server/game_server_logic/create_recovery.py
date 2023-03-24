@@ -1,35 +1,32 @@
-# Run this script to set up the leaderboard.
-# It only needs to be run once on the EC2 instance. However, it can be run multiple
-# times with no negative effect if that is more convenient.
-
-# The leaderboard has only one partition, which is leaderboard=1.
-# In this partition the sort key is the name of the player, and the value is their score.
+# Run this script to set up the game recovery DB.
+# There is only one partition, which is recovery = 1.
+# In this partition the sort key is an identifier associated with the game state, which is stored by the server.
 
 import boto3
 
-def create_leaderboard():
+def create_recovery():
 
     dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
 
     table = dynamodb.create_table(
-        TableName = 'Leaderboard',
+        TableName = 'Recovery',
         KeySchema = [
             {
-                'AttributeName' : 'leaderboard',
+                'AttributeName' : 'recovery',
                 'KeyType' : 'HASH' # Partition key
             },
             {
-                'AttributeName' : 'name',
+                'AttributeName' : 'identifier',
                 'KeyType' : 'RANGE' # Sort key
             }
         ],
         AttributeDefinitions = [
             {
-                'AttributeName' : 'leaderboard',
+                'AttributeName' : 'recovery',
                 'AttributeType' : 'N'
             },
             {
-                'AttributeName' : 'name',
+                'AttributeName' : 'identifier',
                 'AttributeType' : 'S'
             },
         ],
@@ -40,4 +37,4 @@ def create_leaderboard():
     )
 
 if __name__ == '__main__':
-    create_leaderboard()
+    create_recovery()

@@ -3,13 +3,14 @@ import time
 
 TIMEOUT = 0
 N = 10 # The number of iterations of RTT that are calculated.
+BUFFER_SIZE = 1024
 
 class TCPClient:
 
     def __init__(self):
         # NOTE since the public IP address of the EC2 instance changes every time it is started,
-        # self.server_name must be updated accordingly.
-        self.server_name = '13.40.52.10'
+        # self.server_name must be updated every time as well.
+        self.server_name = '18.168.201.84'
         self.server_port = 5555
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -29,7 +30,7 @@ class TCPClient:
     def recv_server(self):
         response = ''
         try: # Since the socket is non-blocking, an exception is thrown if there is nothing to receive.
-            response = self.clientsocket.recv(1024).decode()
+            response = self.clientsocket.recv(BUFFER_SIZE).decode()
         except:
             pass
         return response

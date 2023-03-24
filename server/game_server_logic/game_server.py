@@ -1,8 +1,19 @@
+# Import this class into server.py to execute the server-side game logic.
+# After instantiating the class, the only method needed to interface with it is update.
+
 import time
 import random
+import json
 
+# Import leaderboard interface.
 from game_server_logic.leaderboard_functions import *
 from game_server_logic.create_leaderboard import *
+
+# Import recovery save interface.
+from game_server_logic.recovery_functions import *
+
+# Import Decimal to int encoder.
+from game_server_logic.decimal_encoder import *
 
 NUM_ENEMIES = 44
 SCORE_INCREMENT = 10 # How much a player's score should increase by upon killing an enemy.
@@ -50,10 +61,19 @@ class GameServer:
         self.reset_game_state()
         print('Ended game.')
     
+    # Create a new recovery save in the database with the given game state data.
+    def parse_ingame_exit(self, message, ips):
+        identifier = [[ips[0], self.player_name[0]], [ips[1], self.player_name[1]]]
+        game_state = json.loads(message[1:])
+        new_recovery(str(identifier), game_state)
+        print('Created new recovery save with identifier ' + str(identifier) + '.')
+    
     # Parses messages if the game is in progress.
     # Return messages: messages to return to the client that sent the incoming (raw) message.
     # Relay messages: messages to relay to the other client.
-    def parse_ingame(self, client_index, raw_message, return_messages, relay_messages):
+    def parse_ingame(self, client_index, raw_message, responses, ips):
+        return_messages = responses[client_index]
+        relay_messages = responses[1 - client_index]
         messages = raw_message.split(';')
         sent_position = False
         for m in messages: # TODO consider iterating backwards through messages
@@ -98,12 +118,20 @@ class GameServer:
                 print('Enemy bullet destroyed.')
             elif m[0] == 'g': # Notification of game end
                 pair = m[1:].split(':')
-                self.player_score[0] = int(pair[0])
-                self.player_score[1] = int(pair[1])
+                for i in range(2):
+                    self.player_score[i] = int(pair[i])
                 self.end_game()
                 break # Don't need to process any more messages after game ends
+            elif m[0] == 'z': # Notification of in-game exit
+                self.parse_ingame_exit(m, ips)
+                relay_messages.append('x')
+                self.reset_game_state()
+                return True
+            elif m == 'x': # Notification of out-of-game exit
+                break
             else:
-                print("Error: received in-game message " + m)
+                print("Error: received in-game message " + m + '.')
+        return False
     
     # Parses messages if the game is not in progress.
     def parse_outofgame(self, client_index, raw_message):
@@ -121,6 +149,8 @@ class GameServer:
             self.player_ready[client_index] = True
             self.player_name[client_index] = raw_message[1:]
             print('Player ' + str(client_index + 1) + ' is ready, name: ' + self.player_name[client_index])
+        elif raw_message == 'x': # Client exit
+            pass
         else:
             print("Error: received out-of-game message " + raw_message)
             # Note that there is a delay between one player claiming the end of the game and the other player
@@ -151,63 +181,92 @@ class GameServer:
         else:
             return ''
     
+    # Loads a game from a recovery save.
+    # Returns the messages for client 1 and 2.
+    def load_from_save(self, recovery_db_response):
+        game_state = recovery_db_response['game_state']
+        i = 1 if self.player_name[1] == game_state['player_name'][0] else 0
+            # 1 if player 1 and player 2 are swapped in the game state record, 0 otherwise
+        self.player_bullets[i] = game_state['player_bullet_y'][0] != 500
+        self.player_bullets[1 - i] = game_state['player_bullet_y'][1] != 500
+        for i in range(NUM_ENEMIES):
+            if game_state['enemy_yvel'][i] == 0:
+                self.killed_enemies += 1
+                self.remaining_enemies[i] = False
+        self.enemy_bullet = game_state['enemy_bullet_y'] != 1000
+        return 'z' + json.dumps(game_state, separators=(',', ':'), cls=DecimalEncoder)
+
     # Main update loop of server-side game logic.
     # Arguments: raw TCP/UDP messages from clients.
     # Returns: messages to send back to clients (in same order).
-    def update(self, raw_message1, raw_message2):
+    def update(self, raw_message, ips):
 
-        if raw_message1 != '' or raw_message2 != '':
-            print('Received: 1 = ' + raw_message1 + ' 2 = ' + raw_message2)
+        if raw_message[0] != '' or raw_message[1] != '':
+            print('Received: 1 = ' + raw_message[0] + ' 2 = ' + raw_message[1])
 
-        response1, response2 = '', ''
+        response = ['', '']
+        crash_game = False
 
         if self.game_in_progress:
             
-            ## Process messages from clients and take direct action
-            arr1, arr2 = [], []
-            self.parse_ingame(0, raw_message1, arr1, arr2)
+            temp_arr = [[], []]
 
-            if self.game_in_progress: # Check again since parsing messages may have ended the game
+            for i in range(2):
+                crash_game = self.parse_ingame(i, raw_message[i], temp_arr, ips)
+                if not self.game_in_progress:
+                    break # Don't need to parse any more.
+            
+            if self.game_in_progress: # Check if game is still in progress after parsing messages.
 
-                self.parse_ingame(1, raw_message2, arr2, arr1)
-
-                ## Update time
+                # Update time.
                 self.update_time()
 
-                ## See if we are on a new wave of enemies
+                # See if we are on a new wave of enemies.
                 if self.killed_enemies == NUM_ENEMIES:
                     self.killed_enemies = 0
                     for i in range(NUM_ENEMIES):
                         self.remaining_enemies[i] = True
 
-                ## Check if we can create a new enemy projectile
+                # Check if we can create a new enemy projectile.
                 enemy_bullet_message = self.create_enemy_bullet()
                 if enemy_bullet_message != '':
-                    arr1.append(enemy_bullet_message)
-                    arr2.append(enemy_bullet_message)
+                    for i in range(2):
+                        temp_arr[i].append(enemy_bullet_message)
 
             # Join messages from array together into a single string to send.
-            if len(arr1) != 0:
-                response1 = ';'.join(str(x) for x in arr1) + ';'
-            if len(arr2) != 0:
-                response2 = ';'.join(str(x) for x in arr2) + ';'
+            for i in range(2):
+                if len(temp_arr[i]) != 0:
+                    response[i] = ';'.join(str(x) for x in temp_arr[i]) + ';'
 
         else:
 
-            ## Check for notifications of readiness and leaderboard requests
-            response1 = self.parse_outofgame(0, raw_message1)
-            response2 = self.parse_outofgame(1, raw_message2)
+            # Check for notifications of readiness and leaderboard requests.
+            for i in range(2):
+                response[i] = self.parse_outofgame(i, raw_message[i])
 
-            ## Check if both players are ready so we can start the game.
-            ## Note that we are assuming that notifications of readiness and requests for
-            ## the leaderboard are mutually exclusive.
+            # Check if both players are ready so we can start the game.
+            # Note that notifications of readiness and requests for the leaderboard are mutually exclusive.
             if self.player_ready[0] and self.player_ready[1]:
                 self.start_game()
-                response1 = 's' + self.player_name[1]
-                response2 = 's' + self.player_name[0]
+                pair1 = [ips[0], self.player_name[0]]
+                pair2 = [ips[1], self.player_name[1]]
+                id1 = [pair1, pair2]
+                id2 = [pair2, pair1]
+                recovery_db_response = get_recovery(str(id1))
+                if recovery_db_response == None:
+                    recovery_db_response = get_recovery(str(id2))
+                # get_recovery(str(id1)) and get_recovery(str(id2)) cannot both be non-null since this would imply
+                # two identical entries in the recovery database, just with the identifiers swapped,
+                # which is not possible because entries are deleted when accessed.
+                
+                # If there is a recovery save, load from that, otherwise start a fresh game.
+                if recovery_db_response != None:
+                    response[0] = response[1] = self.load_from_save(recovery_db_response)
+                else:
+                    for i in range(2):
+                        response[i] = 's' + self.player_name[1 - i]
         
-        # Do not send an empty string.
-        if response1 != '' or response2 != '':
-            print('Sent: 1 = ' + response1 + ' 2 = ' + response2)
+        if response[0] != '' or response[1] != '':
+            print('Sent: 1 = ' + response[0] + ' 2 = ' + response[1])
 
-        return response1, response2
+        return response, crash_game

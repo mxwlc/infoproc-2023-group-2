@@ -1,15 +1,15 @@
-# Run this script to clear the leaderboard.
+# Run this script to clear the recovery database.
 # It works by just deleting the table and then re-initialising it.
 
 import boto3
-from create_leaderboard import *
+from create_recovery import *
 import time
 
-def clear_leaderboard():
+def clear_recovery():
 
     try:
         dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
-        table = dynamodb.Table('Leaderboard')
+        table = dynamodb.Table('Recovery')
         table.delete()
         print('Table deleted.')
     except:
@@ -21,10 +21,10 @@ def clear_leaderboard():
     # Trying to recreate the leaderboard immediately throws exception (dynamodb thinks the table still exists).
 
     try:
-        create_leaderboard()
+        create_recovery()
         print('Table re-initialised.')
     except:
         print('Unable to re-initialise table.')
 
 if __name__ == '__main__':
-    clear_leaderboard()
+    clear_recovery()
