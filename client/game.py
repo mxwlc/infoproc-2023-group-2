@@ -480,32 +480,19 @@ def play(game_state=None):  # Todo: 1.change input method to FPGA input  2.send 
                     player1X_change = player_vel
                 if event.key == pygame.K_DOWN: # Kill button
                     Player1.Lives = 0
-                # if event.key == pygame.K_a:
-                #     player2X_change = -player_vel
-                # if event.key == pygame.K_d:
-                #     player2X_change = player_vel
                 if event.key == pygame.K_SPACE:
                     if Player1.Bullet_State == "ready":
                         player1_bulletX = Player1.X
                         Player1.shoot(player1_bulletX, player1_bulletY)
                         responses.append('c') # Create player bullet
                         print('Shot bullet.')
-                # if event.key == pygame.K_TAB:
-                #     if Player2.Bullet_State == "ready":
-                #         player2_bulletX = Player2.X
-                #         Player2.shoot(player2_bulletX, player2_bulletY)
-
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     player1X_change = 0
-                # if event.key == pygame.K_a or event.key == pygame.K_d:
-                #     player2X_change = 0
 
         # checking for boundaries of spaceship sp it doesn't go out of bounds
         Player1.X += player1X_change
-        # Player2.X += player2X_change
         Player1.X = boundary(Player1.X)
-        # Player2.X = boundary(Player2.X)
 
         responses.append(str(Player1.X))
         
@@ -525,8 +512,6 @@ def play(game_state=None):  # Todo: 1.change input method to FPGA input  2.send 
                 I_Won = True
                 over = True
             if over:
-                # for j in range(num_of_enemies):
-                #     enemyY[j] = -2000
                 print('Game ended.')
                 responses.append('g' + str(Player1.Score) + ':' + str(Player2.Score)) # End game immediately
                 # (and inform server of player scores)
@@ -594,10 +579,6 @@ def play(game_state=None):  # Todo: 1.change input method to FPGA input  2.send 
             Player1.shoot(player1_bulletX, player1_bulletY)
             player1_bulletY -= bulletY_change
 
-        # if player2_bulletY <= -5:
-        #     player2_bulletY = 500
-        #     Player2.Bullet_State = "ready"
-
         if Player2.Bullet_State == "fire":
             Player2.shoot(player2_bulletX, player2_bulletY)
             player2_bulletY -= bulletY_change
@@ -616,7 +597,6 @@ def play(game_state=None):  # Todo: 1.change input method to FPGA input  2.send 
         if isCollision(Player1.X, Player1.Y, enemy_bulletX, enemy_bulletY) and not was_hit:
             responses.append('p') # Player is hit by enemy bullet.
             was_hit = True
-        # if isCollision(Player2.X, Player2.Y, enemy_bulletX, enemy_bulletY):
 
         Player1.draw(player1Img)  # draw player1
         Player2.draw(player2Img)  # draw player2
@@ -635,7 +615,6 @@ def play(game_state=None):  # Todo: 1.change input method to FPGA input  2.send 
         send_responses(responses) # Send message to server.
 
 
-# to be modified
 def leaderboard():
     pygame.display.set_caption('Leaderboard')
 
@@ -731,7 +710,7 @@ def waiting():
         play(game_state)
 
 
-def start_menu():  # Todo: change input method to FPGA input
+def start_menu():  
     # use keyboard up and down to navigate; use 'enter' to select
     pygame.display.set_caption('Menu')
 
@@ -789,15 +768,12 @@ def start_menu():  # Todo: change input method to FPGA input
 
 
 def input_id():
-    # Todo: 1.change input method to FPGA input done
-    #  2.let each player input their names separately, game can't start until both players have input their names
+    # let each player input their names separately, game can't start until both players have input their names
     # use keyboard up, down, left and right to navigate; use 'enter' to select
     pygame.display.set_caption('Input ID')
 
     user1_text = ''
-    # user2_text = ''
     input_rect1 = pygame.Rect(300, 200, 140, 32)  # (left, top, width, height)
-    # input_rect2 = pygame.Rect(300, 300, 140, 32)
     colour = [colour_active, colour_passive]
     position = [400, 210]
 
@@ -806,13 +782,8 @@ def input_id():
         # check position
         if position[1] == 210:
             active1 = True
-            # active2 = False
-        # elif position[1] == 310:
-        #     active1 = False
-        #     active2 = True
         else:
             active1 = False
-            # active1 = active2 = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -843,11 +814,6 @@ def input_id():
                         user1_text = user1_text[:-1]
                     else:
                         user1_text += event.unicode
-                # if active2:
-                #     if event.key == pygame.K_BACKSPACE:
-                #         user2_text = user2_text[:-1]
-                #     else:
-                #         user2_text += event.unicode
 
         screen.blit(menu_bg, (0, 0))
 
@@ -864,29 +830,17 @@ def input_id():
         if active1:
             colour[0] = colour_active
             colour[1] = colour_passive
-        # elif active2:
-        #     colour[0] = colour_passive
-        #     colour[1] = colour_active
         else:
             colour = [colour_passive, colour_passive]
 
         text1 = fonts.render("Player1 ID:", True, (255, 255, 255))
         screen.blit(text1, (300, 150))
-        # text2 = fonts.render("Player2 ID:", True, (255, 255, 255))
-        # screen.blit(text2, (300, 250))
-
         pygame.draw.rect(screen, colour[0], input_rect1, 2)
-        # pygame.draw.rect(screen, colour[1], input_rect2, 2)
 
         text_surface1 = fonts.render(user1_text, True, (255, 255, 255))
-        # text_surface2 = fonts.render(user2_text, True, (255, 255, 255))
         screen.blit(text_surface1, (input_rect1.x + 5, input_rect1.y + 5))
-        # screen.blit(text_surface2, (input_rect2.x + 5, input_rect2.y + 5))
-
         input_rect1.w = max(200, text_surface1.get_width() + 10)
-        # input_rect2.w = max(200, text_surface2.get_width() + 10)
 
-        # fpga.update_hex(player1_name)
         pygame.display.flip()
 
 
