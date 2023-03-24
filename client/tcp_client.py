@@ -1,6 +1,7 @@
 import socket
 import time
 
+SERVER_NAME = '18.168.201.84'
 TIMEOUT = 0
 N = 10 # The number of iterations of RTT that are calculated.
 BUFFER_SIZE = 1024
@@ -10,7 +11,7 @@ class TCPClient:
     def __init__(self):
         # NOTE since the public IP address of the EC2 instance changes every time it is started,
         # self.server_name must be updated every time as well.
-        self.server_name = '18.168.201.84'
+        self.server_name = SERVER_NAME
         self.server_port = 5555
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 

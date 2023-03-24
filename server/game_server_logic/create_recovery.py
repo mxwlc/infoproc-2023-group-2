@@ -36,5 +36,14 @@ def create_recovery():
         }
     )
 
+    # Wait until the Recovery table has been created.
+    # while True:
+    #     try:
+    #         if table.table_status == 'ACTIVE':
+    #             break
+    #     except:
+    #         pass
+
+
 if __name__ == '__main__':
     create_recovery()

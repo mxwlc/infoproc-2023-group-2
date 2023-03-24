@@ -16,15 +16,15 @@ def clear_recovery():
         print('No table to delete.')
         return
 
-    time.sleep(5)
-    # Apparently, it takes time for dynamodb to recognise that a table has been deleted.
-    # Trying to recreate the leaderboard immediately throws exception (dynamodb thinks the table still exists).
+    # Wait until the Recovery table no longer exists.
+    while True:
+        table_names = [table.name for table in dynamodb.tables.all()]
+        if 'Recovery' not in table_names:
+            break
 
-    try:
-        create_recovery()
-        print('Table re-initialised.')
-    except:
-        print('Unable to re-initialise table.')
+    create_recovery()
+    print('Table re-initialised.')
+
 
 if __name__ == '__main__':
     clear_recovery()
