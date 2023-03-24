@@ -411,11 +411,13 @@ def parse_ingame():
             print('Enemy ' + m[1:] + ' created bullet.')
         elif m == 'p': # Own player gets hit with enemy bullet
             enemy_bulletY = 1000
+            enemy_bullet_state = 'ready'
             Player1.lose_lives()
             was_hit = False
             print('Own player got hit.')
         elif m == 'o': # Other player gets hit with enemy bullet
             enemy_bulletY = 1000
+            enemy_bullet_state = 'ready'
             Player2.lose_lives()
             was_hit = False
             print('Other player got hit.')
@@ -587,8 +589,8 @@ def play(game_state=None):  # Todo: 1.change input method to FPGA input  2.send 
         if enemy_bulletY >= 610 and enemy_bulletY != 1000:
             enemy_bulletY = 1000
             enemy_bullet_state = "ready"
-            responses.append('d') # Enemy bullet is destroyed, either through player/base collision or out of bounds.
-            print('Destroyed enemy bullet.')
+            responses.append('d') # Enemy bullet went out of bounds.
+            print('Enemy bullet went out of bounds.')
 
         if enemy_bullet_state == "fire":
             enemy_attack(enemy_bulletX, enemy_bulletY)

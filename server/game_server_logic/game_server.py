@@ -113,9 +113,9 @@ class GameServer:
                     return_messages.append('p')
                     relay_messages.append('o')
                     print('Player ' + str(client_index + 1) + ' got hit.')
-            elif m == 'd': # Enemy bullet destroyed
+            elif m == 'd': # Enemy bullet out of bounds
                 self.enemy_bullet = False
-                print('Enemy bullet destroyed.')
+                print('Enemy bullet went out of bounds.')
             elif m[0] == 'g': # Notification of game end
                 pair = m[1:].split(':')
                 for i in range(2):
