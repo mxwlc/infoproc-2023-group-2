@@ -43,7 +43,10 @@ def new_recovery(identifier, game_state, dynamodb=None):
 #         }
 #     )
 
-# Gets a recovery save with a given identifier from the database.
+# Gets a recovery save with a given identifier from the database, then deletes it.
+# If no recovery save with the given identifier can be found, this function returns None.
+# Note that recovery saves are meant to be single use; if the game crashes again, a new save
+# will be generated, with different game state data.
 def get_recovery(identifier, dynamodb=None):
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb', region_name='eu-west-2')
@@ -52,6 +55,12 @@ def get_recovery(identifier, dynamodb=None):
     try:
         response = table.get_item(Key = {'recovery' : 1, 'identifier' : identifier})
         item = response['Item']
+        table.delete_item(
+            Key={
+                'recovery' : 1,
+                'identifier' : identifier
+            }
+        )
     except:
         pass
     return item

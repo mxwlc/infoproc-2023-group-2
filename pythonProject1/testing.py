@@ -36,8 +36,6 @@ colour_gold = '#b68f40'
 tcp_client = TCPClient()
 tcp_client.connect_to_server()
 
-game_in_progress = False
-
 # Open a file to store the player's lives. This is accessed by receive.py to
 # display the lives on the FPGA.
 life_file = open('life.txt', 'w')
@@ -259,30 +257,40 @@ was_hit = False
 rtt = 0 # Round trip time between peers.
 frame_delay = 0 # rtt -> frame delay
 fps = 60
+game_in_progress = False
+
+def save_game_state():
+    game_state = {}
+    game_state['player_name'] = [player1_name, player2_name]
+    game_state['player_score'] = [Player1.Score, Player2.Score]
+    game_state['player_lives'] = [Player1.Lives, Player2.Lives]
+    game_state['player_x'] = [Player1.X, Player2.X]
+    game_state['player_bullet_x'] = [player1_bulletX, player2_bulletX]
+    game_state['player_bullet_y'] = [player1_bulletY, player2_bulletY]
+    game_state['enemy_x'] = enemyX
+    game_state['enemy_y'] = enemyY
+    game_state['enemy_xvel'] = enemyX_change
+    game_state['enemy_yvel'] = enemyY_change
+    game_state['enemy_bullet_x'] = enemy_bulletX
+    game_state['enemy_bullet_y'] = enemy_bulletY
+    game_state['enemy_vel'] = enemy_vel
+    bunker_health = []
+    for bunker in bunkers:
+        bunker_health.append(bunker.Health)
+    game_state['bunker_health'] = bunker_health
+    message = json.dumps(game_state, separators=(',', ':'))
+    print('Size of game state: ' + str(len(message)) + ' characters.')
+    tcp_client.send_server('z' + message)
 
 # If the game crashes, send a disconnect message to the server so that it
 # knows to go back to a state of waiting for new clients.
 def exit_handler():
 
     if game_in_progress:
-        game_state = {}
-        game_state['player_name'] = [player1_name, player2_name]
-        game_state['player_score'] = [Player1.Score, Player2.Score]
-        game_state['player_lives'] = [Player1.Lives, Player2.Lives]
-        game_state['player_x'] = [Player1.X, Player2.X]
-        game_state['player_bullet_x'] = [player1_bulletX, player2_bulletX]
-        game_state['player_bullet_y'] = [player1_bulletY, player2_bulletY]
-        game_state['enemy_x'] = enemyX
-        game_state['enemy_y'] = enemyY
-        game_state['enemy_xvel'] = enemyX_change
-        game_state['enemy_yvel'] = enemyY_change
-        game_state['enemy_bullet_x'] = enemy_bulletX
-        game_state['enemy_bullet_y'] = enemy_bulletY
-        game_state['enemy_vel'] = enemy_vel
-        bunker_health = []
-        for bunker in bunkers:
-            bunker_health.append(bunker.Health)
-        game_state['bunker_health'] = bunker_health
+        save_game_state()
+        # Note that 'player 1' in the game state is always the player that closed the game,
+        # which may not be the same as 'player 1' in the server.
+        
         # message = 'z' + str(Player1.Score) + ':' + str(Player2.Score) + ':' + str(Player1.X) + ':'
         # message += str(Player2.X) + ':' + str(player1_bulletX) + ':' + str(player1_bulletY) + ':'
         # message += str(player2_bulletX) + ':' + str(player2_bulletY) + ':'
@@ -297,14 +305,13 @@ def exit_handler():
         #     enemy_yvel += str(enemyY_change[i]) + ':'
         # message += enemy_x + enemy_y + enemy_xvel + enemy_yvel
         # message += str(enemy_bulletX) + ':' + str(enemy_bulletY)
-        message = json.dumps(game_state, separators=(',', ':'))
-        print('Size of game state: ' + str(len(message)) + ' characters.')
-        tcp_client.send_server('z' + message)
     else:
         tcp_client.send_server('x')
         
     tcp_client.close()
     life_file.close()
+
+    print('Called exit handler.')
 
 atexit.register(exit_handler)
 
@@ -451,8 +458,11 @@ def play(game_state=None):  # Todo: 1.change input method to FPGA input  2.send 
 
         for event in pygame.event.get():  # check all the events in the window
             if event.type == pygame.QUIT:
-                running = False
-                start_menu()
+                # It is not possible to go back to the start menu in the middle of a game
+                # since this is a multiplayer game.
+                # running = False
+                # start_menu()
+                raise SystemExit
             # # if keystroke is pressed check whether its right or left
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:

@@ -10,7 +10,7 @@ class TCPClient:
     def __init__(self):
         # NOTE since the public IP address of the EC2 instance changes every time it is started,
         # self.server_name must be updated accordingly.
-        self.server_name = '13.40.52.10'
+        self.server_name = '18.168.201.84'
         self.server_port = 5555
         self.clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
